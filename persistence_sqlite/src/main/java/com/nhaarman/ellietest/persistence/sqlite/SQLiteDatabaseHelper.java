@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence;
+package com.nhaarman.ellietest.persistence.sqlite;
 
 import android.content.Context;
 import android.database.DatabaseErrorHandler;

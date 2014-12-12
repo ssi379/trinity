@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence;
+package com.nhaarman.ellietest.persistence.memory;
 
 import com.nhaarman.ellietest.core.players.Player;
 import com.nhaarman.ellietest.core.players.PlayerRepository;

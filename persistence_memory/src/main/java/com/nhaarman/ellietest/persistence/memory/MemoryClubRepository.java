@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence;
+package com.nhaarman.ellietest.persistence.memory;
 
 import com.nhaarman.ellietest.core.clubs.Club;
 import com.nhaarman.ellietest.core.clubs.ClubRepository;

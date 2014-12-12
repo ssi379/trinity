@@ -1,11 +1,11 @@
-package com.nhaarman.ellietest.persistence.dagger;
+package com.nhaarman.ellietest.persistence.memory.dagger;
 
 import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
-import com.nhaarman.ellietest.persistence.MemoryClubRepository;
-import com.nhaarman.ellietest.persistence.MemoryPlayerRepository;
-import com.nhaarman.ellietest.persistence.MemoryTeamRepository;
+import com.nhaarman.ellietest.persistence.memory.MemoryClubRepository;
+import com.nhaarman.ellietest.persistence.memory.MemoryPlayerRepository;
+import com.nhaarman.ellietest.persistence.memory.MemoryTeamRepository;
 
 import javax.inject.Singleton;
 

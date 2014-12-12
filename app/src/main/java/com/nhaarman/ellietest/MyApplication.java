@@ -1,7 +1,7 @@
 package com.nhaarman.ellietest;
 
-
-import com.nhaarman.ellietest.persistence.dagger.Dagger_MemoryPersistenceComponent;
+import com.nhaarman.ellietest.components.ApplicationComponent;
+import com.nhaarman.ellietest.components.PersistenceComponent;
 
 public class MyApplication extends android.app.Application {
 
@@ -9,7 +9,8 @@ public class MyApplication extends android.app.Application {
 
     @Override
     public void onCreate() {
-        mApplicationComponent = Dagger_ApplicationComponent.builder().memoryPersistenceComponent(Dagger_MemoryPersistenceComponent.create()).build();
+        PersistenceComponent persistenceComponent = Dagger_PersistenceComponent.create();
+        mApplicationComponent = Dagger_ApplicationComponent.builder().persistenceComponent(persistenceComponent).build();
     }
 
     public ApplicationComponent getApplicationComponent() {
