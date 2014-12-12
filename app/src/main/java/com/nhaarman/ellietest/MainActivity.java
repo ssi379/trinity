@@ -2,8 +2,6 @@ package com.nhaarman.ellietest;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.nhaarman.ellietest.core.teams.Team;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
