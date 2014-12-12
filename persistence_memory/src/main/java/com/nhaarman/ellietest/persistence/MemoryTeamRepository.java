@@ -7,12 +7,15 @@ import com.nhaarman.ellietest.core.teams.TeamRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 public class MemoryTeamRepository implements TeamRepository {
 
     private final Map<Long, Team> mTable;
     private final ClubRepository mClubRepository;
     private Long mLastId = 0L;
 
+    @Inject
     public MemoryTeamRepository(final ClubRepository clubRepository) {
         mClubRepository = clubRepository;
         mTable = new HashMap<>();

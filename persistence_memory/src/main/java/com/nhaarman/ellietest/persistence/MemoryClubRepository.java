@@ -6,11 +6,14 @@ import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 public class MemoryClubRepository implements ClubRepository {
 
     private final Map<Long, Club> mTable;
     private Long mLastId = 0L;
 
+    @Inject
     public MemoryClubRepository() {
         mTable = new HashMap<>();
     }

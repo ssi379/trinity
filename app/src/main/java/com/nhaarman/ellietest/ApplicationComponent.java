@@ -1,10 +1,12 @@
 package com.nhaarman.ellietest;
 
-import com.nhaarman.ellietest.persistence.MemoryRepositoryFactoryComponent;
+import com.nhaarman.ellietest.persistence.MemoryPersistenceComponent;
 
 import dagger.Component;
 
-@Component(dependencies = MemoryRepositoryFactoryComponent.class)
+@Component(dependencies = MemoryPersistenceComponent.class)
 public interface ApplicationComponent {
+
+    void inject(MainActivity application);
 
 }

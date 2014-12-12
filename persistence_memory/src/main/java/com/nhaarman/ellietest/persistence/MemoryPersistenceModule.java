@@ -1,7 +1,10 @@
 package com.nhaarman.ellietest.persistence;
 
-import com.nhaarman.ellietest.core.RepositoryFactory;
-import com.nhaarman.ellietest.persistence.MemoryRepositoryFactory;
+import com.nhaarman.ellietest.core.clubs.ClubRepository;
+import com.nhaarman.ellietest.core.players.PlayerRepository;
+import com.nhaarman.ellietest.core.teams.TeamRepository;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -10,8 +13,21 @@ import dagger.Provides;
 public class MemoryPersistenceModule {
 
     @Provides
-    RepositoryFactory provideRepositoryFactory(final MemoryRepositoryFactory factory) {
-        return factory;
+    @Singleton
+    ClubRepository provideClubRepository(final MemoryClubRepository clubRepository) {
+        return clubRepository;
+    }
+
+    @Provides
+    @Singleton
+    TeamRepository provideTeamRepository(final MemoryTeamRepository teamRepository) {
+        return teamRepository;
+    }
+
+    @Provides
+    @Singleton
+    PlayerRepository providePlayerRepository(final MemoryPlayerRepository teamRepository) {
+        return teamRepository;
     }
 
 }
