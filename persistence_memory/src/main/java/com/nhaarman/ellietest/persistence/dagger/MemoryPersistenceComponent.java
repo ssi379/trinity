@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence;
+package com.nhaarman.ellietest.persistence.dagger;
 
 import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.players.PlayerRepository;

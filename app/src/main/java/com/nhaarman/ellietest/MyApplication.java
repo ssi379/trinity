@@ -1,7 +1,7 @@
 package com.nhaarman.ellietest;
 
 
-import com.nhaarman.ellietest.persistence.Dagger_MemoryPersistenceComponent;
+import com.nhaarman.ellietest.persistence.dagger.Dagger_MemoryPersistenceComponent;
 
 public class MyApplication extends android.app.Application {
 

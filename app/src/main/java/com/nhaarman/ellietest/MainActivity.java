@@ -8,7 +8,6 @@ import com.nhaarman.ellietest.core.players.Player;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.Team;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
-import com.nhaarman.ellietest.persistence.Dagger_MemoryPersistenceComponent;
 
 import javax.inject.Inject;
 

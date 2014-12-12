@@ -1,6 +1,6 @@
 package com.nhaarman.ellietest;
 
-import com.nhaarman.ellietest.persistence.MemoryPersistenceComponent;
+import com.nhaarman.ellietest.persistence.dagger.MemoryPersistenceComponent;
 
 import dagger.Component;
 
