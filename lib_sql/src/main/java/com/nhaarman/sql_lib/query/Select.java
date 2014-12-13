@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.nhaarman.ellietest.persistence.sqlite.query.Select.Join.Type;
+import com.nhaarman.sql_lib.query.Select.Join.Type;
 
 import java.util.ArrayList;
 import java.util.List;

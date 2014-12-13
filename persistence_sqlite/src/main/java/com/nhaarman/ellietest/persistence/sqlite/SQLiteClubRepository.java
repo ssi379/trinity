@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.nhaarman.ellietest.core.clubs.Club;
 import com.nhaarman.ellietest.core.clubs.ClubRepository;
-import com.nhaarman.ellietest.persistence.sqlite.query.Select;
+import com.nhaarman.sql_lib.query.Select;
 
 import java.util.ArrayList;
 import java.util.List;

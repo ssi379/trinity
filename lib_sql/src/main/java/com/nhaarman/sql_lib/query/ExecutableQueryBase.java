@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+public abstract class ExecutableQueryBase extends QueryBase implements ExecutableQuery {
 
-@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
-public abstract class ResultQueryBase extends ExecutableQueryBase implements ResultQuery {
-
-    protected ResultQueryBase(final Query parent, final String table) {
+    protected ExecutableQueryBase(final Query parent, final String table) {
         super(parent, table);
     }
 
     @Override
-    public Cursor fetchFrom(final SQLiteDatabase database) {
-        System.out.println(getSql());
-        return database.rawQuery(getSql(), getArgs());
+    public void execute(final SQLiteDatabase database) {
+        database.execSQL(getSql(), getArgs());
     }
 }

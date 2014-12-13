@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.teams.Team;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
-import com.nhaarman.ellietest.persistence.sqlite.query.Select;
+import com.nhaarman.sql_lib.query.Select;
 
 import java.util.ArrayList;
 import java.util.List;

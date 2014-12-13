@@ -15,18 +15,11 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
 import android.database.sqlite.SQLiteDatabase;
 
-public abstract class ExecutableQueryBase extends QueryBase implements ExecutableQuery {
+public interface ExecutableQuery extends Query {
 
-    protected ExecutableQueryBase(final Query parent, final String table) {
-        super(parent, table);
-    }
-
-    @Override
-    public void execute(final SQLiteDatabase database) {
-        database.execSQL(getSql(), getArgs());
-    }
+    void execute(SQLiteDatabase database);
 }

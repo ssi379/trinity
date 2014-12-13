@@ -1,1 +1,1 @@
-include ':app', ':core', ':persistence_sqlite', ':persistence_memory'
+include ':app', ':core', ':persistence_sqlite', ':persistence_memory', ':lib_sql'

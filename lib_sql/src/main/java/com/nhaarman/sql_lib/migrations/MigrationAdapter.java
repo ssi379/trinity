@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.migrations;
+package com.nhaarman.sql_lib.migrations;
 
 public class MigrationAdapter implements Migration {
 

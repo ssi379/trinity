@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
-import android.database.sqlite.SQLiteDatabase;
+public class MalformedQueryException extends RuntimeException {
 
-public interface ExecutableQuery extends Query {
-
-    void execute(SQLiteDatabase database);
+    public MalformedQueryException(final String detailMessage) {
+        super(detailMessage);
+    }
 }

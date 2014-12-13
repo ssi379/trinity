@@ -1,5 +1,7 @@
 package com.nhaarman.ellietest.persistence.sqlite.migrations;
 
+import com.nhaarman.sql_lib.migrations.MigrationAdapter;
+
 public class CreatePlayersTableMigration extends MigrationAdapter {
 
     private static final long ORDER = 201412131955551L;

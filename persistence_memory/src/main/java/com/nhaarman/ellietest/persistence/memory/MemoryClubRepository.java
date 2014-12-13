@@ -29,6 +29,7 @@ public class MemoryClubRepository implements ClubRepository {
     @Override
     public boolean update(final Club object) {
         mTable.put(object.getId(), object);
+        return true;
     }
 
     @Override

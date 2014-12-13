@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
 @SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
-public final class Update extends QueryBase {
+public final class Delete extends QueryBase {
 
-
-    public Update(final String table) {
-        super(null, table);
+    public Delete() {
+        super(null, null);
     }
 
-    public Set set(final String set) {
-        return set(set, (Object[]) null);
-    }
-
-    public Set set(final String set, final Object... args) {
-        return new Set(this, getTable(), set, args);
+    public From from(String table) {
+        return new From(this, table);
     }
 
     @Override
     public String getPartSql() {
-        return "UPDATE " + getTable();
+        return "DELETE";
     }
 
-    public static final class Set extends ExecutableQueryBase {
+    public static final class From extends ExecutableQueryBase {
 
-        private final String mSet;
-        private final Object[] mSetArgs;
-
-        private Set(final Query parent, final String table, final String set, final Object... args) {
+        private From(final Delete parent, final String table) {
             super(parent, table);
-            mSet = set;
-            mSetArgs = args;
         }
 
         public Where where(final String where) {
@@ -59,12 +49,7 @@ public final class Update extends QueryBase {
 
         @Override
         public String getPartSql() {
-            return "SET " + mSet;
-        }
-
-        @Override
-        public String[] getPartArgs() {
-            return toStringArray(mSetArgs);
+            return "FROM " + getTable();
         }
     }
 
@@ -73,7 +58,7 @@ public final class Update extends QueryBase {
         private final String mWhere;
         private final Object[] mWhereArgs;
 
-        private Where(final Query parent, final String table, final String where, final Object[] args) {
+        public Where(final Query parent, final String table, final String where, final Object[] args) {
             super(parent, table);
             mWhere = where;
             mWhereArgs = args;

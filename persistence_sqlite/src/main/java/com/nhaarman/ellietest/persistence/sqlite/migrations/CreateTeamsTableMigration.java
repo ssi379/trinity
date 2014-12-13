@@ -1,5 +1,7 @@
 package com.nhaarman.ellietest.persistence.sqlite.migrations;
 
+import com.nhaarman.sql_lib.migrations.MigrationAdapter;
+
 public class CreateTeamsTableMigration extends MigrationAdapter {
 
     private static final long ORDER = 20141213195014L;

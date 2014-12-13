@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence.sqlite.migrations;
+package com.nhaarman.sql_lib.migrations;
 
 import java.util.ArrayList;
 import java.util.Collections;

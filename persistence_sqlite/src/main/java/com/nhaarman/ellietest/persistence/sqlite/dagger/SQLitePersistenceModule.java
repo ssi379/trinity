@@ -7,11 +7,11 @@ import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
 import com.nhaarman.ellietest.persistence.sqlite.SQLiteClubRepository;
-import com.nhaarman.ellietest.persistence.sqlite.SQLiteDatabaseHelper;
 import com.nhaarman.ellietest.persistence.sqlite.SQLitePlayerRepository;
 import com.nhaarman.ellietest.persistence.sqlite.SQLiteTeamRepository;
+import com.nhaarman.sql_lib.SQLiteDatabaseHelper;
 import com.nhaarman.ellietest.persistence.sqlite.migrations.MigrationFactory;
-import com.nhaarman.ellietest.persistence.sqlite.migrations.Migrations;
+import com.nhaarman.sql_lib.migrations.Migrations;
 
 import javax.inject.Singleton;
 

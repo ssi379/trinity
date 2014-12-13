@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;

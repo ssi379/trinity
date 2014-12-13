@@ -15,11 +15,22 @@
  * limitations under the License.
  */
 
-package com.nhaarman.ellietest.persistence.sqlite.query;
+package com.nhaarman.sql_lib.query;
 
-public class MalformedQueryException extends RuntimeException {
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-    public MalformedQueryException(final String detailMessage) {
-        super(detailMessage);
+
+@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
+public abstract class ResultQueryBase extends ExecutableQueryBase implements ResultQuery {
+
+    protected ResultQueryBase(final Query parent, final String table) {
+        super(parent, table);
+    }
+
+    @Override
+    public Cursor fetchFrom(final SQLiteDatabase database) {
+        System.out.println(getSql());
+        return database.rawQuery(getSql(), getArgs());
     }
 }

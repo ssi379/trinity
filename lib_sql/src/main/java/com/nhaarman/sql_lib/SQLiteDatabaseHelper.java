@@ -1,11 +1,11 @@
-package com.nhaarman.ellietest.persistence.sqlite;
+package com.nhaarman.sql_lib;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.nhaarman.ellietest.persistence.sqlite.migrations.Migration;
-import com.nhaarman.ellietest.persistence.sqlite.migrations.Migrations;
+import com.nhaarman.sql_lib.migrations.Migration;
+import com.nhaarman.sql_lib.migrations.Migrations;
 
 import java.util.List;
 import java.util.ListIterator;
