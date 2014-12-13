@@ -4,7 +4,10 @@ import com.nhaarman.ellietest.MainActivity;
 
 import dagger.Component;
 
-@Component(dependencies = PersistenceComponent.class)
+@Component(
+        modules = ApplicationModule.class,
+        dependencies = PersistenceComponent.class
+)
 public interface ApplicationComponent {
 
     void inject(MainActivity application);

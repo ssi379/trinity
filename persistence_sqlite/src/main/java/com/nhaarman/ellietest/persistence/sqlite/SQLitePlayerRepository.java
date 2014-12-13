@@ -1,5 +1,7 @@
 package com.nhaarman.ellietest.persistence.sqlite;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.nhaarman.ellietest.core.players.Player;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 
@@ -7,14 +9,16 @@ import javax.inject.Inject;
 
 public class SQLitePlayerRepository implements PlayerRepository {
 
-    @Inject
-    SQLitePlayerRepository() {
+    private final SQLiteDatabase mDatabase;
 
+    @Inject
+    SQLitePlayerRepository(SQLiteDatabase database) {
+        mDatabase = database;
     }
 
     @Override
     public Long create(final Player object) {
-        throw new UnsupportedOperationException("Not yet implemented"); // TODO: Implement create.
+        return null;
     }
 
     @Override
