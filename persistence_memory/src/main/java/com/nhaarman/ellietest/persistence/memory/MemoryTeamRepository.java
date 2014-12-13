@@ -30,7 +30,7 @@ public class MemoryTeamRepository implements TeamRepository {
     }
 
     @Override
-    public void update(final Team object) {
+    public boolean update(final Team object) {
         mTable.put(object.getId(), object);
         mClubRepository.update(object.getClub());
     }

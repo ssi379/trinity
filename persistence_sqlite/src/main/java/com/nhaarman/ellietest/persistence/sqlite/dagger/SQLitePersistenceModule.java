@@ -10,6 +10,8 @@ import com.nhaarman.ellietest.persistence.sqlite.SQLiteClubRepository;
 import com.nhaarman.ellietest.persistence.sqlite.SQLiteDatabaseHelper;
 import com.nhaarman.ellietest.persistence.sqlite.SQLitePlayerRepository;
 import com.nhaarman.ellietest.persistence.sqlite.SQLiteTeamRepository;
+import com.nhaarman.ellietest.persistence.sqlite.migrations.MigrationFactory;
+import com.nhaarman.ellietest.persistence.sqlite.migrations.Migrations;
 
 import javax.inject.Singleton;
 
@@ -52,6 +54,12 @@ public class SQLitePersistenceModule {
     @Singleton
     SQLiteDatabase provideDatabase(final SQLiteDatabaseHelper databaseHelper) {
         return databaseHelper.getWritableDatabase();
+    }
+
+    @Provides
+    @Singleton
+    Migrations provideMigrations(final MigrationFactory migrationFactory) {
+        return migrationFactory.createMigrations();
     }
 
 }

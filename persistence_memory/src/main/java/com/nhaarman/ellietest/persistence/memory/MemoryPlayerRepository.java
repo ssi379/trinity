@@ -31,7 +31,7 @@ public class MemoryPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public void update(final Player object) {
+    public boolean update(final Player object) {
         mTable.put(object.getId(), object);
         mTeamRepository.update(object.getTeam());
     }

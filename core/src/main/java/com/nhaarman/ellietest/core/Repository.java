@@ -4,7 +4,7 @@ public interface Repository<T> {
 
     Long create(T object);
 
-    void update(T object);
+    boolean update(T object);
 
     T find(Long id);
 }
