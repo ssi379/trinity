@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence.sqlite;
+package com.nhaarman.lib_sql_generated;
 
 import android.content.ContentValues;
 import android.database.Cursor;

@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.nhaarman.lib_sql_generated">
+
+    <application android:allowBackup="true" >
+
+    </application>
+
+</manifest>

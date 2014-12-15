@@ -1,6 +1,6 @@
-package com.nhaarman.ellietest.persistence.sqlite.migrations;
+package com.nhaarman.lib_sql_generated.migrations;
 
-import com.nhaarman.sql_lib.migrations.MigrationAdapter;
+import com.nhaarman.lib_setup.migrations.MigrationAdapter;
 
 public class CreateTeamsTableMigration extends MigrationAdapter {
 

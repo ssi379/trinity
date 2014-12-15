@@ -4,7 +4,6 @@ package com.nhaarman.ellietest;
 import android.app.Application;
 
 import com.nhaarman.ellietest.components.ApplicationComponent;
-import com.nhaarman.ellietest.components.ApplicationModule;
 import com.nhaarman.ellietest.components.Dagger_ApplicationComponent;
 import com.nhaarman.ellietest.components.PersistenceComponent;
 

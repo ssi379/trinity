@@ -5,7 +5,7 @@ import android.content.Context;
 import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
-import com.nhaarman.ellietest.persistence.sqlite.dagger.SQLitePersistenceModule;
+import com.nhaarman.lib_sql_generated.dagger.SQLitePersistenceModule;
 
 import javax.inject.Singleton;
 

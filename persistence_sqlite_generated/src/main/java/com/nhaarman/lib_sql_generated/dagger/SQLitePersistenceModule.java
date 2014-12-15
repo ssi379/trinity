@@ -1,4 +1,4 @@
-package com.nhaarman.ellietest.persistence.sqlite.dagger;
+package com.nhaarman.lib_sql_generated.dagger;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,10 +7,10 @@ import com.nhaarman.ellietest.core.clubs.ClubRepository;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.TeamRepository;
 import com.nhaarman.ellietest.persistence.sqlite.SQLiteClubRepository;
-import com.nhaarman.ellietest.persistence.sqlite.SQLitePlayerRepository;
-import com.nhaarman.ellietest.persistence.sqlite.SQLiteTeamRepository;
+import com.nhaarman.lib_sql_generated.SQLitePlayerRepository;
+import com.nhaarman.lib_sql_generated.SQLiteTeamRepository;
 import com.nhaarman.sql_lib.SQLiteDatabaseHelper;
-import com.nhaarman.ellietest.persistence.sqlite.migrations.MigrationFactory;
+import com.nhaarman.lib_sql_generated.migrations.MigrationFactory;
 import com.nhaarman.sql_lib.migrations.Migrations;
 
 import javax.inject.Singleton;

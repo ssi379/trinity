@@ -1,10 +1,12 @@
-package com.nhaarman.ellietest.persistence.sqlite.migrations;
+package com.nhaarman.ellietest.persistence.sqlite;
 
-import com.nhaarman.sql_lib.migrations.MigrationAdapter;
+import com.nhaarman.lib_setup.Migration;
+import com.nhaarman.lib_setup.migrations.MigrationAdapter;
 
+@Migration(version = 1, order = CreateClubsTableMigration.ORDER)
 public class CreateClubsTableMigration extends MigrationAdapter {
 
-    private static final long ORDER = 20141213194024L;
+    static final long ORDER = 20141213194024L;
 
     public CreateClubsTableMigration() {
         super(1);

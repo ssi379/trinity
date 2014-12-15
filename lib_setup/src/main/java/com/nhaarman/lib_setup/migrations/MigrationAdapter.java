@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nhaarman.sql_lib.migrations;
+package com.nhaarman.lib_setup.migrations;
 
 public class MigrationAdapter implements Migration {
 

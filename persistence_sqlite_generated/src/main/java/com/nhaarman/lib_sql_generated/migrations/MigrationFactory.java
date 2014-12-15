@@ -1,17 +1,16 @@
-package com.nhaarman.ellietest.persistence.sqlite.migrations;
+package com.nhaarman.lib_sql_generated.migrations;
 
-import com.nhaarman.sql_lib.migrations.IMigrationFactory;
+import com.nhaarman.ellietest.persistence.sqlite.CreateClubsTableMigration;
 import com.nhaarman.sql_lib.migrations.Migrations;
 
 import javax.inject.Inject;
 
-public class MigrationFactory implements IMigrationFactory {
+public class MigrationFactory {
 
     @Inject
     public MigrationFactory() {
     }
 
-    @Override
     public Migrations createMigrations() {
         Migrations migrations = new Migrations();
 

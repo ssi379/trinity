@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.nhaarman.sql_lib.migrations.Migration;
+import com.nhaarman.lib_setup.migrations.Migration;
 import com.nhaarman.sql_lib.migrations.Migrations;
 
 import java.util.List;

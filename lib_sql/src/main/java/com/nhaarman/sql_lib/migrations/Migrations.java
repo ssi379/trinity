@@ -1,5 +1,7 @@
 package com.nhaarman.sql_lib.migrations;
 
+import com.nhaarman.lib_setup.migrations.Migration;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

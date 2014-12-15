@@ -1,4 +1,4 @@
-package com.nhaarman.sql_lib.migrations;
+package com.nhaarman.lib_setup.migrations;
 
 public interface Migration extends Comparable<Migration> {
 
