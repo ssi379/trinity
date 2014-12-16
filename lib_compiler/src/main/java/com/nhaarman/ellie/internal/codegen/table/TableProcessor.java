@@ -1,6 +1,8 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
 import com.nhaarman.ellie.internal.codegen.ProcessingFailedException;
+import com.nhaarman.ellie.internal.codegen.column.ColumnConverter;
+import com.nhaarman.ellie.internal.codegen.migration.CreateTableMigrationWriter;
 import com.nhaarman.lib_setup.annotations.Table;
 
 import java.io.IOException;
@@ -17,10 +19,12 @@ public class TableProcessor {
 
     private final ProcessingEnvironment mProcessingEnvironment;
     private final TableValidator mTableValidator;
+    private final TableConverter mTableConverter;
 
     public TableProcessor(final ProcessingEnvironment processingEnvironment) {
         mProcessingEnvironment = processingEnvironment;
         mTableValidator = new TableValidator();
+        mTableConverter = new TableConverter(new ColumnConverter());
     }
 
     public void process(final RoundEnvironment roundEnvironment) throws ProcessingFailedException, IOException {
@@ -35,7 +39,7 @@ public class TableProcessor {
         }
 
         for (TableInfo tableInfo : tableInfoList) {
-            new MigrationWriter(mProcessingEnvironment.getFiler()).writeMigration(tableInfo);
+            new CreateTableMigrationWriter(mProcessingEnvironment.getFiler(), mTableConverter).writeMigration(tableInfo);
         }
     }
 }

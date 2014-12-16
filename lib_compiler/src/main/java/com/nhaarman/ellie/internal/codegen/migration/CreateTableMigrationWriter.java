@@ -1,14 +1,12 @@
-package com.nhaarman.ellie.internal.codegen.table;
+package com.nhaarman.ellie.internal.codegen.migration;
 
-import com.nhaarman.ellie.internal.codegen.column.ColumnConverter;
-import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
+import com.nhaarman.ellie.internal.codegen.table.TableConverter;
+import com.nhaarman.ellie.internal.codegen.table.TableInfo;
 import com.nhaarman.lib_setup.migrations.Migration;
 import com.nhaarman.lib_setup.migrations.MigrationAdapter;
 import com.squareup.javawriter.JavaWriter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Locale;
 
 import javax.annotation.processing.Filer;
@@ -16,18 +14,18 @@ import javax.tools.JavaFileObject;
 
 import static com.nhaarman.ellie.internal.codegen.Modifiers.PUBLIC;
 
-/**
- * Generates a
- */
-public class MigrationWriter {
+public class CreateTableMigrationWriter {
 
     private final Filer mFiler;
+
+    private final TableConverter mTableConverter;
 
     private JavaWriter mJavaWriter;
     private TableInfo mTableInfo;
 
-    public MigrationWriter(final Filer filer) {
+    public CreateTableMigrationWriter(final Filer filer, final TableConverter tableConverter) {
         mFiler = filer;
+        mTableConverter = tableConverter;
     }
 
     public void writeMigration(final TableInfo tableInfo) throws IOException {
@@ -97,33 +95,11 @@ public class MigrationWriter {
     }
 
     private String createUpStatements() {
-        StringBuilder result = new StringBuilder(255);
-
-        result.append("\"CREATE TABLE ");
-        result.append(mTableInfo.getTableName());
-        result.append("(\" +\n\"");
-
-        ColumnConverter columnConverter = new ColumnConverter();
-
-        Collection<ColumnInfo> columns = mTableInfo.getColumns();
-        for (Iterator<ColumnInfo> iterator = columns.iterator(); iterator.hasNext(); ) {
-            ColumnInfo columnInfo = iterator.next();
-            result.append(columnConverter.toSQLiteStatement(columnInfo));
-
-            if (iterator.hasNext()) {
-                result.append(',');
-            }
-
-            result.append("\" +\n\"");
-        }
-
-        result.append(")\"");
-
-        return result.toString();
+        return mTableConverter.createTableStatement(mTableInfo);
     }
 
     private String createDownStatements() {
-        return "\"DROP TABLE " + mTableInfo.getTableName() + '"';
+        return mTableConverter.dropTableStatement(mTableInfo);
     }
 
 }
