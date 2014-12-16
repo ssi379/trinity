@@ -17,9 +17,9 @@ public class TableConverter {
     public String createTableStatement(final TableInfo tableInfo) {
         StringBuilder result = new StringBuilder(255);
 
-        result.append("\"CREATE TABLE ");
+        result.append("CREATE TABLE ");
         result.append(tableInfo.getTableName());
-        result.append("(\" +\n\"");
+        result.append('(');
 
         Collection<ColumnInfo> columns = tableInfo.getColumns();
         for (Iterator<ColumnInfo> iterator = columns.iterator(); iterator.hasNext(); ) {
@@ -27,18 +27,16 @@ public class TableConverter {
             result.append(mColumnConverter.toSQLiteStatement(columnInfo));
 
             if (iterator.hasNext()) {
-                result.append(',');
+                result.append(", ");
             }
-
-            result.append("\" +\n\"");
         }
 
-        result.append(")\"");
+        result.append(')');
 
         return result.toString();
     }
 
     public String dropTableStatement(final TableInfo tableInfo) {
-        return "\"DROP TABLE " + tableInfo.getTableName() + '"';
+        return "DROP TABLE " + tableInfo.getTableName();
     }
 }
