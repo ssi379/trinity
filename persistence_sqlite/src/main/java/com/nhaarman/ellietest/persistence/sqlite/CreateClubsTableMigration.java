@@ -1,6 +1,6 @@
 package com.nhaarman.ellietest.persistence.sqlite;
 
-import com.nhaarman.lib_setup.Migration;
+import com.nhaarman.lib_setup.annotations.Migration;
 import com.nhaarman.lib_setup.migrations.MigrationAdapter;
 
 @Migration(version = 1, order = CreateClubsTableMigration.ORDER)

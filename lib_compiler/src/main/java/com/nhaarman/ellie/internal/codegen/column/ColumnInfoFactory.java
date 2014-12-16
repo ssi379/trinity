@@ -1,8 +1,8 @@
 package com.nhaarman.ellie.internal.codegen.column;
 
-import com.nhaarman.lib_setup.Column;
-import com.nhaarman.lib_setup.Foreign;
-import com.nhaarman.lib_setup.PrimaryKey;
+import com.nhaarman.lib_setup.annotations.Column;
+import com.nhaarman.lib_setup.annotations.Foreign;
+import com.nhaarman.lib_setup.annotations.PrimaryKey;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -3,10 +3,10 @@ package com.nhaarman.ellietest.persistence.sqlite;
 import com.nhaarman.ellietest.core.players.Player;
 import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.Team;
-import com.nhaarman.lib_setup.Column;
-import com.nhaarman.lib_setup.Foreign;
-import com.nhaarman.lib_setup.PrimaryKey;
-import com.nhaarman.lib_setup.Table;
+import com.nhaarman.lib_setup.annotations.Column;
+import com.nhaarman.lib_setup.annotations.Foreign;
+import com.nhaarman.lib_setup.annotations.PrimaryKey;
+import com.nhaarman.lib_setup.annotations.Table;
 
 @Table(name = "players", repository = PlayerRepository.class)
 public class SQLPlayer extends Player {

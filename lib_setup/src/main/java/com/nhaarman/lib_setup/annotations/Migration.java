@@ -1,15 +1,17 @@
-package com.nhaarman.lib_setup;
+package com.nhaarman.lib_setup.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
-@Target(METHOD)
+@Target(TYPE)
 @Retention(CLASS)
-public @interface PrimaryKey {
+public @interface Migration {
 
-    boolean autoIncrement() default true;
+    int version();
 
+    long order() default 0;
 }

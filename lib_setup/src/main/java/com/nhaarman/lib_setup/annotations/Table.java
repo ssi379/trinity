@@ -1,4 +1,4 @@
-package com.nhaarman.lib_setup;
+package com.nhaarman.lib_setup.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

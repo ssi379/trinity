@@ -3,8 +3,8 @@ package com.nhaarman.ellie.internal.codegen.table;
 import com.nhaarman.ellie.internal.codegen.ProcessingFailedException;
 import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
 import com.nhaarman.ellie.internal.codegen.column.ColumnInfoFactory;
-import com.nhaarman.lib_setup.Column;
-import com.nhaarman.lib_setup.Table;
+import com.nhaarman.lib_setup.annotations.Column;
+import com.nhaarman.lib_setup.annotations.Table;
 
 import java.util.Collection;
 import java.util.Iterator;

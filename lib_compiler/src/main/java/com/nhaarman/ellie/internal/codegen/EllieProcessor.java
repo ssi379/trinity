@@ -18,7 +18,7 @@
 package com.nhaarman.ellie.internal.codegen;
 
 import com.nhaarman.ellie.internal.codegen.table.TableProcessor;
-import com.nhaarman.lib_setup.Table;
+import com.nhaarman.lib_setup.annotations.Table;
 
 import java.io.IOException;
 import java.util.HashMap;
