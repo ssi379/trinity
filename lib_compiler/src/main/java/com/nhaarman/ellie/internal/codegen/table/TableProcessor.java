@@ -1,5 +1,6 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
+import com.nhaarman.ellie.internal.codegen.Node;
 import com.nhaarman.ellie.internal.codegen.ProcessingFailedException;
 import com.nhaarman.ellie.internal.codegen.column.ColumnConverter;
 import com.nhaarman.ellie.internal.codegen.migration.CreateTableMigrationWriter;
@@ -7,6 +8,7 @@ import com.nhaarman.lib_setup.annotations.Table;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -38,8 +40,16 @@ public class TableProcessor {
             tableInfoList.add(tableInfo);
         }
 
-        for (TableInfo tableInfo : tableInfoList) {
-            new CreateTableMigrationWriter(mProcessingEnvironment.getFiler(), mTableConverter).writeMigration(tableInfo);
+        Collection<Node<TableInfo>> nodes = new NodeFactory().createTree(tableInfoList);
+
+        writeMigrations(nodes);
+    }
+
+    private void writeMigrations(final Collection<Node<TableInfo>> nodes) throws IOException {
+        for (Node<TableInfo> node : nodes) {
+            new CreateTableMigrationWriter(mProcessingEnvironment.getFiler(), mTableConverter).writeMigration(node.getValue());
+
+            writeMigrations(node.getChildren());
         }
     }
 }

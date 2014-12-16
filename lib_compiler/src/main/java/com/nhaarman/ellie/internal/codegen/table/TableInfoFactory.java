@@ -30,6 +30,8 @@ public class TableInfoFactory {
         mRoundEnvironment = roundEnvironment;
         mAnnotation = element.getAnnotation(Table.class);
 
+        result.setElement(element);
+
         result.setTableName(getTableName());
         result.setSinceVersion(getSinceVersion());
         result.setRepositoryClass(getRepositoryClass());

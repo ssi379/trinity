@@ -67,6 +67,7 @@ public class EllieProcessor extends AbstractProcessor {
         } catch (ProcessingFailedException | IOException e) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getLocalizedMessage());
         }
+
         return true;
     }
 }

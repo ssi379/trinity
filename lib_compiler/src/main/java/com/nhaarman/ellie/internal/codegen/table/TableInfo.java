@@ -4,6 +4,8 @@ import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
 
 import java.util.Collection;
 
+import javax.lang.model.element.TypeElement;
+
 public class TableInfo {
 
     private Collection<ColumnInfo> mColumns;
@@ -12,6 +14,7 @@ public class TableInfo {
     private Class<?> mRepositoryClass;
     private int mSinceVersion;
     private String mTableName;
+    private TypeElement mElement;
 
     public String getTableName() {
         return mTableName;
@@ -53,11 +56,24 @@ public class TableInfo {
         mEntityFQN = entityFQN;
     }
 
+    public Collection<ColumnInfo> getColumns() {
+        return mColumns;
+    }
+
     public void setColumns(final Collection<ColumnInfo> columns) {
         mColumns = columns;
     }
 
-    public Collection<ColumnInfo> getColumns() {
-        return mColumns;
+    @Override
+    public String toString() {
+        return mEntityFQN;
+    }
+
+    public void setElement(final TypeElement element) {
+        mElement = element;
+    }
+
+    public TypeElement getElement() {
+        return mElement;
     }
 }

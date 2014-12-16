@@ -8,7 +8,7 @@ import com.nhaarman.lib_setup.annotations.Foreign;
 import com.nhaarman.lib_setup.annotations.PrimaryKey;
 import com.nhaarman.lib_setup.annotations.Table;
 
-@Table(name = "players", repository = PlayerRepository.class)
+@Table(name = "players", repository = PlayerRepository.class, sinceVersion = 3)
 public class SQLPlayer extends Player {
 
     @Override

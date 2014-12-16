@@ -39,7 +39,7 @@ public class CreateTableMigrationWriter {
         writeBeginType();
 
         writeConstructor();
-        writeGetVersion();
+        writeGetOrder();
         writeGetUpStatements();
         writeGetDownStatements();
 
@@ -66,9 +66,10 @@ public class CreateTableMigrationWriter {
         mJavaWriter.emitEmptyLine();
     }
 
-    private void writeGetVersion() throws IOException {
-        mJavaWriter.beginMethod(int.class.getCanonicalName(), "getVersion", PUBLIC);
-        mJavaWriter.emitStatement("return %d", mTableInfo.getSinceVersion());
+    private void writeGetOrder() throws IOException {
+        mJavaWriter.emitAnnotation(Override.class);
+        mJavaWriter.beginMethod(long.class.getCanonicalName(), "getOrder", PUBLIC);
+        mJavaWriter.emitStatement("return %dL", System.currentTimeMillis());
         mJavaWriter.endMethod();
         mJavaWriter.emitEmptyLine();
     }
@@ -103,11 +104,11 @@ public class CreateTableMigrationWriter {
     }
 
     private String createUpStatements() {
-        return "\"" + mTableConverter.createTableStatement(mTableInfo) + "\"";
+        return '"' + mTableConverter.createTableStatement(mTableInfo) + '"';
     }
 
     private String createDownStatements() {
-        return "\"" + mTableConverter.dropTableStatement(mTableInfo) + "\"";
+        return '"' + mTableConverter.dropTableStatement(mTableInfo) + '"';
     }
 
 }
