@@ -61,7 +61,7 @@ public class EllieProcessor extends AbstractProcessor {
             for (TypeElement annotation : annotations) {
                 TableProcessor processor = mProcessors.get(annotation.getQualifiedName().toString());
                 if (processor != null) {
-                    processor.process(annotations, roundEnv);
+                    processor.process(roundEnv);
                 }
             }
         } catch (ProcessingFailedException | IOException e) {

@@ -5,12 +5,14 @@ import com.nhaarman.ellietest.core.players.PlayerRepository;
 import com.nhaarman.ellietest.core.teams.Team;
 import com.nhaarman.lib_setup.Column;
 import com.nhaarman.lib_setup.Foreign;
+import com.nhaarman.lib_setup.PrimaryKey;
 import com.nhaarman.lib_setup.Table;
 
 @Table(name = "players", repository = PlayerRepository.class)
 public class SQLPlayer extends Player {
 
     @Override
+    @PrimaryKey
     @Column("id")
     public Long getId() {
         return super.getId();
@@ -35,14 +37,13 @@ public class SQLPlayer extends Player {
     }
 
     @Override
-    @Foreign
+    @Foreign(tableName = "teams", columnName = "id")
     @Column("team_id")
     public Team getTeam() {
         return super.getTeam();
     }
 
     @Override
-    @Foreign
     @Column("team_id")
     public void setTeam(final Team team) {
         super.setTeam(team);

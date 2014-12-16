@@ -1,7 +1,8 @@
-package com.nhaarman.ellie.internal.codegen.table;
+package com.nhaarman.ellie.internal.codegen.column;
 
 import com.nhaarman.lib_setup.Column;
 import com.nhaarman.lib_setup.Foreign;
+import com.nhaarman.lib_setup.PrimaryKey;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import javax.lang.model.type.TypeMirror;
 public class ColumnInfoFactory {
 
     private final Map<String, ColumnInfo> mColumnInfoMap = new HashMap<>();
+    private final TypeConverter mTypeConverter = new TypeConverter();
 
     public synchronized Collection<ColumnInfo> createColumnInfoList(final Set<ExecutableElement> annotatedElements) {
         mColumnInfoMap.clear();
@@ -41,7 +43,20 @@ public class ColumnInfoFactory {
         }
 
         Foreign foreignAnnotation = element.getAnnotation(Foreign.class);
-        result.setForeignColumn(foreignAnnotation != null);
+        if (foreignAnnotation != null) {
+            result.setForeignColumn(true);
+            result.setForeignTable(foreignAnnotation.tableName());
+            result.setForeignColumnName(foreignAnnotation.columnName());
+        }
+
+        PrimaryKey primaryKeyAnnotation = element.getAnnotation(PrimaryKey.class);
+        if (primaryKeyAnnotation != null) {
+            result.setPrimaryKey(true);
+
+            if (mTypeConverter.toSQLiteType(result).equals(TypeConverter.TYPE_INTEGER)) {
+                result.setAutoIncrement(primaryKeyAnnotation.autoIncrement());
+            }
+        }
 
         mColumnInfoMap.put(result.getColumnName(), result);
         return result;

@@ -23,7 +23,7 @@ public class TableProcessor {
         mTableValidator = new TableValidator();
     }
 
-    public void process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) throws ProcessingFailedException, IOException {
+    public void process(final RoundEnvironment roundEnvironment) throws ProcessingFailedException, IOException {
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(Table.class);
 
         List<TableInfo> tableInfoList = new ArrayList<>();
@@ -35,7 +35,7 @@ public class TableProcessor {
         }
 
         for (TableInfo tableInfo : tableInfoList) {
-            new MigrationWriter(mProcessingEnvironment.getFiler(), tableInfoList).writeMigration(tableInfo);
+            new MigrationWriter(mProcessingEnvironment.getFiler()).writeMigration(tableInfo);
         }
     }
 }

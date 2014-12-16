@@ -1,5 +1,7 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
+import com.nhaarman.ellie.internal.codegen.column.ColumnConverter;
+import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
 import com.nhaarman.lib_setup.migrations.Migration;
 import com.nhaarman.lib_setup.migrations.MigrationAdapter;
 import com.squareup.javawriter.JavaWriter;
@@ -7,7 +9,6 @@ import com.squareup.javawriter.JavaWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.processing.Filer;
@@ -21,14 +22,12 @@ import static com.nhaarman.ellie.internal.codegen.Modifiers.PUBLIC;
 public class MigrationWriter {
 
     private final Filer mFiler;
-    private final List<TableInfo> mTableInfoList;
 
     private JavaWriter mJavaWriter;
     private TableInfo mTableInfo;
 
-    public MigrationWriter(final Filer filer, final List<TableInfo> tableInfoList) throws IOException {
+    public MigrationWriter(final Filer filer) {
         mFiler = filer;
-        mTableInfoList = tableInfoList;
     }
 
     public void writeMigration(final TableInfo tableInfo) throws IOException {
@@ -43,6 +42,7 @@ public class MigrationWriter {
 
         writeConstructor();
         writeGetUpStatements();
+        writeGetDownStatements();
 
         writeEndType();
 
@@ -64,6 +64,7 @@ public class MigrationWriter {
         mJavaWriter.beginConstructor(PUBLIC);
         mJavaWriter.emitStatement("super(%d)", mTableInfo.getSinceVersion());
         mJavaWriter.endConstructor();
+        mJavaWriter.emitEmptyLine();
     }
 
     private void writeGetUpStatements() throws IOException {
@@ -73,7 +74,19 @@ public class MigrationWriter {
         mJavaWriter.emitStatement("return new String[]{%s}", createUpStatements());
 
         mJavaWriter.endMethod();
+        mJavaWriter.emitEmptyLine();
     }
+
+    private void writeGetDownStatements() throws IOException {
+        mJavaWriter.emitAnnotation(Override.class);
+        mJavaWriter.beginMethod(String[].class.getCanonicalName(), "getDownStatements", PUBLIC);
+
+        mJavaWriter.emitStatement("return new String[]{%s}", createDownStatements());
+
+        mJavaWriter.endMethod();
+        mJavaWriter.emitEmptyLine();
+    }
+
 
     private void writeEndType() throws IOException {
         mJavaWriter.endType();
@@ -84,28 +97,33 @@ public class MigrationWriter {
     }
 
     private String createUpStatements() {
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder(255);
 
-        result.append("\"CREATE TABLE " + mTableInfo.getTableName());
-        result.append("(");
+        result.append("\"CREATE TABLE ");
+        result.append(mTableInfo.getTableName());
+        result.append("(\" +\n\"");
 
-        TypeConverter typeConverter = new TypeConverter();
+        ColumnConverter columnConverter = new ColumnConverter();
 
         Collection<ColumnInfo> columns = mTableInfo.getColumns();
         for (Iterator<ColumnInfo> iterator = columns.iterator(); iterator.hasNext(); ) {
             ColumnInfo columnInfo = iterator.next();
-            result.append(columnInfo.getColumnName());
-            result.append(' ');
-            result.append(typeConverter.toSQLiteType(columnInfo));
+            result.append(columnConverter.toSQLiteStatement(columnInfo));
 
             if (iterator.hasNext()) {
-                result.append(", ");
+                result.append(',');
             }
+
+            result.append("\" +\n\"");
         }
 
         result.append(")\"");
 
         return result.toString();
+    }
+
+    private String createDownStatements() {
+        return "\"DROP TABLE " + mTableInfo.getTableName() + '"';
     }
 
 }

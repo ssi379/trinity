@@ -8,10 +8,8 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 
 @Target(METHOD)
 @Retention(CLASS)
-public @interface Foreign {
+public @interface PrimaryKey {
 
-    String tableName();
-
-    String columnName();
+    boolean autoIncrement() default true;
 
 }

@@ -1,10 +1,10 @@
-package com.nhaarman.ellie.internal.codegen.table;
+package com.nhaarman.ellie.internal.codegen.column;
 
 public class TypeConverter {
 
-    private static final String TYPE_INTEGER = "INTEGER";
-    private static final String TYPE_REAL = "REAL";
-    private static final String TYPE_TEXT = "TEXT";
+    static final String TYPE_INTEGER = "INTEGER";
+    static final String TYPE_REAL = "REAL";
+    static final String TYPE_TEXT = "TEXT";
 
 
     public String toSQLiteType(final ColumnInfo columnInfo) {

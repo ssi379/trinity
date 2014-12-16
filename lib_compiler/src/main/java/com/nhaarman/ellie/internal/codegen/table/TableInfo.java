@@ -1,5 +1,7 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
+import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
+
 import java.util.Collection;
 
 public class TableInfo {

@@ -1,7 +1,8 @@
-package com.nhaarman.ellie.internal.codegen.table;
+package com.nhaarman.ellie.internal.codegen.column;
 
 import com.nhaarman.lib_setup.Column;
 import com.nhaarman.lib_setup.Foreign;
+import com.nhaarman.lib_setup.PrimaryKey;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -21,6 +22,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -116,7 +118,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-    public void create_column_info_for_foreign_has_foreign_column_name_set() {
+    public void create_column_info_for_foreign_has_foreign_set() {
         /* Given */
         Foreign foreignAnnotation = mock(Foreign.class);
 
@@ -128,6 +130,106 @@ import static org.mockito.Mockito.when;
 
         /* Then */
         assertThat(result.isForeign(), is(true));
+    }
+
+    @Test
+    public void create_column_info_for_foreign_has_foreign_table_set() {
+        /* Given */
+        Foreign foreignAnnotation = mock(Foreign.class);
+        when(foreignAnnotation.tableName()).thenReturn("table");
+
+        ExecutableElement setterElement = mockSetterElement("name");
+        when(setterElement.getAnnotation(argThat(is(anySubClass(Foreign.class))))).thenReturn(foreignAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(setterElement);
+
+        /* Then */
+        assertThat(result.getForeignTableName(), is(equalTo("table")));
+    }
+
+    @Test
+    public void create_column_info_for_foreign_has_foreign_column_set() {
+        /* Given */
+        Foreign foreignAnnotation = mock(Foreign.class);
+        when(foreignAnnotation.columnName()).thenReturn("column");
+
+        ExecutableElement setterElement = mockSetterElement("name");
+        when(setterElement.getAnnotation(argThat(is(anySubClass(Foreign.class))))).thenReturn(foreignAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(setterElement);
+
+        /* Then */
+        assertThat(result.getForeignColumnName(), is(equalTo("column")));
+    }
+
+
+    @Test
+    public void create_column_info_for_primarykey_has_primarykey_set() {
+        /* Given */
+        PrimaryKey primaryKeyAnnotation = mock(PrimaryKey.class);
+
+        ExecutableElement setterElement = mockSetterElement("name");
+        when(setterElement.getAnnotation(argThat(is(anySubClass(PrimaryKey.class))))).thenReturn(primaryKeyAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(setterElement);
+
+        /* Then */
+        assertThat(result.isPrimaryKey(), is(true));
+    }
+
+    @Test
+    public void create_column_info_for_primarykey_with_autoincrement_has_autoincrement_set() {
+        /* Given */
+        PrimaryKey primaryKeyAnnotation = mock(PrimaryKey.class);
+        when(primaryKeyAnnotation.autoIncrement()).thenReturn(true);
+
+        ExecutableElement setterElement = mockSetterElement("name");
+        when(setterElement.getAnnotation(argThat(is(anySubClass(PrimaryKey.class))))).thenReturn(primaryKeyAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(setterElement);
+
+        /* Then */
+        assertThat(result.autoIncrement(), is(true));
+    }
+
+    @Test
+    public void create_column_info_for_primarykey_without_autoincrement_has_autoincrement_not_set() {
+        /* Given */
+        PrimaryKey primaryKeyAnnotation = mock(PrimaryKey.class);
+        when(primaryKeyAnnotation.autoIncrement()).thenReturn(false);
+
+        ExecutableElement setterElement = mockSetterElement("name");
+        when(setterElement.getAnnotation(argThat(is(anySubClass(PrimaryKey.class))))).thenReturn(primaryKeyAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(setterElement);
+
+        /* Then */
+        assertThat(result.autoIncrement(), is(false));
+    }
+
+    @Test
+    public void create_column_info_for_primarykey_of_type_string_has_autoincrement_not_set() {
+        /* Given */
+        PrimaryKey primaryKeyAnnotation = mock(PrimaryKey.class);
+        when(primaryKeyAnnotation.autoIncrement()).thenReturn(true);
+
+        TypeMirror returnType = mock(TypeMirror.class);
+        when(returnType.toString()).thenReturn("java.lang.String");
+
+        ExecutableElement getterElement = mockGetterElement("name");
+        when(getterElement.getReturnType()).thenReturn(returnType);
+        when(getterElement.getAnnotation(argThat(is(anySubClass(PrimaryKey.class))))).thenReturn(primaryKeyAnnotation);
+
+        /* When */
+        ColumnInfo result = mColumnInfoFactory.createColumnInfo(getterElement);
+
+        /* Then */
+        assertThat(result.autoIncrement(), is(false));
     }
 
     @Test
@@ -206,7 +308,7 @@ import static org.mockito.Mockito.when;
         TypeMirror parameterType = mock(TypeMirror.class);
         when(parameterType.toString()).thenReturn("java.lang.Long");
 
-
+        //noinspection rawtypes
         List parameters = new ArrayList<>();
         VariableElement parameter = mock(VariableElement.class);
         parameters.add(parameter);

@@ -36,14 +36,13 @@ public class SQLTeam extends Team {
     }
 
     @Override
-    @Foreign
+    @Foreign(tableName = "clubs", columnName = "id")
     @Column("club_id")
     public Club getClub() {
         return super.getClub();
     }
 
     @Override
-    @Foreign
     @Column("club_id")
     public void setClub(final Club club) {
         super.setClub(club);

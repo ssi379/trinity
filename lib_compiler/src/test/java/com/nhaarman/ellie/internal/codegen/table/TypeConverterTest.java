@@ -1,5 +1,8 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
+import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
+import com.nhaarman.ellie.internal.codegen.column.TypeConverter;
+
 import org.junit.Before;
 import org.junit.Test;
 
