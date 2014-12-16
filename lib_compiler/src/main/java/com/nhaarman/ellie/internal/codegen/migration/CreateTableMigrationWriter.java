@@ -39,6 +39,7 @@ public class CreateTableMigrationWriter {
         writeBeginType();
 
         writeConstructor();
+        writeGetVersion();
         writeGetUpStatements();
         writeGetDownStatements();
 
@@ -62,6 +63,13 @@ public class CreateTableMigrationWriter {
         mJavaWriter.beginConstructor(PUBLIC);
         mJavaWriter.emitStatement("super(%d)", mTableInfo.getSinceVersion());
         mJavaWriter.endConstructor();
+        mJavaWriter.emitEmptyLine();
+    }
+
+    private void writeGetVersion() throws IOException {
+        mJavaWriter.beginMethod(int.class.getCanonicalName(), "getVersion", PUBLIC);
+        mJavaWriter.emitStatement("return %d", mTableInfo.getSinceVersion());
+        mJavaWriter.endMethod();
         mJavaWriter.emitEmptyLine();
     }
 
@@ -95,11 +103,11 @@ public class CreateTableMigrationWriter {
     }
 
     private String createUpStatements() {
-        return mTableConverter.createTableStatement(mTableInfo);
+        return "\"" + mTableConverter.createTableStatement(mTableInfo) + "\"";
     }
 
     private String createDownStatements() {
-        return mTableConverter.dropTableStatement(mTableInfo);
+        return "\"" + mTableConverter.dropTableStatement(mTableInfo) + "\"";
     }
 
 }
