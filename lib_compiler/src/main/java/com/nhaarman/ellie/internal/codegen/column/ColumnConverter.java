@@ -13,23 +13,23 @@ public class ColumnConverter {
 
         stringBuilder.append(columnInfo.getColumnName());
         stringBuilder.append(' ');
-        stringBuilder.append(mTypeConverter.toSQLiteType(columnInfo));
+        stringBuilder.append(mTypeConverter.toSQLiteType(columnInfo.getType()));
 
-        if (columnInfo.isPrimaryKey()) {
+        if (columnInfo.getPrimaryKeyInfo() != null) {
             stringBuilder.append(" PRIMARY KEY");
 
-            if (columnInfo.autoIncrement()) {
+            if (columnInfo.getPrimaryKeyInfo().autoIncrement()) {
                 stringBuilder.append(" AUTOINCREMENT");
             }
         }
 
-        if (columnInfo.isForeign()) {
+        if (columnInfo.getForeignInfo() != null) {
             stringBuilder.append(", FOREIGN KEY(");
             stringBuilder.append(columnInfo.getColumnName());
             stringBuilder.append(") REFERENCES ");
-            stringBuilder.append(columnInfo.getForeignTableName());
+            stringBuilder.append(columnInfo.getForeignInfo().tableName());
             stringBuilder.append('(');
-            stringBuilder.append(columnInfo.getForeignColumnName());
+            stringBuilder.append(columnInfo.getForeignInfo().columnName());
             stringBuilder.append(')');
         }
 

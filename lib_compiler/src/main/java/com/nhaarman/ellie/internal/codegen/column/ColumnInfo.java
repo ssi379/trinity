@@ -1,89 +1,54 @@
 package com.nhaarman.ellie.internal.codegen.column;
 
-import javax.lang.model.element.ExecutableElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.lang.model.type.TypeMirror;
 
 public class ColumnInfo {
 
-    private TypeMirror mType;
-    private String mColumnName;
-    private ExecutableElement mGetter;
-    private ExecutableElement mSetter;
-    private boolean mIsForeignColumn;
-    private boolean mPrimaryKey;
-    private boolean mAutoIncrement;
-    private String mForeignTable;
-    private String mForeignColumnName;
+    private final String mColumnName;
 
-    public TypeMirror getType() {
-        return mType;
+    private final Collection<ColumnMethodInfo> mMethods = new ArrayList<>();
+
+    public ColumnInfo(final String columnName, final ColumnMethodInfo methodInfo) {
+        mColumnName = columnName;
+        mMethods.add(methodInfo);
     }
 
-    public void setType(final TypeMirror type) {
-        mType = type;
+    public void addMethodInfo(final ColumnMethodInfo info) {
+        mMethods.add(info);
     }
 
     public String getColumnName() {
         return mColumnName;
     }
 
-    public void setColumnName(final String columnName) {
-        mColumnName = columnName;
+    public Collection<ColumnMethodInfo> getMethodInfos() {
+        return Collections.unmodifiableCollection(mMethods);
     }
 
-    public ExecutableElement getGetter() {
-        return mGetter;
+    public TypeMirror getType() {
+        return mMethods.iterator().next().getType();
     }
 
-    public void setGetter(final ExecutableElement getter) {
-        mGetter = getter;
+    public ForeignInfo getForeignInfo() {
+        for (ColumnMethodInfo method : mMethods) {
+            if (method.getForeignInfo() != null) {
+                return method.getForeignInfo();
+            }
+        }
+        return null;
     }
 
-    public ExecutableElement getSetter() {
-        return mSetter;
+    public PrimaryKeyInfo getPrimaryKeyInfo() {
+        for (ColumnMethodInfo method : mMethods) {
+            if (method.getPrimaryKeyInfo() != null) {
+                return method.getPrimaryKeyInfo();
+            }
+        }
+        return null;
     }
 
-    public void setSetter(final ExecutableElement setter) {
-        mSetter = setter;
-    }
-
-    public boolean isForeign() {
-        return mIsForeignColumn;
-    }
-
-    public boolean isPrimaryKey() {
-        return mPrimaryKey;
-    }
-
-    public void setPrimaryKey(final boolean primaryKey) {
-        mPrimaryKey = primaryKey;
-    }
-
-    public boolean autoIncrement() {
-        return mAutoIncrement;
-    }
-
-    public void setAutoIncrement(final boolean autoIncrement) {
-        mAutoIncrement = autoIncrement;
-    }
-
-    public String getForeignTableName() {
-        return mForeignTable;
-    }
-
-    public void setForeignTable(final String foreignTable) {
-        mForeignTable = foreignTable;
-    }
-
-    public String getForeignColumnName() {
-        return mForeignColumnName;
-    }
-
-    public void setForeignColumnName(final String foreignColumnName) {
-        mForeignColumnName = foreignColumnName;
-    }
-
-    public void setForeignColumn(final boolean foreignColumn) {
-        mIsForeignColumn = foreignColumn;
-    }
 }

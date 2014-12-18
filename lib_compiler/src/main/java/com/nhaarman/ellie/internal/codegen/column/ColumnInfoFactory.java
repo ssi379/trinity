@@ -4,7 +4,7 @@ import com.nhaarman.lib_setup.annotations.Column;
 import com.nhaarman.lib_setup.annotations.Foreign;
 import com.nhaarman.lib_setup.annotations.PrimaryKey;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,61 +17,50 @@ import javax.lang.model.type.TypeMirror;
 public class ColumnInfoFactory {
 
     private final Map<String, ColumnInfo> mColumnInfoMap = new HashMap<>();
-    private final TypeConverter mTypeConverter = new TypeConverter();
 
-    public synchronized Collection<ColumnInfo> createColumnInfoList(final Set<ExecutableElement> annotatedElements) {
+    public synchronized Map<String, ColumnInfo> createColumnInfoList(final Set<ExecutableElement> annotatedElements) {
         mColumnInfoMap.clear();
 
         for (ExecutableElement annotatedElement : annotatedElements) {
-            createColumnInfo(annotatedElement);
+            ColumnMethodInfo columnMethodInfo = createColumnMethodInfo(annotatedElement);
+            String columnName = columnMethodInfo.getColumnName();
+
+            if (mColumnInfoMap.containsKey(columnName)) {
+                mColumnInfoMap.get(columnName).addMethodInfo(columnMethodInfo);
+            } else {
+                mColumnInfoMap.put(columnName, new ColumnInfo(columnName, columnMethodInfo));
+            }
         }
 
-        return mColumnInfoMap.values();
+        return Collections.unmodifiableMap(mColumnInfoMap);
     }
 
-    public ColumnInfo createColumnInfo(final ExecutableElement element) {
+    public ColumnMethodInfo createColumnMethodInfo(final ExecutableElement element) {
         Column columnAnnotation = element.getAnnotation(Column.class);
         String columnName = columnAnnotation.value();
 
-        ColumnInfo result = mColumnInfoMap.containsKey(columnName) ? mColumnInfoMap.get(columnName) : new ColumnInfo();
-        result.setColumnName(columnName);
-
-        if (element.getReturnType() instanceof NoType) {
-            processSetterElement(element, result);
-        } else {
-            processGetterElement(element, result);
-        }
+        ColumnMethodInfo result = new ColumnMethodInfo(columnName, element);
+        result.setType(getType(element));
 
         Foreign foreignAnnotation = element.getAnnotation(Foreign.class);
         if (foreignAnnotation != null) {
-            result.setForeignColumn(true);
-            result.setForeignTable(foreignAnnotation.tableName());
-            result.setForeignColumnName(foreignAnnotation.columnName());
+            result.setForeignInfo(new ForeignInfo(foreignAnnotation.tableName(), foreignAnnotation.columnName()));
         }
 
         PrimaryKey primaryKeyAnnotation = element.getAnnotation(PrimaryKey.class);
         if (primaryKeyAnnotation != null) {
-            result.setPrimaryKey(true);
-
-            if (mTypeConverter.toSQLiteType(result).equals(TypeConverter.TYPE_INTEGER)) {
-                result.setAutoIncrement(primaryKeyAnnotation.autoIncrement());
-            }
+            result.setPrimaryKeyInfo(new PrimaryKeyInfo(primaryKeyAnnotation.autoIncrement()));
         }
 
-        mColumnInfoMap.put(result.getColumnName(), result);
         return result;
     }
 
-    private void processGetterElement(final ExecutableElement element, final ColumnInfo result) {
-        TypeMirror type = element.getReturnType();
-        result.setType(type);
-        result.setGetter(element);
-    }
-
-    private void processSetterElement(final ExecutableElement element, final ColumnInfo result) {
-        VariableElement variableElement = element.getParameters().get(0);
-        TypeMirror type = variableElement.asType();
-        result.setType(type);
-        result.setSetter(element);
+    private TypeMirror getType(final ExecutableElement element) {
+        if (element.getReturnType() instanceof NoType) {
+            VariableElement variableElement = element.getParameters().get(0);
+            return variableElement.asType();
+        } else {
+            return element.getReturnType();
+        }
     }
 }

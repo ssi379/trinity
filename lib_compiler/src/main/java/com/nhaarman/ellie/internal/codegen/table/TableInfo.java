@@ -1,14 +1,18 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
 import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
+import com.nhaarman.lib_setup.annotations.Table;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 
 public class TableInfo {
 
-    private Collection<ColumnInfo> mColumns;
+    private Map<String, ColumnInfo> mColumns;
     private String mEntityFQN;
     private String mPackageName;
     private Class<?> mRepositoryClass;
@@ -57,23 +61,30 @@ public class TableInfo {
     }
 
     public Collection<ColumnInfo> getColumns() {
-        return mColumns;
+        return mColumns.values();
     }
 
-    public void setColumns(final Collection<ColumnInfo> columns) {
+    public void setColumns(final Map<String, ColumnInfo> columns) {
         mColumns = columns;
     }
 
-    @Override
-    public String toString() {
-        return mEntityFQN;
+    public TypeElement getElement() {
+        return mElement;
     }
 
     public void setElement(final TypeElement element) {
         mElement = element;
     }
 
-    public TypeElement getElement() {
-        return mElement;
+    public AnnotationMirror getTableAnnotationMirror() {
+        AnnotationMirror result = null;
+
+        List<? extends AnnotationMirror> annotationMirrors = mElement.getAnnotationMirrors();
+        for (AnnotationMirror annotationMirror : annotationMirrors) {
+            if (annotationMirror.getAnnotationType().toString().equals(Table.class.getCanonicalName())) {
+                result = annotationMirror;
+            }
+        }
+        return result;
     }
 }

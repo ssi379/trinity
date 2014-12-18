@@ -5,6 +5,7 @@ import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 public class TableConverter {
 

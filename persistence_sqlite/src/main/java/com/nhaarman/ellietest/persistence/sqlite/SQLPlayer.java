@@ -9,6 +9,7 @@ import com.nhaarman.lib_setup.annotations.PrimaryKey;
 import com.nhaarman.lib_setup.annotations.Table;
 
 @Table(name = "players", repository = PlayerRepository.class, sinceVersion = 3)
+@Deprecated
 public class SQLPlayer extends Player {
 
     @Override

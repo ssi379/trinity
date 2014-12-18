@@ -1,5 +1,6 @@
 package com.nhaarman.ellie.internal.codegen;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +29,17 @@ public class Node<T> {
 
     public T getValue() {
         return mValue;
+    }
+
+    public Collection<T> values() {
+        Collection<T> results = new ArrayDeque<>();
+        results.add(mValue);
+
+        for (Node<T> child : mChildren) {
+            results.addAll(child.values());
+        }
+
+        return results;
     }
 
     /**

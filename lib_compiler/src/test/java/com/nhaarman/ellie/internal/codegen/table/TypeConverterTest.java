@@ -1,6 +1,5 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
-import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
 import com.nhaarman.ellie.internal.codegen.column.TypeConverter;
 
 import org.junit.Before;
@@ -18,15 +17,11 @@ public class TypeConverterTest {
 
     private TypeConverter mTypeConverter;
     private TypeMirror mTypeMirror;
-    private ColumnInfo mColumnInfo;
 
     @Before
     public void setUp() {
         mTypeConverter = new TypeConverter();
         mTypeMirror = mock(TypeMirror.class);
-
-        mColumnInfo = mock(ColumnInfo.class);
-        when(mColumnInfo.getType()).thenReturn(mTypeMirror);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -35,7 +30,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn("Some unknown class");
 
         /* When */
-        mTypeConverter.toSQLiteType(mColumnInfo);
+        mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         /* An exception should have been thrown by now. */
@@ -47,7 +42,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Boolean.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -59,7 +54,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(boolean.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -71,7 +66,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Integer.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -83,7 +78,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(int.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -95,7 +90,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(long.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -107,7 +102,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Long.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -119,7 +114,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(short.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -131,7 +126,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Short.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("INTEGER"));
@@ -143,7 +138,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(double.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("REAL"));
@@ -155,7 +150,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Double.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("REAL"));
@@ -167,7 +162,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(float.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("REAL"));
@@ -179,7 +174,7 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(Float.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("REAL"));
@@ -191,24 +186,9 @@ public class TypeConverterTest {
         when(mTypeMirror.toString()).thenReturn(String.class.getCanonicalName());
 
         /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
+        String result = mTypeConverter.toSQLiteType(mTypeMirror);
 
         /* Then */
         assertThat(result, is("TEXT"));
     }
-
-    @Test
-    public void foreign_type_returns_integer() {
-        /* Given */
-        when(mTypeMirror.toString()).thenReturn("com.example.Club");
-        when(mColumnInfo.isForeign()).thenReturn(true);
-
-        /* When */
-        String result = mTypeConverter.toSQLiteType(mColumnInfo);
-
-        /* Then */
-        assertThat(result, is("INTEGER"));
-
-    }
-
 }

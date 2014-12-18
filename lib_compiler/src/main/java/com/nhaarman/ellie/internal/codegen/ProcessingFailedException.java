@@ -1,6 +1,6 @@
 package com.nhaarman.ellie.internal.codegen;
 
-public class ProcessingFailedException extends Exception {
+public class ProcessingFailedException extends RuntimeException {
 
     public ProcessingFailedException(final String message) {
         super(message);

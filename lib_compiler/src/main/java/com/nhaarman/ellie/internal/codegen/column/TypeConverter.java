@@ -1,5 +1,7 @@
 package com.nhaarman.ellie.internal.codegen.column;
 
+import javax.lang.model.type.TypeMirror;
+
 public class TypeConverter {
 
     static final String TYPE_INTEGER = "INTEGER";
@@ -7,8 +9,8 @@ public class TypeConverter {
     static final String TYPE_TEXT = "TEXT";
 
 
-    public String toSQLiteType(final ColumnInfo columnInfo) {
-        switch (columnInfo.getType().toString()) {
+    public String toSQLiteType(final TypeMirror typeMirror) {
+        switch (typeMirror.toString()) {
 
             case "boolean":
             case "java.lang.Boolean":
@@ -37,11 +39,7 @@ public class TypeConverter {
                 return TYPE_TEXT;
 
             default:
-                if (columnInfo.isForeign()) {
-                    return TYPE_INTEGER;
-                } else {
-                    throw new IllegalArgumentException(String.format("Cannot convert type %s to a SQLite type", columnInfo.getType().toString()));
-                }
+                throw new IllegalArgumentException(String.format("Cannot convert type %s to a SQLite type", typeMirror.toString()));
         }
     }
 }

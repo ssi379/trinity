@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
     public void column_info_with_primary_key_returns_primary_key_statement() {
         /* Given */
         ColumnInfo columnInfo = mockColumnInfo("java.lang.String", "name");
-        when(columnInfo.isPrimaryKey()).thenReturn(true);
+        when(columnInfo.getPrimaryKeyInfo()).thenReturn(mock(PrimaryKeyInfo.class));
 
         /* When */
         String result = mColumnConverter.toSQLiteStatement(columnInfo);
@@ -49,8 +49,10 @@ import static org.mockito.Mockito.when;
     public void column_info_with_primary_key_and_autoincrement_returns_primary_key_and_autoincrement_statement() {
         /* Given */
         ColumnInfo columnInfo = mockColumnInfo("long", "id");
-        when(columnInfo.isPrimaryKey()).thenReturn(true);
-        when(columnInfo.autoIncrement()).thenReturn(true);
+
+        PrimaryKeyInfo primaryKeyInfo = mock(PrimaryKeyInfo.class);
+        when(columnInfo.getPrimaryKeyInfo()).thenReturn(primaryKeyInfo);
+        when(primaryKeyInfo.autoIncrement()).thenReturn(true);
 
         /* When */
         String result = mColumnConverter.toSQLiteStatement(columnInfo);
@@ -63,9 +65,11 @@ import static org.mockito.Mockito.when;
     public void column_info_with_foreign_returns_foreign_key_statement() {
         /* Given */
         ColumnInfo columnInfo = mockColumnInfo("long", "foreign_id");
-        when(columnInfo.isForeign()).thenReturn(true);
-        when(columnInfo.getForeignTableName()).thenReturn("table");
-        when(columnInfo.getForeignColumnName()).thenReturn("id");
+
+        ForeignInfo foreignInfo = mock(ForeignInfo.class);
+        when(columnInfo.getForeignInfo()).thenReturn(foreignInfo);
+        when(foreignInfo.tableName()).thenReturn("table");
+        when(foreignInfo.columnName()).thenReturn("id");
 
         /* When */
         String result = mColumnConverter.toSQLiteStatement(columnInfo);

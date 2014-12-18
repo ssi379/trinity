@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.lang.model.type.TypeMirror;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;

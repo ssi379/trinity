@@ -17,12 +17,17 @@
 
 package com.nhaarman.ellie.internal.codegen;
 
-import com.nhaarman.ellie.internal.codegen.table.TableProcessor;
+import com.nhaarman.ellie.internal.codegen.column.validator.ColumnTypeValidator;
+import com.nhaarman.ellie.internal.codegen.column.validator.ColumnValidator;
+import com.nhaarman.ellie.internal.codegen.table.TableInfo;
+import com.nhaarman.ellie.internal.codegen.table.TableInfoFactory;
+import com.nhaarman.ellie.internal.codegen.table.validator.TableTypeValidator;
+import com.nhaarman.ellie.internal.codegen.table.validator.TableValidator;
+import com.nhaarman.lib_setup.annotations.Column;
 import com.nhaarman.lib_setup.annotations.Table;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -30,19 +35,19 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes(
-        "com.nhaarman.lib_setup.*"
+        "com.nhaarman.lib_setup.annotations.*"
 )
 public class EllieProcessor extends AbstractProcessor {
 
-    private final Map<String, TableProcessor> mProcessors;
 
-    public EllieProcessor() {
-        mProcessors = new HashMap<>();
-    }
+    private TableTypeValidator mTableTypeValidator;
+    private ColumnTypeValidator mColumnTypeValidator;
+    private TableValidator mTableValidator;
+    private ColumnValidator mColumnValidator;
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
@@ -52,20 +57,40 @@ public class EllieProcessor extends AbstractProcessor {
     @Override
     public synchronized void init(final ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        mProcessors.put(Table.class.getCanonicalName(), new TableProcessor(processingEnv));
+        mTableTypeValidator = new TableTypeValidator(processingEnv.getMessager());
+        mColumnTypeValidator = new ColumnTypeValidator(processingEnv.getMessager());
+
+        mTableValidator = new TableValidator(processingEnv.getMessager());
+        mColumnValidator = new ColumnValidator(processingEnv.getMessager());
     }
 
     @Override
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        try {
-            for (TypeElement annotation : annotations) {
-                TableProcessor processor = mProcessors.get(annotation.getQualifiedName().toString());
-                if (processor != null) {
-                    processor.process(roundEnv);
-                }
+    public synchronized boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+        Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
+        if (!mTableTypeValidator.validates(tableElements)) {
+            return true;
+        }
+
+        Set<? extends Element> columnElements = roundEnv.getElementsAnnotatedWith(Column.class);
+        if (!mColumnTypeValidator.validates(columnElements)) {
+            return true;
+        }
+
+        Collection<Node<TableInfo>> tableInfoTrees = new TableInfoFactory().createTableInfoTrees(tableElements, roundEnv);
+
+        Collection<TableInfo> tableInfos = new ArrayDeque<>();
+        for (Node<TableInfo> tableInfoTree : tableInfoTrees) {
+            tableInfos.addAll(tableInfoTree.values());
+        }
+
+        if (!mTableValidator.validates(tableInfos)) {
+            return true;
+        }
+
+        for (TableInfo tableInfo : tableInfos) {
+            if (!mColumnValidator.validates(tableInfo.getColumns())) {
+                return true;
             }
-        } catch (ProcessingFailedException | IOException e) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getLocalizedMessage());
         }
 
         return true;
