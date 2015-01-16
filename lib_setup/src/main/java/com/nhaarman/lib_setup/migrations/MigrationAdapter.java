@@ -18,55 +18,53 @@ package com.nhaarman.lib_setup.migrations;
 
 public class MigrationAdapter implements Migration {
 
-    private final int mVersion;
+  private int mVersion;
 
-    public MigrationAdapter(final int version) {
-        mVersion = version;
-    }
+  public MigrationAdapter() {
+  }
 
-    @Override
-    public int getVersion() {
-        return mVersion;
-    }
+  public MigrationAdapter(final int version) {
+    mVersion = version;
+  }
 
-    @Override
-    public long getOrder() {
-        return 0;
-    }
+  @Override
+  public int getVersion() {
+    return mVersion;
+  }
 
-    @Override
-    public void beforeUp() {
-    }
+  @Override
+  public void beforeUp() {
+  }
 
-    /**
-     * Returns the SQL statements which are to be executed in order to perform this migration.
-     *
-     * @return The SQL statements.
-     */
-    @Override
-    public String[] getUpStatements() {
-        return new String[0];
-    }
+  /**
+   * Returns the SQL statements which are to be executed in order to perform this migration.
+   *
+   * @return The SQL statements.
+   */
+  @Override
+  public String[] getUpStatements() {
+    return new String[0];
+  }
 
-    @Override
-    public void afterUp() {
-    }
+  @Override
+  public void afterUp() {
+  }
 
-    @Override
-    public void beforeDown() {
-    }
+  @Override
+  public void beforeDown() {
+  }
 
-    @Override
-    public String[] getDownStatements() {
-        return new String[0];
-    }
+  @Override
+  public String[] getDownStatements() {
+    return new String[0];
+  }
 
-    @Override
-    public void afterDown() {
-    }
+  @Override
+  public void afterDown() {
+  }
 
-    @Override
-    public int compareTo(final Migration another) {
-        return Long.valueOf(getOrder()).compareTo(another.getOrder());
-    }
+  @Override
+  public int compareTo(final Migration another) {
+    return Integer.valueOf(mVersion).compareTo(another.getVersion());
+  }
 }

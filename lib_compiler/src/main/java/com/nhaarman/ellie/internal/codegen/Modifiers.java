@@ -9,4 +9,5 @@ public class Modifiers {
 
     public static final Set<Modifier> PUBLIC = EnumSet.of(Modifier.PUBLIC);
 
+    public static final Set<Modifier> PRIVATE_FINAL = EnumSet.of(Modifier.PRIVATE, Modifier.FINAL);
 }

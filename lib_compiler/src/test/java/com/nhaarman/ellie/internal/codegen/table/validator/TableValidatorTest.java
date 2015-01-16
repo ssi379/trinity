@@ -42,7 +42,7 @@ public class TableValidatorTest {
         when(tableInfo2.getTableName()).thenReturn("name");
 
         /* When */
-        boolean result = mTableValidator.validates(Arrays.asList(tableInfo1, tableInfo2));
+        boolean result = mTableValidator.validate(Arrays.asList(tableInfo1, tableInfo2));
 
         /* Then */
         assertThat(result, is(false));

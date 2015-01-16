@@ -61,7 +61,7 @@ public class ColumnValidatorTest {
         when(columnInfo.getMethodInfos()).thenReturn(Arrays.asList(columnMethodInfo1, columnMethodInfo2));
 
         /* When */
-        boolean result = mColumnValidator.validates(Collections.singletonList(columnInfo));
+        boolean result = mColumnValidator.validate(Collections.singletonList(columnInfo));
 
         /* Then */
         assertThat(result, is(false));

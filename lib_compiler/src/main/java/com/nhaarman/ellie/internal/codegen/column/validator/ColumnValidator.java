@@ -17,7 +17,7 @@ public class ColumnValidator {
         mMessager = messager;
     }
 
-    public boolean validates(final Collection<ColumnInfo> columnInfos) {
+    public boolean validate(final Collection<ColumnInfo> columnInfos) {
         for (ColumnInfo columnInfo : columnInfos) {
             Collection<ColumnMethodInfo> methods = columnInfo.getMethodInfos();
             Iterator<ColumnMethodInfo> iterator = methods.iterator();

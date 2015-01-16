@@ -1,6 +1,6 @@
-package com.nhaarman.ellie.internal.codegen.table.validator;
+package com.nhaarman.ellie.internal.codegen.repository.validator;
 
-import com.nhaarman.lib_setup.annotations.Table;
+import com.nhaarman.lib_setup.annotations.Repository;
 
 import java.util.List;
 import java.util.Set;
@@ -11,11 +11,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-public class TableTypeValidator {
+public class RepositoryTypeValidator {
 
     private final Messager mMessager;
 
-    public TableTypeValidator(final Messager messager) {
+    public RepositoryTypeValidator(final Messager messager) {
         mMessager = messager;
     }
 
@@ -31,15 +31,15 @@ public class TableTypeValidator {
     }
 
     private void printInvalidElementMessage(final Element element) {
-        AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
-        mMessager.printMessage(Diagnostic.Kind.ERROR, "@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
+        AnnotationMirror repositoryAnnotationMirror = getRepositoryAnnotationMirror(element);
+        mMessager.printMessage(Diagnostic.Kind.ERROR, "@Repository annotation can only be applied to classes.", element, repositoryAnnotationMirror);
     }
 
-    private AnnotationMirror getTableAnnotationMirror(final Element element) {
+    private AnnotationMirror getRepositoryAnnotationMirror(final Element element) {
         List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
         AnnotationMirror tableAnnotationMirror = null;
         for (AnnotationMirror annotationMirror : annotationMirrors) {
-            if (annotationMirror.getAnnotationType().toString().equals(Table.class.getCanonicalName())) {
+            if (annotationMirror.getAnnotationType().toString().equals(Repository.class.getCanonicalName())) {
                 tableAnnotationMirror = annotationMirror;
             }
         }

@@ -1,1 +1,3 @@
-include ':app', ':core', ':persistence_sqlite', ':persistence_memory', ':lib_sql', ':lib_setup', ':persistence_sqlite_generated', ':lib_compiler'
+include ':app', ':core', ':persistence_sqlite'
+
+include ':lib_sql', ':lib_setup', ':lib_compiler'

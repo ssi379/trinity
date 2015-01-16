@@ -13,7 +13,7 @@ public class ColumnTypeValidator {
         mMessager = messager;
     }
 
-    public boolean validates(final Set<? extends Element> columnElements) {
+    public boolean validate(final Set<? extends Element> columnElements) {
 return true;
     }
 }

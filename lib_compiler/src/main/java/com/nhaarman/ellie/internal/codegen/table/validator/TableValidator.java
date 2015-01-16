@@ -17,7 +17,7 @@ public class TableValidator {
         mMessager = messager;
     }
 
-    public boolean validates(final Collection<TableInfo> tableInfos) {
+    public boolean validate(final Collection<TableInfo> tableInfos) {
         if (!validateTableNames(tableInfos)) {
             return false;
         }

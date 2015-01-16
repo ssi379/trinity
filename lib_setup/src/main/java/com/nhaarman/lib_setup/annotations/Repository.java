@@ -8,8 +8,9 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 
 @Target(ElementType.TYPE)
 @Retention(CLASS)
-public @interface Table {
+public @interface Repository {
 
-    String name();
+    String tableName();
+
 
 }

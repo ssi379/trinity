@@ -61,7 +61,7 @@ public class CreateTableMigrationWriter {
 
     private void writeConstructor() throws IOException {
         mJavaWriter.beginConstructor(PUBLIC);
-        mJavaWriter.emitStatement("super(%d)", mTableInfo.getSinceVersion());
+        mJavaWriter.emitStatement("super(%d)", 1);
         mJavaWriter.endConstructor();
         mJavaWriter.emitEmptyLine();
     }
@@ -93,7 +93,6 @@ public class CreateTableMigrationWriter {
         mJavaWriter.endMethod();
         mJavaWriter.emitEmptyLine();
     }
-
 
     private void writeEndType() throws IOException {
         mJavaWriter.endType();

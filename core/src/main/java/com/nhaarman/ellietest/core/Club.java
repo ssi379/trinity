@@ -1,14 +1,10 @@
-package com.nhaarman.ellietest.core.players;
+package com.nhaarman.ellietest.core;
 
-import com.nhaarman.ellietest.core.teams.Team;
-
-public class Player {
+public class Club {
 
     private Long mId;
 
     private String mName;
-
-    private Team mTeam;
 
     public Long getId() {
         return mId;
@@ -24,13 +20,5 @@ public class Player {
 
     public void setName(final String name) {
         mName = name;
-    }
-
-    public Team getTeam() {
-        return mTeam;
-    }
-
-    public void setTeam(final Team team) {
-        mTeam = team;
     }
 }

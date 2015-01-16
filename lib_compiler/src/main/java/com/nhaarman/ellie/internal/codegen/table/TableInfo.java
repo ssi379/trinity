@@ -1,6 +1,7 @@
 package com.nhaarman.ellie.internal.codegen.table;
 
 import com.nhaarman.ellie.internal.codegen.column.ColumnInfo;
+import com.nhaarman.ellie.internal.codegen.repository.RepositoryInfo;
 import com.nhaarman.lib_setup.annotations.Table;
 
 import java.util.Collection;
@@ -15,8 +16,7 @@ public class TableInfo {
     private Map<String, ColumnInfo> mColumns;
     private String mEntityFQN;
     private String mPackageName;
-    private Class<?> mRepositoryClass;
-    private int mSinceVersion;
+
     private String mTableName;
     private TypeElement mElement;
 
@@ -26,22 +26,6 @@ public class TableInfo {
 
     public void setTableName(final String tableName) {
         mTableName = tableName;
-    }
-
-    public int getSinceVersion() {
-        return mSinceVersion;
-    }
-
-    public void setSinceVersion(final int sinceVersion) {
-        mSinceVersion = sinceVersion;
-    }
-
-    public Class<?> getRepositoryClass() {
-        return mRepositoryClass;
-    }
-
-    public void setRepositoryClass(final Class<?> repositoryClass) {
-        mRepositoryClass = repositoryClass;
     }
 
     public String getPackageName() {

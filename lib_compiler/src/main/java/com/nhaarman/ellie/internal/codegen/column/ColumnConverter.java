@@ -13,7 +13,7 @@ public class ColumnConverter {
 
         stringBuilder.append(columnInfo.getColumnName());
         stringBuilder.append(' ');
-        stringBuilder.append(mTypeConverter.toSQLiteType(columnInfo.getType()));
+        stringBuilder.append(getType(columnInfo));
 
         if (columnInfo.getPrimaryKeyInfo() != null) {
             stringBuilder.append(" PRIMARY KEY");
@@ -34,5 +34,13 @@ public class ColumnConverter {
         }
 
         return stringBuilder.toString();
+    }
+
+    private String getType(final ColumnInfo columnInfo) {
+        if (columnInfo.getForeignInfo() == null) {
+            return mTypeConverter.toSQLiteType(columnInfo.getType());
+        } else {
+            return "INTEGER"; // TODO: Respect foreign key type
+        }
     }
 }

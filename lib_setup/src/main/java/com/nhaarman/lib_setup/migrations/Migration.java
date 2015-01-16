@@ -4,8 +4,6 @@ public interface Migration extends Comparable<Migration> {
 
     int getVersion();
 
-    long getOrder();
-
     void beforeUp();
 
     String[] getUpStatements();

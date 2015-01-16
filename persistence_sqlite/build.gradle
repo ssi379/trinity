@@ -19,10 +19,6 @@ android {
     }
 }
 
-repositories {
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-}
-
 dependencies {
     compile project(':core')
     compile project(':lib_sql')
@@ -30,9 +26,5 @@ dependencies {
 
     compile project(':lib_compiler')
 
-//    compile 'com.google.dagger:dagger:2.0-SNAPSHOT'
-//    apt 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
-
     compile 'javax.annotation:jsr250-api:1.0'
 }
-
