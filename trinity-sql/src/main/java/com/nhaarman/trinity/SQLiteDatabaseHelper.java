@@ -12,7 +12,7 @@ import java.util.ListIterator;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
-  private static final int VERSION = 2;
+  private static final int VERSION = 3;
 
   private final Migrations mMigrations;
 
