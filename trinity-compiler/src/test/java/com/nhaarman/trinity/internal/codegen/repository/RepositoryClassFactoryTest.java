@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
 
-public class RepositoryInfoFactoryTest {
+public class RepositoryClassFactoryTest {
 
 
     private RepositoryInfoFactory mRepositoryInfoFactory;

@@ -21,7 +21,7 @@ import com.nhaarman.trinity.internal.codegen.column.ColumnConverter;
 import com.nhaarman.trinity.internal.codegen.column.validator.ColumnTypeValidator;
 import com.nhaarman.trinity.internal.codegen.column.validator.ColumnValidator;
 import com.nhaarman.trinity.internal.codegen.migration.CreateTableMigrationWriter;
-import com.nhaarman.trinity.internal.codegen.repository.RepositoryInfo;
+import com.nhaarman.trinity.internal.codegen.repository.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.repository.RepositoryInfoFactory;
 import com.nhaarman.trinity.internal.codegen.repository.RepositoryWriter;
 import com.nhaarman.trinity.internal.codegen.repository.validator.RepositoryTypeValidator;
@@ -92,16 +92,34 @@ public class TrinityProcessor extends AbstractProcessor {
 
     /* Validate individual elements */
     Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
-    mTableTypeValidator.validate(tableElements);
+    if (!mTableTypeValidator.validate(tableElements)) {
+      return true;
+    }
 
     Set<? extends Element> columnElements = roundEnv.getElementsAnnotatedWith(Column.class);
-    mColumnTypeValidator.validate(columnElements);
+    if (!mColumnTypeValidator.validate(columnElements)) {
+      return true;
+    }
 
     Set<? extends Element> repositoryElements = roundEnv.getElementsAnnotatedWith(Repository.class);
-    mRepositoryTypeValidator.validate(repositoryElements);
+    if (!mRepositoryTypeValidator.validate(repositoryElements)) {
+      return true;
+    }
 
     /* Gather information about repositories, tables and columns */
-    Collection<TableInfo> tableInfos = new TableInfoFactory().createTableInfos(tableElements, roundEnv);
+
+
+
+
+
+
+
+
+
+
+
+
+    Collection<TableInfo> tableInfos = new TableInfoFactory().createTableInfos(tableElements, columnElements, roundEnv);
 
     mTableValidator.validate(tableInfos);
 
@@ -109,11 +127,11 @@ public class TrinityProcessor extends AbstractProcessor {
       mColumnValidator.validate(tableInfo.getColumns());
     }
 
-    Collection<RepositoryInfo> repositoryInfos = new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableInfos, roundEnv);
+    Collection<RepositoryClass> repositoryClasses = new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableInfos, roundEnv);
 
-    for (RepositoryInfo repositoryInfo : repositoryInfos) {
+    for (RepositoryClass repositoryClass : repositoryClasses) {
       try {
-        mRepositoryWriter.writeRepository(repositoryInfo);
+        mRepositoryWriter.writeRepository(repositoryClass);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -121,4 +139,5 @@ public class TrinityProcessor extends AbstractProcessor {
 
     return true;
   }
+
 }

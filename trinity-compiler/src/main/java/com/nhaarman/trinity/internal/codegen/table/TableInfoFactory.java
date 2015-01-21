@@ -7,6 +7,7 @@ import com.nhaarman.trinity.annotations.Table;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -24,14 +25,14 @@ public class TableInfoFactory {
 
   private RoundEnvironment mRoundEnvironment;
 
-  public Collection<TableInfo> createTableInfos(final Set<? extends Element> tableElements, final RoundEnvironment roundEnvironment) {
-    Collection<TableInfo> nodes = new ArrayList<>();
+  public Collection<TableInfo> createTableInfos(final Set<? extends Element> tableElements, final Set<? extends Element> columnElements, final RoundEnvironment roundEnvironment) {
+    Collection<TableInfo> tableInfos = new HashSet<>(tableElements.size());
 
     for (Element tableElement : tableElements) {
-      nodes.add(createTableInfo((TypeElement) tableElement, roundEnvironment));
+      tableInfos.add(createTableInfo((TypeElement) tableElement, roundEnvironment));
     }
 
-    return nodes;
+    return tableInfos;
   }
 
   public TableInfo createTableInfo(final TypeElement element, final RoundEnvironment roundEnvironment) {

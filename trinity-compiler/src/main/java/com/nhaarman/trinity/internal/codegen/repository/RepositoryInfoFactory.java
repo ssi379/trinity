@@ -17,19 +17,19 @@ import javax.lang.model.element.TypeElement;
 
 public class RepositoryInfoFactory {
 
-  public Collection<RepositoryInfo> createRepositoryInfo(final Set<? extends Element> repositoryElements,
+  public Collection<RepositoryClass> createRepositoryInfo(final Set<? extends Element> repositoryElements,
                                                          final Collection<TableInfo> tableInfos,
                                                          final RoundEnvironment roundEnvironment) {
-    Set<RepositoryInfo> results = new HashSet<>();
+    Set<RepositoryClass> results = new HashSet<>();
 
     for (Element repositoryElement : repositoryElements) {
       TypeElement typeElement = (TypeElement) repositoryElement;
-      RepositoryInfo repositoryInfo = new RepositoryInfo(typeElement);
-      repositoryInfo.setInterface(typeElement.getKind() == ElementKind.INTERFACE);
+      RepositoryClass repositoryClass = new RepositoryClass(typeElement);
+      repositoryClass.setInterface(typeElement.getKind() == ElementKind.INTERFACE);
 
       for (TableInfo tableInfo : tableInfos) {
         if (tableInfo.getTableName().equals(typeElement.getAnnotation(Repository.class).tableName())) {
-          repositoryInfo.setTableInfo(tableInfo);
+          repositoryClass.setTableInfo(tableInfo);
         }
       }
 
@@ -38,11 +38,11 @@ public class RepositoryInfoFactory {
         if (enclosedElement instanceof ExecutableElement) {
           ExecutableElement executableElement = (ExecutableElement) enclosedElement;
           if (executableElement.getModifiers().contains(Modifier.ABSTRACT)) {
-            repositoryInfo.addMethodToImplement(executableElement);
+            repositoryClass.addMethodToImplement(executableElement);
           }
         }
       }
-      results.add(repositoryInfo);
+      results.add(repositoryClass);
     }
 
     return results;

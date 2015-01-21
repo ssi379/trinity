@@ -1,7 +1,9 @@
 package com.nhaarman.trinity.internal.codegen.repository;
 
 import com.nhaarman.trinity.internal.codegen.table.TableInfo;
+import com.squareup.javapoet.ClassName;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,7 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-public class RepositoryInfo {
+public class RepositoryClass {
 
   private final TypeElement mRepositoryElement;
 
@@ -20,11 +22,11 @@ public class RepositoryInfo {
 
   private TableInfo mTableInfo;
 
-  public RepositoryInfo(final TypeElement repositoryElement) {
+  public RepositoryClass(final TypeElement repositoryElement) {
     mRepositoryElement = repositoryElement;
   }
 
-  public Element getRepositoryElement() {
+  public TypeElement getRepositoryElement() {
     return mRepositoryElement;
   }
 
