@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.column;
+package com.nhaarman.trinity.internal.codegen.table;
 
 public class PrimaryKeyInfo {
 

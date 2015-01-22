@@ -10,7 +10,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface Repository {
 
-    String tableName();
-
+  Class<?> value();
 
 }

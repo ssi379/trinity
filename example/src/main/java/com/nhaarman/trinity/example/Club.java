@@ -1,6 +1,7 @@
 package com.nhaarman.trinity.example;
 
 import com.nhaarman.trinity.annotations.Column;
+import com.nhaarman.trinity.annotations.PrimaryKey;
 import com.nhaarman.trinity.annotations.Table;
 
 @Table(name = "clubs")
@@ -11,6 +12,7 @@ public class Club {
   private String mName;
 
   @Column("id")
+  @PrimaryKey
   public Long getId() {
     return mId;
   }

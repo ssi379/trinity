@@ -17,34 +17,32 @@
 
 package com.nhaarman.trinity.internal.codegen;
 
-import com.nhaarman.trinity.internal.codegen.column.ColumnConverter;
-import com.nhaarman.trinity.internal.codegen.column.validator.ColumnTypeValidator;
-import com.nhaarman.trinity.internal.codegen.column.validator.ColumnValidator;
-import com.nhaarman.trinity.internal.codegen.migration.CreateTableMigrationWriter;
-import com.nhaarman.trinity.internal.codegen.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.repository.RepositoryInfoFactory;
-import com.nhaarman.trinity.internal.codegen.repository.RepositoryWriter;
-import com.nhaarman.trinity.internal.codegen.repository.validator.RepositoryTypeValidator;
-import com.nhaarman.trinity.internal.codegen.table.TableConverter;
-import com.nhaarman.trinity.internal.codegen.table.TableInfo;
-import com.nhaarman.trinity.internal.codegen.table.TableInfoFactory;
-import com.nhaarman.trinity.internal.codegen.table.validator.TableTypeValidator;
-import com.nhaarman.trinity.internal.codegen.table.validator.TableValidator;
 import com.nhaarman.trinity.annotations.Column;
 import com.nhaarman.trinity.annotations.Repository;
 import com.nhaarman.trinity.annotations.Table;
+import com.nhaarman.trinity.internal.codegen.table.TableClass;
+import com.nhaarman.trinity.internal.codegen.table.TableInfoFactory;
+import com.nhaarman.trinity.internal.codegen.table.column.validator.ColumnTypeValidator;
+import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryInfoFactory;
+import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryWriter;
+import com.nhaarman.trinity.internal.codegen.table.repository.validator.RepositoryTypeValidator;
+import com.nhaarman.trinity.internal.codegen.table.validator.TableClassValidator;
+import com.nhaarman.trinity.internal.codegen.table.validator.TableTypeValidator;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes("com.nhaarman.trinity.annotations.*")
 public class TrinityProcessor extends AbstractProcessor {
@@ -54,15 +52,13 @@ public class TrinityProcessor extends AbstractProcessor {
 
   private ColumnTypeValidator mColumnTypeValidator;
 
-  private TableValidator mTableValidator;
-
-  private ColumnValidator mColumnValidator;
-
-  private CreateTableMigrationWriter mCreateTableMigrationWriter;
+  private TableClassValidator mTableClassValidator;
 
   private RepositoryWriter mRepositoryWriter;
 
   private RepositoryTypeValidator mRepositoryTypeValidator;
+
+  private Messager mMessager;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -72,17 +68,14 @@ public class TrinityProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(final ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    mTableTypeValidator = new TableTypeValidator(processingEnv.getMessager());
-    mColumnTypeValidator = new ColumnTypeValidator(processingEnv.getMessager());
-    mRepositoryTypeValidator = new RepositoryTypeValidator(processingEnv.getMessager());
+    mMessager = processingEnv.getMessager();
 
-    mTableValidator = new TableValidator(processingEnv.getMessager());
-    mColumnValidator = new ColumnValidator(processingEnv.getMessager());
+    mTableTypeValidator = new TableTypeValidator(mMessager);
+    mColumnTypeValidator = new ColumnTypeValidator(mMessager);
+    mRepositoryTypeValidator = new RepositoryTypeValidator(mMessager);
 
-    mCreateTableMigrationWriter = new CreateTableMigrationWriter(
-        processingEnv.getFiler(),
-        new TableConverter(new ColumnConverter())
-    );
+    mTableClassValidator = new TableClassValidator(mMessager);
+
     mRepositoryWriter = new RepositoryWriter(processingEnv.getFiler());
   }
 
@@ -107,33 +100,17 @@ public class TrinityProcessor extends AbstractProcessor {
     }
 
     /* Gather information about repositories, tables and columns */
+    Collection<TableClass> tableClasses = new TableInfoFactory().createTableInfos(tableElements);
+    mTableClassValidator.validate(tableClasses);
 
-
-
-
-
-
-
-
-
-
-
-
-    Collection<TableInfo> tableInfos = new TableInfoFactory().createTableInfos(tableElements, columnElements, roundEnv);
-
-    mTableValidator.validate(tableInfos);
-
-    for (TableInfo tableInfo : tableInfos) {
-      mColumnValidator.validate(tableInfo.getColumns());
-    }
-
-    Collection<RepositoryClass> repositoryClasses = new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableInfos, roundEnv);
+    Collection<RepositoryClass> repositoryClasses = new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses, roundEnv);
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
       try {
-        mRepositoryWriter.writeRepository(repositoryClass);
+        mRepositoryWriter.writeRepositoryClass(repositoryClass);
       } catch (IOException e) {
-        e.printStackTrace();
+        mMessager.printMessage(Diagnostic.Kind.ERROR, e.getLocalizedMessage());
+        return true;
       }
     }
 

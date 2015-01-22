@@ -2,7 +2,7 @@ package com.nhaarman.trinity.example;
 
 import com.nhaarman.trinity.annotations.Repository;
 
-@Repository(tableName = "clubs")
+@Repository(Club.class)
 public interface ClubRepository {
 
   Club find(Long id);
