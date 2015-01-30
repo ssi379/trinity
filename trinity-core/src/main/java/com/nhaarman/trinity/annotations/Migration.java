@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface Migration {
 
-    int version();
+  int version();
 
-    long order() default 0;
+  long order() default 0;
 }

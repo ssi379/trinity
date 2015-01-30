@@ -2,17 +2,17 @@ package com.nhaarman.trinity.migrations;
 
 public interface Migration extends Comparable<Migration> {
 
-    int getVersion();
+  int getVersion();
 
-    void beforeUp();
+  void beforeUp();
 
-    String[] getUpStatements();
+  String[] getUpStatements();
 
-    void afterUp();
+  void afterUp();
 
-    void beforeDown();
+  void beforeDown();
 
-    String[] getDownStatements();
+  String[] getDownStatements();
 
-    void afterDown();
+  void afterDown();
 }

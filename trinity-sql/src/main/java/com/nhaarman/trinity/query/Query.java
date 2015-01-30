@@ -19,8 +19,7 @@ package com.nhaarman.trinity.query;
 
 public interface Query {
 
-    String getSql();
+  String getSql();
 
-    String[] getArgs();
-
+  String[] getArgs();
 }

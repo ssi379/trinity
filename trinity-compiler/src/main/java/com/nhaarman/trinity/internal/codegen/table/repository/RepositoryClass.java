@@ -1,12 +1,10 @@
 package com.nhaarman.trinity.internal.codegen.table.repository;
 
 import com.nhaarman.trinity.internal.codegen.table.TableClass;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -27,7 +25,8 @@ public class RepositoryClass {
 
     List<? extends Element> enclosedElements = repositoryElement.getEnclosedElements();
     for (Element element : enclosedElements) {
-      if (element.getKind() == ElementKind.METHOD && element.getModifiers().contains(Modifier.ABSTRACT)) {
+      if (element.getKind() == ElementKind.METHOD && element.getModifiers()
+          .contains(Modifier.ABSTRACT)) {
         mMethods.add(new RepositoryMethod((ExecutableElement) element));
       }
     }
@@ -46,7 +45,9 @@ public class RepositoryClass {
   }
 
   public String getPackageName() {
-    return mRepositoryElement.getQualifiedName().toString().substring(0, mRepositoryElement.getQualifiedName().toString().lastIndexOf('.'));
+    return mRepositoryElement.getQualifiedName()
+        .toString()
+        .substring(0, mRepositoryElement.getQualifiedName().toString().lastIndexOf('.'));
   }
 
   public TableClass getTableClass() {

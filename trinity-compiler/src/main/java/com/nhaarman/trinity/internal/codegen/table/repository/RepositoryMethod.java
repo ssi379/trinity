@@ -3,7 +3,6 @@ package com.nhaarman.trinity.internal.codegen.table.repository;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
@@ -47,7 +46,6 @@ public class RepositoryMethod {
       mType = variableElement.asType().toString();
       mName = variableElement.getSimpleName().toString();
     }
-
 
     public String getType() {
       return mType;

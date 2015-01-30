@@ -7,7 +7,7 @@ dependencies {
     compile project(':trinity-sql')
     compile project(':trinity-core')
 
-    compile 'com.squareup:javapoet:1.0.0-SNAPSHOT'
+    compile 'com.squareup:javapoet:1.0.0'
 
     compile files('/usr/local/android-sdk/platforms/android-21/android.jar')
 

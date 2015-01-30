@@ -20,58 +20,58 @@ package com.nhaarman.trinity.query;
 @SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
 public final class Delete extends QueryBase {
 
-    public Delete() {
-        super(null, null);
+  public Delete() {
+    super(null, null);
+  }
+
+  public From from(String table) {
+    return new From(this, table);
+  }
+
+  @Override
+  public String getPartSql() {
+    return "DELETE";
+  }
+
+  public static final class From extends ExecutableQueryBase {
+
+    private From(final Delete parent, final String table) {
+      super(parent, table);
     }
 
-    public From from(String table) {
-        return new From(this, table);
+    public Where where(final String where) {
+      return where(where, (Object[]) null);
+    }
+
+    public Where where(final String where, final Object... args) {
+      return new Where(this, getTable(), where, args);
     }
 
     @Override
     public String getPartSql() {
-        return "DELETE";
+      return "FROM " + getTable();
+    }
+  }
+
+  public static final class Where extends ExecutableQueryBase {
+
+    private final String mWhere;
+    private final Object[] mWhereArgs;
+
+    public Where(final Query parent, final String table, final String where, final Object[] args) {
+      super(parent, table);
+      mWhere = where;
+      mWhereArgs = args;
     }
 
-    public static final class From extends ExecutableQueryBase {
-
-        private From(final Delete parent, final String table) {
-            super(parent, table);
-        }
-
-        public Where where(final String where) {
-            return where(where, (Object[]) null);
-        }
-
-        public Where where(final String where, final Object... args) {
-            return new Where(this, getTable(), where, args);
-        }
-
-        @Override
-        public String getPartSql() {
-            return "FROM " + getTable();
-        }
+    @Override
+    public String getPartSql() {
+      return "WHERE " + mWhere;
     }
 
-    public static final class Where extends ExecutableQueryBase {
-
-        private final String mWhere;
-        private final Object[] mWhereArgs;
-
-        public Where(final Query parent, final String table, final String where, final Object[] args) {
-            super(parent, table);
-            mWhere = where;
-            mWhereArgs = args;
-        }
-
-        @Override
-        public String getPartSql() {
-            return "WHERE " + mWhere;
-        }
-
-        @Override
-        public String[] getPartArgs() {
-            return toStringArray(mWhereArgs);
-        }
+    @Override
+    public String[] getPartArgs() {
+      return toStringArray(mWhereArgs);
     }
+  }
 }

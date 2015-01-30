@@ -10,6 +10,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface PrimaryKey {
 
-    boolean autoIncrement() default true;
-
+  boolean autoIncrement() default true;
 }

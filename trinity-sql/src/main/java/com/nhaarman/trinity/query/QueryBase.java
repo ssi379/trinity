@@ -17,78 +17,77 @@
 
 package com.nhaarman.trinity.query;
 
-
 public abstract class QueryBase implements Query {
 
-    private Query mParent;
-    private String mTable;
+  private Query mParent;
+  private String mTable;
 
-    protected QueryBase(final Query parent, String table) {
-        mParent = parent;
-        mTable = table;
+  protected QueryBase(final Query parent, String table) {
+    mParent = parent;
+    mTable = table;
+  }
+
+  @Override
+  public final String getSql() {
+    if (mParent != null) {
+      return mParent.getSql() + " " + getPartSql().trim();
+    }
+    return getPartSql().trim();
+  }
+
+  @Override
+  public final String[] getArgs() {
+    if (mParent != null) {
+      return join(mParent.getArgs(), getPartArgs());
+    }
+    return getPartArgs();
+  }
+
+  public Query getParent() {
+    return mParent;
+  }
+
+  public String getTable() {
+    return mTable;
+  }
+
+  protected String getPartSql() {
+    return null;
+  }
+
+  protected String[] getPartArgs() {
+    return null;
+  }
+
+  protected final String[] toStringArray(final Object[] array) {
+    if (array == null) {
+      return null;
+    }
+    final String[] transformedArray = new String[array.length];
+    for (int i = 0; i < array.length; i++) {
+      transformedArray[i] = String.valueOf(array[i]);
+    }
+    return transformedArray;
+  }
+
+  private String[] join(final String[] array1, final String... array2) {
+    if (array1 == null) {
+      return clone(array2);
+    }
+    if (array2 == null) {
+      return clone(array1);
     }
 
-    @Override
-    public final String getSql() {
-        if (mParent != null) {
-            return mParent.getSql() + " " + getPartSql().trim();
-        }
-        return getPartSql().trim();
-    }
+    final String[] joinedArray = new String[array1.length + array2.length];
+    System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+    System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+    return joinedArray;
+  }
 
-    @Override
-    public final String[] getArgs() {
-        if (mParent != null) {
-            return join(mParent.getArgs(), getPartArgs());
-        }
-        return getPartArgs();
+  private String[] clone(final String[] array) {
+    if (array == null) {
+      return null;
     }
-
-    public Query getParent() {
-        return mParent;
-    }
-
-    public String getTable() {
-        return mTable;
-    }
-
-    protected String getPartSql() {
-        return null;
-    }
-
-    protected String[] getPartArgs() {
-        return null;
-    }
-
-    protected final String[] toStringArray(final Object[] array) {
-        if (array == null) {
-            return null;
-        }
-        final String[] transformedArray = new String[array.length];
-        for (int i = 0; i < array.length; i++) {
-            transformedArray[i] = String.valueOf(array[i]);
-        }
-        return transformedArray;
-    }
-
-    private String[] join(final String[] array1, final String... array2) {
-        if (array1 == null) {
-            return clone(array2);
-        }
-        if (array2 == null) {
-            return clone(array1);
-        }
-
-        final String[] joinedArray = new String[array1.length + array2.length];
-        System.arraycopy(array1, 0, joinedArray, 0, array1.length);
-        System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
-        return joinedArray;
-    }
-
-    private String[] clone(final String[] array) {
-        if (array == null) {
-            return null;
-        }
-        return array.clone();
-    }
+    return array.clone();
+  }
 }

@@ -21,12 +21,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 public abstract class ExecutableQueryBase extends QueryBase implements ExecutableQuery {
 
-    protected ExecutableQueryBase(final Query parent, final String table) {
-        super(parent, table);
-    }
+  protected ExecutableQueryBase(final Query parent, final String table) {
+    super(parent, table);
+  }
 
-    @Override
-    public void execute(final SQLiteDatabase database) {
-        database.execSQL(getSql(), getArgs());
-    }
+  @Override
+  public void execute(final SQLiteDatabase database) {
+    database.execSQL(getSql(), getArgs());
+  }
 }

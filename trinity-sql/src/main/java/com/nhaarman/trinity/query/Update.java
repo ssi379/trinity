@@ -20,73 +20,72 @@ package com.nhaarman.trinity.query;
 @SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
 public final class Update extends QueryBase {
 
+  public Update(final String table) {
+    super(null, table);
+  }
 
-    public Update(final String table) {
-        super(null, table);
+  public Set set(final String set) {
+    return set(set, (Object[]) null);
+  }
+
+  public Set set(final String set, final Object... args) {
+    return new Set(this, getTable(), set, args);
+  }
+
+  @Override
+  public String getPartSql() {
+    return "UPDATE " + getTable();
+  }
+
+  public static final class Set extends ExecutableQueryBase {
+
+    private final String mSet;
+    private final Object[] mSetArgs;
+
+    private Set(final Query parent, final String table, final String set, final Object... args) {
+      super(parent, table);
+      mSet = set;
+      mSetArgs = args;
     }
 
-    public Set set(final String set) {
-        return set(set, (Object[]) null);
+    public Where where(final String where) {
+      return where(where, (Object[]) null);
     }
 
-    public Set set(final String set, final Object... args) {
-        return new Set(this, getTable(), set, args);
+    public Where where(final String where, final Object... args) {
+      return new Where(this, getTable(), where, args);
     }
 
     @Override
     public String getPartSql() {
-        return "UPDATE " + getTable();
+      return "SET " + mSet;
     }
 
-    public static final class Set extends ExecutableQueryBase {
+    @Override
+    public String[] getPartArgs() {
+      return toStringArray(mSetArgs);
+    }
+  }
 
-        private final String mSet;
-        private final Object[] mSetArgs;
+  public static final class Where extends ExecutableQueryBase {
 
-        private Set(final Query parent, final String table, final String set, final Object... args) {
-            super(parent, table);
-            mSet = set;
-            mSetArgs = args;
-        }
+    private final String mWhere;
+    private final Object[] mWhereArgs;
 
-        public Where where(final String where) {
-            return where(where, (Object[]) null);
-        }
-
-        public Where where(final String where, final Object... args) {
-            return new Where(this, getTable(), where, args);
-        }
-
-        @Override
-        public String getPartSql() {
-            return "SET " + mSet;
-        }
-
-        @Override
-        public String[] getPartArgs() {
-            return toStringArray(mSetArgs);
-        }
+    private Where(final Query parent, final String table, final String where, final Object[] args) {
+      super(parent, table);
+      mWhere = where;
+      mWhereArgs = args;
     }
 
-    public static final class Where extends ExecutableQueryBase {
-
-        private final String mWhere;
-        private final Object[] mWhereArgs;
-
-        private Where(final Query parent, final String table, final String where, final Object[] args) {
-            super(parent, table);
-            mWhere = where;
-            mWhereArgs = args;
-        }
-
-        @Override
-        public String getPartSql() {
-            return "WHERE " + mWhere;
-        }
-
-        @Override
-        public String[] getPartArgs() {
-            return toStringArray(mWhereArgs);
-        }
+    @Override
+    public String getPartSql() {
+      return "WHERE " + mWhere;
     }
+
+    @Override
+    public String[] getPartArgs() {
+      return toStringArray(mWhereArgs);
+    }
+  }
 }

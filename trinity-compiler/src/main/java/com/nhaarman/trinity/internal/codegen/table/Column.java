@@ -2,7 +2,6 @@ package com.nhaarman.trinity.internal.codegen.table;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-
 import javax.lang.model.element.ExecutableElement;
 
 public class Column {
@@ -45,7 +44,7 @@ public class Column {
 
   public boolean isPrimary() {
     for (ColumnMethod method : mMethods) {
-      if(method.isPrimary()){
+      if (method.isPrimary()) {
         return true;
       }
     }

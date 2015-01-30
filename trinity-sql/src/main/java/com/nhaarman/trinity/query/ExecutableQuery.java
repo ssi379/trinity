@@ -21,5 +21,5 @@ import android.database.sqlite.SQLiteDatabase;
 
 public interface ExecutableQuery extends Query {
 
-    void execute(SQLiteDatabase database);
+  void execute(SQLiteDatabase database);
 }

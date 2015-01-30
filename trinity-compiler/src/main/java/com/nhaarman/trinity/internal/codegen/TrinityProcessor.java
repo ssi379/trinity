@@ -29,11 +29,9 @@ import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryWriter;
 import com.nhaarman.trinity.internal.codegen.table.repository.validator.RepositoryTypeValidator;
 import com.nhaarman.trinity.internal.codegen.table.validator.TableClassValidator;
 import com.nhaarman.trinity.internal.codegen.table.validator.TableTypeValidator;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -46,7 +44,6 @@ import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes("com.nhaarman.trinity.annotations.*")
 public class TrinityProcessor extends AbstractProcessor {
-
 
   private TableTypeValidator mTableTypeValidator;
 
@@ -81,7 +78,7 @@ public class TrinityProcessor extends AbstractProcessor {
 
   @Override
   public synchronized boolean process(final Set<? extends TypeElement> annotations,
-                                      final RoundEnvironment roundEnv) {
+      final RoundEnvironment roundEnv) {
 
     /* Validate individual elements */
     Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
@@ -103,7 +100,9 @@ public class TrinityProcessor extends AbstractProcessor {
     Collection<TableClass> tableClasses = new TableInfoFactory().createTableInfos(tableElements);
     mTableClassValidator.validate(tableClasses);
 
-    Collection<RepositoryClass> repositoryClasses = new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses, roundEnv);
+    Collection<RepositoryClass> repositoryClasses =
+        new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses,
+            roundEnv);
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
       try {
@@ -116,5 +115,4 @@ public class TrinityProcessor extends AbstractProcessor {
 
     return true;
   }
-
 }

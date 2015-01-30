@@ -1,9 +1,7 @@
 package com.nhaarman.trinity.internal.codegen.table.repository.validator;
 
 import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-
 import java.util.Collection;
-
 import javax.annotation.processing.Messager;
 
 public class RepositoryClassValidator {

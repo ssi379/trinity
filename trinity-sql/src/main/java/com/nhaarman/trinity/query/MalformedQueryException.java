@@ -19,7 +19,7 @@ package com.nhaarman.trinity.query;
 
 public class MalformedQueryException extends RuntimeException {
 
-    public MalformedQueryException(final String detailMessage) {
-        super(detailMessage);
-    }
+  public MalformedQueryException(final String detailMessage) {
+    super(detailMessage);
+  }
 }

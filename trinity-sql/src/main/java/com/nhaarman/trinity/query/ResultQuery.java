@@ -22,6 +22,5 @@ import android.database.sqlite.SQLiteDatabase;
 
 public interface ResultQuery extends ExecutableQuery {
 
-    Cursor fetchFrom(SQLiteDatabase database);
-
+  Cursor fetchFrom(SQLiteDatabase database);
 }

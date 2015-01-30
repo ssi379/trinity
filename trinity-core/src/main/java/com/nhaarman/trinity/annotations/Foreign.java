@@ -10,8 +10,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface Foreign {
 
-    String tableName();
+  String tableName();
 
-    String columnName();
-
+  String columnName();
 }

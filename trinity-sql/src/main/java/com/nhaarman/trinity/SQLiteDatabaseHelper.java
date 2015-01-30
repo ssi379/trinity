@@ -3,10 +3,8 @@ package com.nhaarman.trinity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import com.nhaarman.trinity.migrations.Migration;
 import com.nhaarman.trinity.migrations.Migrations;
-
 import java.util.List;
 import java.util.ListIterator;
 
