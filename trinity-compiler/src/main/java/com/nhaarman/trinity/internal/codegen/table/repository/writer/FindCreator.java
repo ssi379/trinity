@@ -16,25 +16,26 @@ public class FindCreator implements MethodCreator {
   private final RepositoryClass mRepositoryClass;
 
   @NotNull
-  private final RepositoryMethod mRepositoryMethod;
-
-  @NotNull
   private final MethodSpec mReadCursorSpec;
 
+  @NotNull
+  private final RepositoryMethod mMethod;
+
   public FindCreator(@NotNull final RepositoryClass repositoryClass,
-                     @NotNull final RepositoryMethod repositoryMethod,
-                     @NotNull final MethodSpec readCursorSpec) {
+                     @NotNull final MethodSpec readCursorSpec,
+                     @NotNull final RepositoryMethod method) {
     mRepositoryClass = repositoryClass;
-    mRepositoryMethod = repositoryMethod;
     mReadCursorSpec = readCursorSpec;
+    mMethod = method;
   }
 
-  public MethodSpec createMethodSpec() {
-    return MethodSpec.methodBuilder(mRepositoryMethod.getMethodName())
+  @Override
+  public MethodSpec create() {
+    return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(ClassName.bestGuess(mRepositoryMethod.getParameter().getType()), mRepositoryMethod.getParameter().getName(), FINAL)
-        .returns(ClassName.bestGuess(mRepositoryMethod.getReturnType()))
+        .addParameter(ClassName.bestGuess(mMethod.getParameter().getType()), mMethod.getParameter().getName(), FINAL)
+        .returns(ClassName.bestGuess(mMethod.getReturnType()))
         .beginControlFlow("if (id == null)")
         .addStatement("return null")
         .endControlFlow()

@@ -21,28 +21,27 @@ import static org.mockito.Mockito.*;
 
 public class FindCreatorTest {
 
-  private FindCreator mFindCreator;
+  private static final String EXPECTED_CODE =
+      ""
+          + "if (id == null) {\n"
+          + "  return null;\n"
+          + "}\n"
+          + "\n"
+          + "MyConcreteType result = null;\n"
+          + "\n"
+          + "android.database.Cursor cursor = new com.nhaarman.trinity.query.Select().from(\"my_table\").where(\"id=?\", id).limit(\"1\").fetchFrom(mDatabase);\n"
+          + "try {\n"
+          + "  if (cursor.moveToFirst()) {\n"
+          + "    result = readCursor(cursor);\n"
+          + "  }\n"
+          + "} finally{\n"
+          + "  cursor.close();\n"
+          + "}\n"
+          + "\n"
+          + "return result;\n"
+          + "";
 
-  private static String expectedCode() {
-    return ""
-        + "if (id == null) {\n"
-        + "  return null;\n"
-        + "}\n"
-        + "\n"
-        + "MyConcreteType result = null;\n"
-        + "\n"
-        + "android.database.Cursor cursor = new com.nhaarman.trinity.query.Select().from(\"my_table\").where(\"id=?\", id).limit(\"1\").fetchFrom(mDatabase);\n"
-        + "try {\n"
-        + "  if (cursor.moveToFirst()) {\n"
-        + "    result = readCursor(cursor);\n"
-        + "  }\n"
-        + "} finally{\n"
-        + "  cursor.close();\n"
-        + "}\n"
-        + "\n"
-        + "return result;\n"
-        + "";
-  }
+  private FindCreator mFindCreator;
 
   @Before
   public void setUp() {
@@ -64,13 +63,13 @@ public class FindCreatorTest {
     when(repositoryMethodMock.getParameter()).thenReturn(parameterMock);
     when(repositoryMethodMock.getReturnType()).thenReturn("MyClass");
 
-    mFindCreator = new FindCreator(repositoryClassMock, repositoryMethodMock, readCursorMethod);
+    mFindCreator = new FindCreator(repositoryClassMock, readCursorMethod, repositoryMethodMock);
   }
 
   @Test
   public void createFindMethodSpec_returnsNotNull() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec, is(not(nullValue())));
@@ -79,7 +78,7 @@ public class FindCreatorTest {
   @Test
   public void createdMethodSpec_hasProperMethodName() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec.name, is("find"));
@@ -88,7 +87,7 @@ public class FindCreatorTest {
   @Test
   public void createdMethodSpec_hasOverrideAnnotation() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec.annotations, is(not(empty())));
@@ -98,16 +97,16 @@ public class FindCreatorTest {
   @Test
   public void createdMethodSpec_isPublic() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec.modifiers, hasItem(PUBLIC));
   }
 
   @Test
-  public void createdMethodSpec_hasAFinalParameterWithCorrectTypeAndName() {
+  public void createdMethodSpec_hasASingleFinalParameterWithCorrectTypeAndName() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec.parameters.size(), is(1));
@@ -119,7 +118,7 @@ public class FindCreatorTest {
   @Test
   public void createdMethodSpec_returnsProperType() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
     assertThat(methodSpec.returnType.toString(), is("MyClass"));
@@ -128,9 +127,9 @@ public class FindCreatorTest {
   @Test
   public void createdMethodSpec_hasCorrectCode() {
     /* When */
-    MethodSpec methodSpec = mFindCreator.createMethodSpec();
+    MethodSpec methodSpec = mFindCreator.create();
 
     /* Then */
-    assertThat(methodSpec.code.toString(), is(equalTo(expectedCode())));
+    assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE)));
   }
 }

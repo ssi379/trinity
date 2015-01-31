@@ -25,7 +25,7 @@ import com.nhaarman.trinity.internal.codegen.table.TableInfoFactory;
 import com.nhaarman.trinity.internal.codegen.table.column.validator.ColumnTypeValidator;
 import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryInfoFactory;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryWriter;
+import com.nhaarman.trinity.internal.codegen.table.repository.writer.RepositoryWriter;
 import com.nhaarman.trinity.internal.codegen.table.repository.validator.RepositoryTypeValidator;
 import com.nhaarman.trinity.internal.codegen.table.validator.TableClassValidator;
 import com.nhaarman.trinity.internal.codegen.table.validator.TableTypeValidator;

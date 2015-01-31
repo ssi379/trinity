@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table.repository;
+package com.nhaarman.trinity.internal.codegen.table.repository.writer;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.internal.codegen.table.Column;
 import com.nhaarman.trinity.internal.codegen.table.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.table.TableClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod.Parameter;
-import com.nhaarman.trinity.internal.codegen.table.repository.writer.FindCreator;
+import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -33,6 +33,8 @@ public class RepositoryWriter {
 
   private TableClass mTableClass;
 
+  private CreatorFactory mCreatorFactory;
+
   public RepositoryWriter(final Filer filer) {
     mFiler = filer;
   }
@@ -44,13 +46,18 @@ public class RepositoryWriter {
 
     JavaFileObject sourceFile = mFiler.createSourceFile(createRepositoryClassName());
 
+    MethodSpec readCursorSpec = readCursor();
+    MethodSpec createContentValuesSpec = createContentValues();
+
+    mCreatorFactory = new CreatorFactory(mRepositoryClass, readCursorSpec, createContentValuesSpec);
+
     TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName())
         .addModifiers(PUBLIC, FINAL)
         .addOriginatingElement(mRepositoryClass.getRepositoryElement())
         .addField(mDatabase())
         .addMethod(constructor())
-        .addMethod(createContentValues())
-        .addMethod(readCursor());
+        .addMethod(createContentValuesSpec)
+        .addMethod(readCursorSpec);
 
     if (mRepositoryClass.isInterface()) {
       repositoryBuilder.addSuperinterface(ClassName.get(mRepositoryClass.getRepositoryElement()));
@@ -59,7 +66,7 @@ public class RepositoryWriter {
     }
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
-      repositoryBuilder.addMethod(implement(repositoryMethod));
+      repositoryBuilder.addMethod(mCreatorFactory.creatorFor(repositoryMethod).create());
     }
 
     JavaFile javaFile =
@@ -82,45 +89,6 @@ public class RepositoryWriter {
         .addModifiers(PUBLIC)
         .addParameter(SQLiteDatabase.class, "database", FINAL)
         .addStatement("mDatabase = database")
-        .build();
-  }
-
-  private MethodSpec implement(final RepositoryMethod repositoryMethod) {
-    switch (repositoryMethod.getMethodName()) {
-      case "find":
-        return implementFind(repositoryMethod);
-      case "create":
-        return implementCreate(repositoryMethod);
-      default:
-        throw new UnsupportedOperationException(repositoryMethod.getMethodName());
-    }
-  }
-
-  private MethodSpec implementFind(final RepositoryMethod repositoryMethod) {
-    return new FindCreator(mRepositoryClass, repositoryMethod, readCursor()).createMethodSpec();
-  }
-
-  private MethodSpec implementCreate(final RepositoryMethod repositoryMethod) {
-    Parameter parameter = repositoryMethod.getParameter();
-    Column primaryKeyColumn = mTableClass.getPrimaryKeyColumn();
-
-    return MethodSpec.methodBuilder("create")
-        .addAnnotation(Override.class)
-        .addModifiers(PUBLIC)
-        .addParameter(ClassName.bestGuess(parameter.getType()), parameter.getName(), FINAL)
-        .returns(ClassName.bestGuess(repositoryMethod.getReturnType()))
-        .addStatement("$T result = null", Long.class)
-        .addCode("\n")
-        .addStatement("$T contentValues = $N($L)", ContentValues.class, createContentValues(),
-            parameter.getName())
-        .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class,
-            mTableClass.getTableName())
-        .beginControlFlow("if (id != -1)")
-        .addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())
-        .addStatement("result = id")
-        .endControlFlow()
-        .addCode("\n")
-        .addStatement("return result")
         .build();
   }
 
