@@ -23,11 +23,9 @@ public class TableClass {
 
     Map<String, Column> columns = new HashMap<>();
     for (Element element : typeElement.getEnclosedElements()) {
-      if (element.getKind() == ElementKind.METHOD
-          && element.getAnnotation(com.nhaarman.trinity.annotations.Column.class) != null) {
+      if (element.getKind() == ElementKind.METHOD && element.getAnnotation(com.nhaarman.trinity.annotations.Column.class) != null) {
         ExecutableElement executableElement = (ExecutableElement) element;
-        String columnName =
-            executableElement.getAnnotation(com.nhaarman.trinity.annotations.Column.class).value();
+        String columnName = executableElement.getAnnotation(com.nhaarman.trinity.annotations.Column.class).value();
         Column column = columns.get(columnName);
         if (column == null) {
           column = new Column(columnName);
@@ -61,6 +59,10 @@ public class TableClass {
       }
     }
     return result;
+  }
+
+  public String getEntityFullyQualifiedName() {
+    return mTypeElement.getQualifiedName().toString();
   }
 
   public TypeElement getEntityTypeElement() {

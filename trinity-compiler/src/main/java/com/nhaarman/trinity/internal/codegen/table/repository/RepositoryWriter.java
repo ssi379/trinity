@@ -7,6 +7,7 @@ import com.nhaarman.trinity.internal.codegen.table.Column;
 import com.nhaarman.trinity.internal.codegen.table.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.table.TableClass;
 import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod.Parameter;
+import com.nhaarman.trinity.internal.codegen.table.repository.writer.FindCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -96,37 +97,7 @@ public class RepositoryWriter {
   }
 
   private MethodSpec implementFind(final RepositoryMethod repositoryMethod) {
-    return MethodSpec.methodBuilder(repositoryMethod.getMethodName())
-        .addAnnotation(Override.class)
-        .addModifiers(PUBLIC)
-        .addParameter(Long.class, "id", FINAL)
-        .returns(ClassName.bestGuess(repositoryMethod.getReturnType()))
-        .beginControlFlow("if (id == null)")
-        .addStatement("return null")
-        .endControlFlow()
-        .addCode("\n")
-        .addStatement("$T result = null", mTableClass.getEntityTypeElement())
-        .addCode("\n")
-        .addStatement(
-            "$T cursor = new $T()" +
-                ".from($S)" +
-                ".where(\"id=?\", id)" +
-                ".limit(\"1\")" +
-                ".fetchFrom(mDatabase)",
-            Cursor.class,
-            ClassName.get("com.nhaarman.trinity.query", "Select"),
-            mTableClass.getTableName()
-        )
-        .beginControlFlow("try")
-        .beginControlFlow("if (cursor.moveToFirst())")
-        .addStatement("result = $N(cursor)", readCursor())
-        .endControlFlow()
-        .nextControlFlow("finally")
-        .addStatement("cursor.close()")
-        .endControlFlow()
-        .addCode("\n")
-        .addStatement("return result")
-        .build();
+    return new FindCreator(mRepositoryClass, repositoryMethod, readCursor()).createMethodSpec();
   }
 
   private MethodSpec implementCreate(final RepositoryMethod repositoryMethod) {
