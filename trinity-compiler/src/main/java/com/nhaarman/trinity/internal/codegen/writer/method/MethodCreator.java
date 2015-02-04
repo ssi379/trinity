@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.writer;
+package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.squareup.javapoet.MethodSpec;
 

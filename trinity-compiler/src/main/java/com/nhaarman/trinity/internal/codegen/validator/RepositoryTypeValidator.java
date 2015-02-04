@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.validator;
+package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Repository;
 import java.util.List;

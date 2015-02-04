@@ -1,6 +1,5 @@
-package com.nhaarman.trinity.internal.codegen.table.repository;
+package com.nhaarman.trinity.internal.codegen.data;
 
-import com.nhaarman.trinity.internal.codegen.table.TableClass;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;

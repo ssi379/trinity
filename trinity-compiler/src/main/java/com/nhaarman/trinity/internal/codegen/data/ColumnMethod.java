@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table;
+package com.nhaarman.trinity.internal.codegen.data;
 
 import com.nhaarman.trinity.annotations.PrimaryKey;
 import javax.lang.model.element.ExecutableElement;

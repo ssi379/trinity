@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table;
+package com.nhaarman.trinity.internal.codegen.data;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

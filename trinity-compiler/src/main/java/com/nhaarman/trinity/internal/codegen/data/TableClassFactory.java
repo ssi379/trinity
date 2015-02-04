@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table;
+package com.nhaarman.trinity.internal.codegen.data;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -6,9 +6,9 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-public class TableInfoFactory {
+public class TableClassFactory {
 
-  public Collection<TableClass> createTableInfos(final Set<? extends Element> tableElements) {
+  public Collection<TableClass> createTableClasses(final Set<? extends Element> tableElements) {
     Collection<TableClass> tableClasses = new HashSet<>(tableElements.size());
 
     for (Element tableElement : tableElements) {

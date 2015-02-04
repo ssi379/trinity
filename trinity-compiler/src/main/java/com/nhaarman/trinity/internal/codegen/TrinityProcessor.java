@@ -20,19 +20,20 @@ package com.nhaarman.trinity.internal.codegen;
 import com.nhaarman.trinity.annotations.Column;
 import com.nhaarman.trinity.annotations.Repository;
 import com.nhaarman.trinity.annotations.Table;
-import com.nhaarman.trinity.internal.codegen.table.TableClass;
-import com.nhaarman.trinity.internal.codegen.table.TableInfoFactory;
-import com.nhaarman.trinity.internal.codegen.table.column.validator.ColumnTypeValidator;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryInfoFactory;
-import com.nhaarman.trinity.internal.codegen.table.repository.writer.RepositoryWriter;
-import com.nhaarman.trinity.internal.codegen.table.repository.validator.RepositoryTypeValidator;
-import com.nhaarman.trinity.internal.codegen.table.validator.TableClassValidator;
-import com.nhaarman.trinity.internal.codegen.table.validator.TableTypeValidator;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryInfoFactory;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.data.TableClassFactory;
+import com.nhaarman.trinity.internal.codegen.validator.ColumnTypeValidator;
+import com.nhaarman.trinity.internal.codegen.validator.RepositoryTypeValidator;
+import com.nhaarman.trinity.internal.codegen.validator.TableClassValidator;
+import com.nhaarman.trinity.internal.codegen.validator.TableTypeValidator;
+import com.nhaarman.trinity.internal.codegen.writer.RepositoryWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -40,7 +41,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 
 @SupportedAnnotationTypes("com.nhaarman.trinity.annotations.*")
 public class TrinityProcessor extends AbstractProcessor {
@@ -51,11 +52,10 @@ public class TrinityProcessor extends AbstractProcessor {
 
   private TableClassValidator mTableClassValidator;
 
-  private RepositoryWriter mRepositoryWriter;
-
   private RepositoryTypeValidator mRepositoryTypeValidator;
 
   private Messager mMessager;
+  private Filer mFiler;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -73,12 +73,12 @@ public class TrinityProcessor extends AbstractProcessor {
 
     mTableClassValidator = new TableClassValidator(mMessager);
 
-    mRepositoryWriter = new RepositoryWriter(processingEnv.getFiler());
+    mFiler = processingEnv.getFiler();
   }
 
   @Override
   public synchronized boolean process(final Set<? extends TypeElement> annotations,
-      final RoundEnvironment roundEnv) {
+                                      final RoundEnvironment roundEnv) {
 
     /* Validate individual elements */
     Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
@@ -97,7 +97,7 @@ public class TrinityProcessor extends AbstractProcessor {
     }
 
     /* Gather information about repositories, tables and columns */
-    Collection<TableClass> tableClasses = new TableInfoFactory().createTableInfos(tableElements);
+    Collection<TableClass> tableClasses = new TableClassFactory().createTableClasses(tableElements);
     mTableClassValidator.validate(tableClasses);
 
     Collection<RepositoryClass> repositoryClasses =
@@ -106,9 +106,9 @@ public class TrinityProcessor extends AbstractProcessor {
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
       try {
-        mRepositoryWriter.writeRepositoryClass(repositoryClass);
+        new RepositoryWriter(mFiler, repositoryClass).writeRepositoryClass();
       } catch (IOException e) {
-        mMessager.printMessage(Diagnostic.Kind.ERROR, e.getLocalizedMessage());
+        mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage());
         return true;
       }
     }

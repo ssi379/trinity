@@ -1,13 +1,14 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.writer;
+package com.nhaarman.trinity.internal.codegen.writer;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import com.nhaarman.trinity.internal.codegen.table.Column;
-import com.nhaarman.trinity.internal.codegen.table.ColumnMethod;
-import com.nhaarman.trinity.internal.codegen.table.TableClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.writer.method.CreatorFactory;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -19,6 +20,7 @@ import java.io.Writer;
 import javax.annotation.processing.Filer;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
+import org.jetbrains.annotations.NotNull;
 
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -27,51 +29,58 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 @SuppressWarnings("HardCodedStringLiteral")
 public class RepositoryWriter {
 
+  private static final String FIELD_NAME_DATABASE = "mDatabase";
+  
+  @NotNull
   private final Filer mFiler;
 
-  private RepositoryClass mRepositoryClass;
+  @NotNull
+  private final RepositoryClass mRepositoryClass;
 
-  private TableClass mTableClass;
+  @NotNull
+  private final TableClass mTableClass;
 
-  private CreatorFactory mCreatorFactory;
-
-  public RepositoryWriter(final Filer filer) {
+  public RepositoryWriter(@NotNull final Filer filer, @NotNull final RepositoryClass repositoryClass) {
     mFiler = filer;
-  }
-
-  public synchronized void writeRepositoryClass(final RepositoryClass repositoryClass)
-      throws IOException {
     mRepositoryClass = repositoryClass;
     mTableClass = repositoryClass.getTableClass();
+  }
 
-    JavaFileObject sourceFile = mFiler.createSourceFile(createRepositoryClassName());
-
+  public void writeRepositoryClass() throws IOException {
+    FieldSpec databaseFieldSpec = mDatabase();
+    MethodSpec constructor = constructor();
     MethodSpec readCursorSpec = readCursor();
     MethodSpec createContentValuesSpec = createContentValues();
 
-    mCreatorFactory = new CreatorFactory(mRepositoryClass, readCursorSpec, createContentValuesSpec);
+    CreatorFactory creatorFactory = new CreatorFactory(mRepositoryClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
 
-    TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName())
-        .addModifiers(PUBLIC, FINAL)
-        .addOriginatingElement(mRepositoryClass.getRepositoryElement())
-        .addField(mDatabase())
-        .addMethod(constructor())
-        .addMethod(createContentValuesSpec)
-        .addMethod(readCursorSpec);
+    TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName());
+    repositoryBuilder.addModifiers(PUBLIC, FINAL);
+    repositoryBuilder.addOriginatingElement(mRepositoryClass.getRepositoryElement());
+    repositoryBuilder.addField(databaseFieldSpec);
+    repositoryBuilder.addMethod(constructor);
+    repositoryBuilder.addMethod(createContentValuesSpec);
+    repositoryBuilder.addMethod(readCursorSpec);
 
+    ClassName superclass = ClassName.get(mRepositoryClass.getRepositoryElement());
     if (mRepositoryClass.isInterface()) {
-      repositoryBuilder.addSuperinterface(ClassName.get(mRepositoryClass.getRepositoryElement()));
+      repositoryBuilder.addSuperinterface(superclass);
     } else {
-      repositoryBuilder.superclass(ClassName.get(mRepositoryClass.getRepositoryElement()));
+      repositoryBuilder.superclass(superclass);
     }
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
-      repositoryBuilder.addMethod(mCreatorFactory.creatorFor(repositoryMethod).create());
+      repositoryBuilder.addMethod(creatorFactory.creatorFor(repositoryMethod).create());
     }
 
-    JavaFile javaFile =
-        JavaFile.builder(mRepositoryClass.getPackageName(), repositoryBuilder.build()).build();
+    TypeSpec typeSpec = repositoryBuilder.build();
+    writeToFile(typeSpec);
+  }
 
+  private void writeToFile(final TypeSpec typeSpec) throws IOException {
+    JavaFile javaFile = JavaFile.builder(mRepositoryClass.getPackageName(), typeSpec).build();
+
+    JavaFileObject sourceFile = mFiler.createSourceFile(createRepositoryClassName());
     Writer writer = sourceFile.openWriter();
     javaFile.writeTo(writer);
     writer.flush();
@@ -79,7 +88,7 @@ public class RepositoryWriter {
   }
 
   private FieldSpec mDatabase() {
-    return FieldSpec.builder(SQLiteDatabase.class, "mDatabase", PRIVATE, FINAL)
+    return FieldSpec.builder(SQLiteDatabase.class, FIELD_NAME_DATABASE, PRIVATE, FINAL)
         .addJavadoc("The {@link $T} that is used for persistence.\n", SQLiteDatabase.class)
         .build();
   }
@@ -88,7 +97,7 @@ public class RepositoryWriter {
     return MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(SQLiteDatabase.class, "database", FINAL)
-        .addStatement("mDatabase = database")
+        .addStatement(FIELD_NAME_DATABASE + " = database")
         .build();
   }
 

@@ -1,10 +1,10 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.writer;
+package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import android.content.ContentValues;
-import com.nhaarman.trinity.internal.codegen.table.Column;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod.Parameter;
+import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class CreateCreator implements MethodCreator {
+/**
+ * A MethodCreator that creates a MethodSpec for the create method.
+ *
+ * The `Long create(T t)` method takes an entity of a class annotated with the @Table annotation as a parameter,
+ * and inserts the entity into the database. It returns a Long value, based on the result of `insert`.
+ */
+class CreateMethodCreator implements MethodCreator {
 
   @NotNull
   private final RepositoryClass mRepositoryClass;
@@ -21,9 +27,9 @@ public class CreateCreator implements MethodCreator {
   @NotNull
   private final RepositoryMethod mMethod;
 
-  public CreateCreator(@NotNull final RepositoryClass repositoryClass,
-                       @NotNull final MethodSpec createContentValuesSpec,
-                       @NotNull final RepositoryMethod method) {
+  CreateMethodCreator(@NotNull final RepositoryClass repositoryClass,
+                      @NotNull final MethodSpec createContentValuesSpec,
+                      @NotNull final RepositoryMethod method) {
 
     mRepositoryClass = repositoryClass;
     mCreateContentValuesSpec = createContentValuesSpec;
@@ -36,6 +42,7 @@ public class CreateCreator implements MethodCreator {
     Column primaryKeyColumn = mRepositoryClass.getTableClass().getPrimaryKeyColumn();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
+        .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .addParameter(ClassName.bestGuess(parameter.getType()), parameter.getName(), FINAL)
@@ -51,5 +58,16 @@ public class CreateCreator implements MethodCreator {
         .addCode("\n")
         .addStatement("return result")
         .build();
+  }
+
+  private String createJavadoc() {
+    Parameter parameter = mMethod.getParameter();
+    return ""
+        + "Executes an insert statement to persist given " + parameter.getType() + " in the database.\n"
+        + "When successful, the id of the " + parameter.getType() + " will be set to the id of the created row.\n"
+        + "\n"
+        + "@param " + parameter.getName() + " The " + parameter.getType() + " to insert.\n"
+        + "\n"
+        + "@return The created row id, or null if an error occurred.\n";
   }
 }

@@ -1,6 +1,6 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.validator;
+package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import java.util.Collection;
 import javax.annotation.processing.Messager;
 

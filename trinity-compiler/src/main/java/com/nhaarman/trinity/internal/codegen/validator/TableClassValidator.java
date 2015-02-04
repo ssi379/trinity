@@ -1,6 +1,6 @@
-package com.nhaarman.trinity.internal.codegen.table.validator;
+package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.table.TableClass;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

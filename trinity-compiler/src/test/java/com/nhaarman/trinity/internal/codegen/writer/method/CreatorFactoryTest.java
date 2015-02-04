@@ -1,7 +1,9 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.writer;
+package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod;
+import android.database.sqlite.SQLiteDatabase;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +19,10 @@ public class CreatorFactoryTest {
 
   @Before
   public void setUp() {
+    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLiteDatabase.class, "mDatabase").build();
     MethodSpec readCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
-    mCreatorFactory = new CreatorFactory(mock(RepositoryClass.class), readCursorSpec, createContentValuesSpec);
+    mCreatorFactory = new CreatorFactory(mock(RepositoryClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);
   }
 
   @Test
@@ -32,7 +35,7 @@ public class CreatorFactoryTest {
     MethodCreator creator = mCreatorFactory.creatorFor(method);
 
     /* Then */
-    assertThat(creator, is(instanceOf(FindCreator.class)));
+    assertThat(creator, is(instanceOf(FindMethodCreator.class)));
   }
 
   @Test
@@ -45,7 +48,7 @@ public class CreatorFactoryTest {
     MethodCreator creator = mCreatorFactory.creatorFor(method);
 
     /* Then */
-    assertThat(creator, is(instanceOf(FindCreator.class)));
+    assertThat(creator, is(instanceOf(FindMethodCreator.class)));
   }
 
   @Test
@@ -58,7 +61,6 @@ public class CreatorFactoryTest {
     MethodCreator creator = mCreatorFactory.creatorFor(method);
 
     /* Then */
-    assertThat(creator, is(instanceOf(CreateCreator.class)));
+    assertThat(creator, is(instanceOf(CreateMethodCreator.class)));
   }
-
 }

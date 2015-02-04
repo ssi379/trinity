@@ -1,11 +1,11 @@
-package com.nhaarman.trinity.internal.codegen.table.repository.writer;
+package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.table.Column;
-import com.nhaarman.trinity.internal.codegen.table.ColumnMethod;
-import com.nhaarman.trinity.internal.codegen.table.TableClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod;
-import com.nhaarman.trinity.internal.codegen.table.repository.RepositoryMethod.Parameter;
+import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.*;
 
-public class CreateCreatorTest {
+public class CreateMethodCreatorTest {
 
   private static final String METHOD_NAME = "create";
   private static final String PARAMETER_TYPE = "MyType";
@@ -29,25 +29,33 @@ public class CreateCreatorTest {
   private static final String TABLE_NAME = "my_table";
 
   private static final String RETURN_TYPE = "java.lang.Long";
-  private static final String EXPECTED_CODE =
-      ""
-          + "java.lang.Long result = null;\n"
-          + "\n"
-          + "android.content.ContentValues contentValues = createContentValues(entity);\n"
-          + "long id = mDatabase.insert(\"" + TABLE_NAME + "\", null, contentValues);\n"
-          + "if (id != -1) {\n"
-          + "  entity.setId(id);\n"
-          + "  result = id;\n"
-          + "}\n"
-          + "\n"
-          + "return result;\n"
-          + "";
 
-  private CreateCreator mCreateCreator;
+  private static final String EXPECTED_JAVADOC = ""
+      + "Executes an insert statement to persist given " + PARAMETER_TYPE + " in the database.\n"
+      + "When successful, the id of the " + PARAMETER_TYPE + " will be set to the id of the created row.\n"
+      + "\n"
+      + "@param " + PARAMETER_NAME + " The " + PARAMETER_TYPE + " to insert.\n"
+      + "\n"
+      + "@return The created row id, or null if an error occurred.\n"
+      + "";
+
+  private static final String EXPECTED_CODE = ""
+      + "java.lang.Long result = null;\n"
+      + "\n"
+      + "android.content.ContentValues contentValues = createContentValues(entity);\n"
+      + "long id = mDatabase.insert(\"" + TABLE_NAME + "\", null, contentValues);\n"
+      + "if (id != -1) {\n"
+      + "  entity.setId(id);\n"
+      + "  result = id;\n"
+      + "}\n"
+      + "\n"
+      + "return result;\n"
+      + "";
+
+  private CreateMethodCreator mCreateMethodCreator;
 
   @Before
   public void setUp() {
-
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
 
     Parameter parameterMock = mock(Parameter.class);
@@ -72,22 +80,31 @@ public class CreateCreatorTest {
     RepositoryClass repositoryClassMock = mock(RepositoryClass.class);
     when(repositoryClassMock.getTableClass()).thenReturn(tableClassMock);
 
-    mCreateCreator = new CreateCreator(repositoryClassMock, createContentValuesSpec, methodMock);
+    mCreateMethodCreator = new CreateMethodCreator(repositoryClassMock, createContentValuesSpec, methodMock);
   }
 
   @Test
   public void create_returnsNotNull() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec, is(not(nullValue())));
   }
 
   @Test
+  public void createdMethodSpec_hasJavadoc() {
+    /* When */
+    MethodSpec methodSpec = mCreateMethodCreator.create();
+
+    /* Then */
+    assertThat(methodSpec.javadoc.toString(), is(EXPECTED_JAVADOC));
+  }
+
+  @Test
   public void createdMethodSpec_hasProperMethodName() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.name, is(METHOD_NAME));
@@ -96,7 +113,7 @@ public class CreateCreatorTest {
   @Test
   public void createdMethodSpec_hasOverrideAnnotation() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.annotations, is(not(empty())));
@@ -106,7 +123,7 @@ public class CreateCreatorTest {
   @Test
   public void createdMethodSpec_isPublic() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.modifiers, hasItem(PUBLIC));
@@ -115,7 +132,7 @@ public class CreateCreatorTest {
   @Test
   public void createdMethodSpec_hasASingleFinalParameterWithCorrectTypeAndName() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.parameters.size(), is(1));
@@ -127,7 +144,7 @@ public class CreateCreatorTest {
   @Test
   public void createdMethodSpec_returnsProperType() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.returnType.toString(), is(RETURN_TYPE));
@@ -136,7 +153,7 @@ public class CreateCreatorTest {
   @Test
   public void createdMethodSpec_hasCorrectCode() {
     /* When */
-    MethodSpec methodSpec = mCreateCreator.create();
+    MethodSpec methodSpec = mCreateMethodCreator.create();
 
     /* Then */
     assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE)));

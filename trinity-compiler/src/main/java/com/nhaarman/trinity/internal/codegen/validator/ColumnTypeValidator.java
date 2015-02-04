@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.table.column.validator;
+package com.nhaarman.trinity.internal.codegen.validator;
 
 import java.util.Set;
 import javax.annotation.processing.Messager;
