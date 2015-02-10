@@ -13,16 +13,16 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.Mockito.*;
 
-public class CreatorFactoryTest {
+public class MethodCreatorFactoryTest {
 
-  private CreatorFactory mCreatorFactory;
+  private MethodCreatorFactory mMethodCreatorFactory;
 
   @Before
   public void setUp() {
     FieldSpec databaseFieldSpec = FieldSpec.builder(SQLiteDatabase.class, "mDatabase").build();
     MethodSpec readCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
-    mCreatorFactory = new CreatorFactory(mock(RepositoryClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);
+    mMethodCreatorFactory = new MethodCreatorFactory(mock(RepositoryClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);
   }
 
   @Test
@@ -32,7 +32,7 @@ public class CreatorFactoryTest {
     when(method.getMethodName()).thenReturn("find");
 
     /* When */
-    MethodCreator creator = mCreatorFactory.creatorFor(method);
+    MethodCreator creator = mMethodCreatorFactory.creatorFor(method);
 
     /* Then */
     assertThat(creator, is(instanceOf(FindMethodCreator.class)));
@@ -45,7 +45,7 @@ public class CreatorFactoryTest {
     when(method.getMethodName()).thenReturn("findById");
 
     /* When */
-    MethodCreator creator = mCreatorFactory.creatorFor(method);
+    MethodCreator creator = mMethodCreatorFactory.creatorFor(method);
 
     /* Then */
     assertThat(creator, is(instanceOf(FindMethodCreator.class)));
@@ -58,7 +58,7 @@ public class CreatorFactoryTest {
     when(method.getMethodName()).thenReturn("create");
 
     /* When */
-    MethodCreator creator = mCreatorFactory.creatorFor(method);
+    MethodCreator creator = mMethodCreatorFactory.creatorFor(method);
 
     /* Then */
     assertThat(creator, is(instanceOf(CreateMethodCreator.class)));

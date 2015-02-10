@@ -8,7 +8,9 @@ import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.nhaarman.trinity.internal.codegen.writer.method.CreatorFactory;
+import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreatorFactory;
+import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreator;
+import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreatorFactory;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -18,7 +20,6 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.io.Writer;
 import javax.annotation.processing.Filer;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,8 +30,10 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 @SuppressWarnings("HardCodedStringLiteral")
 public class RepositoryWriter {
 
+  private static final String REPOSITORY_CLASS_NAME = "Trinity_%s";
+
   private static final String FIELD_NAME_DATABASE = "mDatabase";
-  
+
   @NotNull
   private final Filer mFiler;
 
@@ -52,7 +55,7 @@ public class RepositoryWriter {
     MethodSpec readCursorSpec = readCursor();
     MethodSpec createContentValuesSpec = createContentValues();
 
-    CreatorFactory creatorFactory = new CreatorFactory(mRepositoryClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
+    MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mRepositoryClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
 
     TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName());
     repositoryBuilder.addModifiers(PUBLIC, FINAL);
@@ -70,13 +73,20 @@ public class RepositoryWriter {
     }
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
-      repositoryBuilder.addMethod(creatorFactory.creatorFor(repositoryMethod).create());
+      repositoryBuilder.addMethod(methodCreatorFactory.creatorFor(repositoryMethod).create());
     }
 
     TypeSpec typeSpec = repositoryBuilder.build();
     writeToFile(typeSpec);
   }
 
+  /**
+   * Writes the TypeSpec to file.
+   *
+   * @param typeSpec The TypeSpec to write.
+   *
+   * @throws IOException if an I/O error occurred.
+   */
   private void writeToFile(final TypeSpec typeSpec) throws IOException {
     JavaFile javaFile = JavaFile.builder(mRepositoryClass.getPackageName(), typeSpec).build();
 
@@ -87,12 +97,18 @@ public class RepositoryWriter {
     writer.close();
   }
 
+  /**
+   * Creates the SQLiteDatabase field spec.
+   */
   private FieldSpec mDatabase() {
     return FieldSpec.builder(SQLiteDatabase.class, FIELD_NAME_DATABASE, PRIVATE, FINAL)
         .addJavadoc("The {@link $T} that is used for persistence.\n", SQLiteDatabase.class)
         .build();
   }
 
+  /**
+   * Creates the constructor.
+   */
   private MethodSpec constructor() {
     return MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
@@ -101,6 +117,9 @@ public class RepositoryWriter {
         .build();
   }
 
+  /**
+   * Creates the createContentValues method.
+   */
   private MethodSpec createContentValues() {
     Builder methodBuilder =
         MethodSpec.methodBuilder("createContentValues")
@@ -121,6 +140,9 @@ public class RepositoryWriter {
     return methodBuilder.build();
   }
 
+  /**
+   * Creates the readCursor method.
+   */
   private MethodSpec readCursor() {
     Builder methodBuilder =
         MethodSpec.methodBuilder("read")
@@ -131,32 +153,10 @@ public class RepositoryWriter {
                 mTableClass.getEntityTypeElement())
             .addCode("\n");
 
+    ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor");
     for (Column column : mTableClass.getColumns()) {
-      ColumnMethod setter = column.setter();
-      TypeMirror type = setter.getType();
-      String cursorMethodName;
-      switch (type.toString()) {
-        case "java.lang.Integer":
-        case "int":
-          cursorMethodName = "getInt";
-          break;
-        case "java.lang.Long":
-        case "long":
-          cursorMethodName = "getLong";
-          break;
-        case "java.lang.String":
-          cursorMethodName = "getString";
-          break;
-        default:
-          throw new UnsupportedOperationException("Unknown type: " + type);
-      }
-
-      methodBuilder.addStatement(
-          "result.$L(cursor.$L(cursor.getColumnIndex($S)))",
-          setter.getName(),
-          cursorMethodName,
-          column.getName()
-      );
+      ReadCursorCreator readCursorCreator = creatorFactory.createReadCursorCreator(column);
+      methodBuilder.addCode(readCursorCreator.create());
     }
 
     return methodBuilder.addCode("\n")
@@ -164,7 +164,10 @@ public class RepositoryWriter {
         .build();
   }
 
+  /**
+   * Returns the class name of the repository to be written.
+   */
   private String createRepositoryClassName() {
-    return String.format("Trinity_%s", mRepositoryClass.getClassName());
+    return String.format(REPOSITORY_CLASS_NAME, mRepositoryClass.getClassName());
   }
 }

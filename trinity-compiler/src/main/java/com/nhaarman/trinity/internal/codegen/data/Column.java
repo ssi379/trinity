@@ -3,6 +3,7 @@ package com.nhaarman.trinity.internal.codegen.data;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import javax.lang.model.element.ExecutableElement;
+import org.jetbrains.annotations.NotNull;
 
 public class Column {
 
@@ -36,6 +37,20 @@ public class Column {
     }
 
     return null;
+  }
+
+  /**
+   * Returns the fully qualified Java type of the column.
+   *
+   * @return The type, e.g. "java.lang.String".
+   */
+  @NotNull
+  public String getFullyQualifiedJavaType() {
+    if (mMethods.isEmpty()) {
+      throw new IllegalStateException("No methods for this column."); // TODO: Proper exception handling.
+    }
+
+    return mMethods.iterator().next().getType().toString();
   }
 
   public String getName() {

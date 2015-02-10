@@ -7,7 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 
-public class CreatorFactory {
+public class MethodCreatorFactory {
 
   @NotNull
   private final RepositoryClass mRepositoryClass;
@@ -21,10 +21,10 @@ public class CreatorFactory {
   @NotNull
   private final MethodSpec mCreateContentValuesSpec;
 
-  public CreatorFactory(@NotNull final RepositoryClass repositoryClass,
-                        @NotNull final FieldSpec databaseFieldSpec,
-                        @NotNull final MethodSpec readCursorSpec,
-                        @NotNull final MethodSpec createContentValuesSpec) {
+  public MethodCreatorFactory(@NotNull final RepositoryClass repositoryClass,
+                              @NotNull final FieldSpec databaseFieldSpec,
+                              @NotNull final MethodSpec readCursorSpec,
+                              @NotNull final MethodSpec createContentValuesSpec) {
     mRepositoryClass = repositoryClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
