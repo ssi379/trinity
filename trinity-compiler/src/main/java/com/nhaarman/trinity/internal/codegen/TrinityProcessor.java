@@ -28,14 +28,13 @@ import com.nhaarman.trinity.internal.codegen.validator.ColumnTypeValidator;
 import com.nhaarman.trinity.internal.codegen.validator.RepositoryTypeValidator;
 import com.nhaarman.trinity.internal.codegen.validator.TableClassValidator;
 import com.nhaarman.trinity.internal.codegen.validator.TableTypeValidator;
+import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import com.nhaarman.trinity.internal.codegen.writer.RepositoryTypeSpecCreator;
 import com.nhaarman.trinity.internal.codegen.writer.TypeSpecWriter;
 import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -44,19 +43,18 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
+import org.jetbrains.annotations.NotNull;
 
 @SupportedAnnotationTypes("com.nhaarman.trinity.annotations.*")
 public class TrinityProcessor extends AbstractProcessor {
 
-  private TableTypeValidator mTableTypeValidator;
-
-  private ColumnTypeValidator mColumnTypeValidator;
-
-  private TableClassValidator mTableClassValidator;
-
-  private RepositoryTypeValidator mRepositoryTypeValidator;
+  private Validator<Set<? extends Element>> mTableTypeValidator;
+  private Validator<Set<? extends Element>> mColumnTypeValidator;
+  private Validator<Set<? extends Element>> mRepositoryTypeValidator;
+  private Validator<Set<? extends TableClass>> mTableClassValidator;
 
   private Messager mMessager;
+
   private TypeSpecWriter mTypeSpecWriter;
 
   @Override
@@ -65,58 +63,76 @@ public class TrinityProcessor extends AbstractProcessor {
   }
 
   @Override
-  public synchronized void init(final ProcessingEnvironment processingEnv) {
+  public synchronized void init(@NotNull final ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     mMessager = processingEnv.getMessager();
 
-    mTableTypeValidator = new TableTypeValidator(mMessager);
-    mColumnTypeValidator = new ColumnTypeValidator(mMessager);
-    mRepositoryTypeValidator = new RepositoryTypeValidator(mMessager);
+    mTableTypeValidator = new TableTypeValidator();
+    mColumnTypeValidator = new ColumnTypeValidator();
+    mRepositoryTypeValidator = new RepositoryTypeValidator();
+    mTableClassValidator = new TableClassValidator();
 
-    mTableClassValidator = new TableClassValidator(mMessager);
-
-    Filer filer = processingEnv.getFiler();
-    mTypeSpecWriter = new TypeSpecWriter(filer);
+    mTypeSpecWriter = new TypeSpecWriter(processingEnv.getFiler());
   }
 
   @Override
-  public synchronized boolean process(final Set<? extends TypeElement> annotations,
+  public synchronized boolean process(@NotNull final Set<? extends TypeElement> annotations,
                                       final RoundEnvironment roundEnv) {
-
-    /* Validate individual elements */
-    Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
-    if (!mTableTypeValidator.validate(tableElements)) {
+    try {
+      process(roundEnv);
+    } catch (ProcessingException e) {
+      mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage(), e.getElement(), e.getAnnotationMirror());
+    } catch (IOException e) {
+      mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage());
       return true;
-    }
-
-    Set<? extends Element> columnElements = roundEnv.getElementsAnnotatedWith(Column.class);
-    if (!mColumnTypeValidator.validate(columnElements)) {
-      return true;
-    }
-
-    Set<? extends Element> repositoryElements = roundEnv.getElementsAnnotatedWith(Repository.class);
-    if (!mRepositoryTypeValidator.validate(repositoryElements)) {
-      return true;
-    }
-
-    /* Gather information about repositories, tables and columns */
-    Collection<TableClass> tableClasses = new TableClassFactory().createTableClasses(tableElements);
-    mTableClassValidator.validate(tableClasses);
-
-    Collection<RepositoryClass> repositoryClasses =
-        new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses,
-            roundEnv);
-
-    for (RepositoryClass repositoryClass : repositoryClasses) {
-      try {
-        TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass).create();
-        mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
-      } catch (IOException e) {
-        mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage());
-        return true;
-      }
     }
 
     return true;
+  }
+
+  private void process(@NotNull final RoundEnvironment roundEnv) throws ProcessingException, IOException {
+    Set<? extends Element> tableElements = findAndValidateTabelElements(roundEnv);
+    Set<? extends Element> columnElements = findAndValidateColumnElements(roundEnv);
+    Set<? extends Element> repositoryElements = findAndValidateRepositoryElements(roundEnv);
+    Set<? extends TableClass> tableClasses = findAndValidateTableClasses(tableElements);
+    Set<? extends RepositoryClass> repositoryClasses = findAndValidateRepositoryClasses(repositoryElements, tableClasses);
+
+    writeRepositoryClasses(repositoryClasses);
+  }
+
+  private Set<? extends Element> findAndValidateTabelElements(@NotNull final RoundEnvironment roundEnv) throws ProcessingException {
+    Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
+    mTableTypeValidator.validate(tableElements);
+    return tableElements;
+  }
+
+  private Set<? extends Element> findAndValidateColumnElements(@NotNull final RoundEnvironment roundEnv) throws ProcessingException {
+    Set<? extends Element> columnElements = roundEnv.getElementsAnnotatedWith(Column.class);
+    mColumnTypeValidator.validate(columnElements);
+    return columnElements;
+  }
+
+  private Set<? extends Element> findAndValidateRepositoryElements(@NotNull final RoundEnvironment roundEnv) throws ProcessingException {
+    Set<? extends Element> repositoryElements = roundEnv.getElementsAnnotatedWith(Repository.class);
+    mRepositoryTypeValidator.validate(repositoryElements);
+    return repositoryElements;
+  }
+
+  private Set<? extends TableClass> findAndValidateTableClasses(@NotNull final Set<? extends Element> tableElements) throws ProcessingException {
+    Set<TableClass> tableClasses = new TableClassFactory().createTableClasses(tableElements);
+    mTableClassValidator.validate(tableClasses);
+    return tableClasses;
+  }
+
+  private Set<? extends RepositoryClass> findAndValidateRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements,
+                                                                          @NotNull final Set<? extends TableClass> tableClasses) {
+    return new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses);
+  }
+
+  private void writeRepositoryClasses(final Set<? extends RepositoryClass> repositoryClasses) throws IOException, ProcessingException {
+    for (RepositoryClass repositoryClass : repositoryClasses) {
+      TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass).create();
+      mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
+    }
   }
 }

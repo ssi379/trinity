@@ -1,18 +1,13 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import java.util.Set;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
+import org.jetbrains.annotations.NotNull;
 
-public class ColumnTypeValidator {
+public class ColumnTypeValidator implements Validator<Set<? extends Element>> {
 
-  private final Messager mMessager;
-
-  public ColumnTypeValidator(final Messager messager) {
-    mMessager = messager;
-  }
-
-  public boolean validate(final Set<? extends Element> columnElements) {
-    return true;
+  @Override
+  public void validate(@NotNull final Set<? extends Element> columnElements) throws ProcessingException {
   }
 }

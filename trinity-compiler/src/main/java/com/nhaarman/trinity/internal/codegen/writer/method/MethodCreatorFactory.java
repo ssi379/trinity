@@ -1,5 +1,6 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.squareup.javapoet.FieldSpec;
@@ -31,7 +32,7 @@ public class MethodCreatorFactory {
     mCreateContentValuesSpec = createContentValuesSpec;
   }
 
-  public MethodCreator creatorFor(@NotNull final RepositoryMethod method) {
+  public MethodCreator creatorFor(@NotNull final RepositoryMethod method) throws ProcessingException {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
@@ -39,8 +40,7 @@ public class MethodCreatorFactory {
       case "create":
         return new CreateMethodCreator(mRepositoryClass, mCreateContentValuesSpec, method);
       default:
-        // TODO: Use Messager
-        throw new UnsupportedOperationException(String.format("Cannot implement %s: unknown method.", method.getMethodName()));
+        throw new ProcessingException(String.format("Cannot implement %s: unknown method.", method.getMethodName()), method.getElement());
     }
   }
 }

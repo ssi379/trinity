@@ -1,47 +1,30 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic;
+import org.jetbrains.annotations.NotNull;
 
-public class TableClassValidator {
+public class TableClassValidator implements Validator<Set<? extends TableClass>> {
 
-  private final Messager mMessager;
-
-  public TableClassValidator(final Messager messager) {
-    mMessager = messager;
+  @Override
+  public void validate(@NotNull final Set<? extends TableClass> tableClasses) throws ProcessingException {
+    validateTableNames(tableClasses);
   }
 
-  public boolean validate(final Collection<TableClass> tableClasses) {
-    if (!validateTableNames(tableClasses)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private boolean validateTableNames(final Collection<TableClass> tableClasses) {
+  private void validateTableNames(@NotNull final Set<? extends TableClass> tableClasses) throws ProcessingException {
     Set<String> tableNames = new HashSet<>();
     for (TableClass tableClass : tableClasses) {
       if (tableNames.contains(tableClass.getTableName())) {
-        printDuplicateTableDeclarationMessage(tableClass);
-        return false;
+        throwProcessingException(tableClass);
       }
 
       tableNames.add(tableClass.getTableName());
     }
-    return true;
   }
 
-  private void printDuplicateTableDeclarationMessage(final TableClass tableClass) {
-    mMessager.printMessage(
-        Diagnostic.Kind.ERROR,
-        "Cannot create two tables with the same name",
-        tableClass.getTypeElement(),
-        tableClass.getTableAnnotationMirror()
-    );
+  private void throwProcessingException(@NotNull final TableClass tableClass) throws ProcessingException {
+    throw new ProcessingException("Cannot create two tables with the same name", tableClass.getTypeElement(), tableClass.getTableAnnotationMirror());
   }
 }

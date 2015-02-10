@@ -1,46 +1,36 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Table;
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.tools.Diagnostic;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * A class which validates the elements annotated with the @{@link Table} annotation. <p/> Table
- * elements should be classes.
+ * A class which validates the elements annotated with the @{@link Table} annotation.
+ *
+ * Table elements should be classes.
  */
-public class TableTypeValidator {
+public class TableTypeValidator implements Validator<Set<? extends Element>> {
 
-  private final Messager mMessager;
-
-  public TableTypeValidator(final Messager messager) {
-    mMessager = messager;
-  }
-
-  public boolean validate(final Set<? extends Element> elements) {
-    boolean result = true;
-
+  @Override
+  public void validate(@NotNull final Set<? extends Element> elements) throws ProcessingException {
     for (Element element : elements) {
       if (element.getKind() != ElementKind.CLASS) {
-        printInvalidElementMessage(element);
-        result = false;
+        throwProcessingException(element);
       }
     }
-
-    return result;
   }
 
-  private void printInvalidElementMessage(final Element element) {
+  private void throwProcessingException(@NotNull final Element element) throws ProcessingException {
     AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
-    mMessager.printMessage(Diagnostic.Kind.ERROR,
-        "@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
+    throw new ProcessingException("@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
   }
 
-  private AnnotationMirror getTableAnnotationMirror(final Element element) {
+  private AnnotationMirror getTableAnnotationMirror(@NotNull final Element element) {
     List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
     AnnotationMirror tableAnnotationMirror = null;
     for (AnnotationMirror annotationMirror : annotationMirrors) {

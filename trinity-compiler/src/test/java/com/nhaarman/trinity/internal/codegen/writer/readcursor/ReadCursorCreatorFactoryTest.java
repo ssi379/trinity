@@ -1,5 +1,6 @@
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.Column;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class ReadCursorCreatorFactoryTest {
   }
 
   @Test
-  public void javaLangString_returnsStringReadCursorCreator() {
+  public void javaLangString_returnsStringReadCursorCreator() throws ProcessingException {
     /* Given */
     when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("java.lang.String");
 
@@ -35,7 +36,7 @@ public class ReadCursorCreatorFactoryTest {
   }
 
   @Test
-  public void javaLangLong_returnsStringReadCursorCreator() {
+  public void javaLangLong_returnsStringReadCursorCreator()  throws ProcessingException {
     /* Given */
     when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("java.lang.Long");
 
@@ -46,8 +47,8 @@ public class ReadCursorCreatorFactoryTest {
     assertThat(readCursorCreator, is(instanceOf(LongReadCursorCreator.class)));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void unknownType_throwsUnsoppertedOperationException() {
+  @Test(expected = ProcessingException.class)
+  public void unknownType_throwsProcessingException() throws ProcessingException  {
     /* Given */
     when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("some.type.that.does.not.Exist");
 

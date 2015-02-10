@@ -3,6 +3,7 @@ package com.nhaarman.trinity.internal.codegen.data;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
@@ -34,6 +35,10 @@ public class RepositoryMethod {
 
   public Parameter getParameter() {
     return mParameters.iterator().next();
+  }
+
+  public Element getElement() {
+    return mExecutableElement;
   }
 
   public static class Parameter {

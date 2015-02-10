@@ -1,20 +1,18 @@
 package com.nhaarman.trinity.internal.codegen.data;
 
 import com.nhaarman.trinity.annotations.Repository;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.TypeMirror;
+import org.jetbrains.annotations.NotNull;
 
 public class RepositoryInfoFactory {
 
-  public Collection<RepositoryClass> createRepositoryInfo(
-      final Set<? extends Element> repositoryElements,
-      final Collection<TableClass> tableClasses,
-      final RoundEnvironment roundEnvironment) {
+  public Set<? extends RepositoryClass> createRepositoryInfo(@NotNull final Set<? extends Element> repositoryElements,
+                                                             @NotNull final Set<? extends TableClass> tableClasses) {
     Set<RepositoryClass> results = new HashSet<>();
 
     for (Element repositoryElement : repositoryElements) {
@@ -26,8 +24,8 @@ public class RepositoryInfoFactory {
     return results;
   }
 
-  private TableClass findTableInfo(final Collection<TableClass> tableClasses,
-      final TypeElement typeElement) {
+  private TableClass findTableInfo(@NotNull final Set<? extends TableClass> tableClasses,
+                                   @NotNull final TypeElement typeElement) {
     for (TableClass tableClass : tableClasses) {
       if (tableClass.getEntityTypeElement()
           .toString()
@@ -38,7 +36,7 @@ public class RepositoryInfoFactory {
     return null;
   }
 
-  private javax.lang.model.type.TypeMirror getRepositoryValue(final TypeElement typeElement) {
+  private TypeMirror getRepositoryValue(final TypeElement typeElement) {
     try {
       typeElement.getAnnotation(Repository.class).value();
       return null;

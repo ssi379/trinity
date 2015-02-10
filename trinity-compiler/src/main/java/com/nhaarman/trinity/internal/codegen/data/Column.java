@@ -2,23 +2,28 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Column {
 
+  @NotNull
   private final String mColumnName;
 
+  @NotNull
   private final Collection<ColumnMethod> mMethods = new LinkedHashSet<>();
 
-  public Column(final String columnName) {
+  public Column(@NotNull final String columnName) {
     mColumnName = columnName;
   }
 
-  public void addExecutableElement(final ExecutableElement executableElement) {
+  public void addExecutableElement(@NotNull final ExecutableElement executableElement) {
     mMethods.add(new ColumnMethod(executableElement));
   }
 
+  @Nullable
   public ColumnMethod getter() {
     for (ColumnMethod method : mMethods) {
       if (method.isGetter()) {
@@ -29,6 +34,7 @@ public class Column {
     return null;
   }
 
+  @Nullable
   public ColumnMethod setter() {
     for (ColumnMethod method : mMethods) {
       if (method.isSetter()) {
@@ -53,6 +59,12 @@ public class Column {
     return mMethods.iterator().next().getType().toString();
   }
 
+  @NotNull
+  public Element getElement() {
+    return mMethods.iterator().next().getElement();
+  }
+
+  @NotNull
   public String getName() {
     return mColumnName;
   }
