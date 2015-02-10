@@ -10,14 +10,9 @@ import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreator
 import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreatorFactory;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
-import java.io.IOException;
-import java.io.Writer;
-import javax.annotation.processing.Filer;
-import javax.tools.JavaFileObject;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
@@ -28,14 +23,11 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 @SuppressWarnings("HardCodedStringLiteral")
-public class RepositoryWriter {
+public class RepositoryTypeSpecCreator {
 
   private static final String REPOSITORY_CLASS_NAME = "Trinity_%s";
 
   private static final String FIELD_NAME_DATABASE = "mDatabase";
-
-  @NotNull
-  private final Filer mFiler;
 
   @NotNull
   private final RepositoryClass mRepositoryClass;
@@ -43,13 +35,12 @@ public class RepositoryWriter {
   @NotNull
   private final TableClass mTableClass;
 
-  public RepositoryWriter(@NotNull final Filer filer, @NotNull final RepositoryClass repositoryClass) {
-    mFiler = filer;
+  public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass) {
     mRepositoryClass = repositoryClass;
     mTableClass = repositoryClass.getTableClass();
   }
 
-  public void writeRepositoryClass() throws IOException {
+  public TypeSpec create() {
     FieldSpec databaseFieldSpec = mDatabase();
     MethodSpec constructor = constructor();
     MethodSpec readCursorSpec = readCursor();
@@ -76,29 +67,11 @@ public class RepositoryWriter {
       repositoryBuilder.addMethod(methodCreatorFactory.creatorFor(repositoryMethod).create());
     }
 
-    TypeSpec typeSpec = repositoryBuilder.build();
-    writeToFile(typeSpec);
+    return repositoryBuilder.build();
   }
 
   /**
-   * Writes the TypeSpec to file.
-   *
-   * @param typeSpec The TypeSpec to write.
-   *
-   * @throws IOException if an I/O error occurred.
-   */
-  private void writeToFile(final TypeSpec typeSpec) throws IOException {
-    JavaFile javaFile = JavaFile.builder(mRepositoryClass.getPackageName(), typeSpec).build();
-
-    JavaFileObject sourceFile = mFiler.createSourceFile(createRepositoryClassName());
-    Writer writer = sourceFile.openWriter();
-    javaFile.writeTo(writer);
-    writer.flush();
-    writer.close();
-  }
-
-  /**
-   * Creates the SQLiteDatabase field spec.
+   * Creates the SQLiteDatabase field.
    */
   private FieldSpec mDatabase() {
     return FieldSpec.builder(SQLITE_DATABASE, FIELD_NAME_DATABASE, PRIVATE, FINAL)

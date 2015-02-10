@@ -28,7 +28,9 @@ import com.nhaarman.trinity.internal.codegen.validator.ColumnTypeValidator;
 import com.nhaarman.trinity.internal.codegen.validator.RepositoryTypeValidator;
 import com.nhaarman.trinity.internal.codegen.validator.TableClassValidator;
 import com.nhaarman.trinity.internal.codegen.validator.TableTypeValidator;
-import com.nhaarman.trinity.internal.codegen.writer.RepositoryWriter;
+import com.nhaarman.trinity.internal.codegen.writer.RepositoryTypeSpecCreator;
+import com.nhaarman.trinity.internal.codegen.writer.TypeSpecWriter;
+import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
@@ -55,7 +57,7 @@ public class TrinityProcessor extends AbstractProcessor {
   private RepositoryTypeValidator mRepositoryTypeValidator;
 
   private Messager mMessager;
-  private Filer mFiler;
+  private TypeSpecWriter mTypeSpecWriter;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -73,7 +75,8 @@ public class TrinityProcessor extends AbstractProcessor {
 
     mTableClassValidator = new TableClassValidator(mMessager);
 
-    mFiler = processingEnv.getFiler();
+    Filer filer = processingEnv.getFiler();
+    mTypeSpecWriter = new TypeSpecWriter(filer);
   }
 
   @Override
@@ -106,7 +109,8 @@ public class TrinityProcessor extends AbstractProcessor {
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
       try {
-        new RepositoryWriter(mFiler, repositoryClass).writeRepositoryClass();
+        TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass).create();
+        mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
       } catch (IOException e) {
         mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage());
         return true;
