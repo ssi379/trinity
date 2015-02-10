@@ -1,6 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.squareup.javapoet.FieldSpec;
@@ -8,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -19,7 +19,7 @@ public class MethodCreatorFactoryTest {
 
   @Before
   public void setUp() {
-    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLiteDatabase.class, "mDatabase").build();
+    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLITE_DATABASE, "mDatabase").build();
     MethodSpec readCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
     mMethodCreatorFactory = new MethodCreatorFactory(mock(RepositoryClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);

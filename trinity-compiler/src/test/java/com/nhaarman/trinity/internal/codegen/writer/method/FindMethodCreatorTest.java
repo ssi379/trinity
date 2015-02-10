@@ -1,6 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
@@ -10,6 +9,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +45,7 @@ public class FindMethodCreatorTest {
       + RETURN_TYPE + " result = null;\n"
       + "\n"
       + "android.database.Cursor cursor = new com.nhaarman.trinity.query.Select()."
-      + "from(\"" + TABLE_NAME + "\").where(\"id=?\", id).limit(\"1\").fetchFrom("+DATABASE_FIELD+");\n"
+      + "from(\"" + TABLE_NAME + "\").where(\"id=?\", id).limit(\"1\").fetchFrom(" + DATABASE_FIELD + ");\n"
       + "try {\n"
       + "  if (cursor.moveToFirst()) {\n"
       + "    result = readCursor(cursor);\n"
@@ -61,7 +61,7 @@ public class FindMethodCreatorTest {
 
   @Before
   public void setUp() {
-    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLiteDatabase.class, DATABASE_FIELD).build();
+    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLITE_DATABASE, DATABASE_FIELD).build();
 
     MethodSpec readCursorMethod = MethodSpec.methodBuilder("readCursor").build();
 

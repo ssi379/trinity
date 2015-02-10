@@ -1,6 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import android.content.ContentValues;
 import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
@@ -9,6 +8,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -49,7 +49,7 @@ class CreateMethodCreator implements MethodCreator {
         .returns(ClassName.bestGuess(mMethod.getReturnType()))
         .addStatement("$T result = null", Long.class)
         .addCode("\n")
-        .addStatement("$T contentValues = $N($L)", ContentValues.class, mCreateContentValuesSpec, parameter.getName())
+        .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getName())
         .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mRepositoryClass.getTableClass().getTableName())
         .beginControlFlow("if (id != -1)")
         .addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())

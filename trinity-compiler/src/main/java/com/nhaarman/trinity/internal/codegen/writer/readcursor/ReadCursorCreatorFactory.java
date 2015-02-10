@@ -19,7 +19,6 @@ public class ReadCursorCreatorFactory {
 
   public ReadCursorCreatorFactory(@NotNull final String resultVariableName,
                                   @NotNull final String cursorVariableName) {
-
     mResultVariableName = resultVariableName;
     mCursorVariableName = cursorVariableName;
   }

@@ -1,8 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
@@ -23,6 +20,9 @@ import javax.annotation.processing.Filer;
 import javax.tools.JavaFileObject;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CURSOR;
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -101,8 +101,8 @@ public class RepositoryWriter {
    * Creates the SQLiteDatabase field spec.
    */
   private FieldSpec mDatabase() {
-    return FieldSpec.builder(SQLiteDatabase.class, FIELD_NAME_DATABASE, PRIVATE, FINAL)
-        .addJavadoc("The {@link $T} that is used for persistence.\n", SQLiteDatabase.class)
+    return FieldSpec.builder(SQLITE_DATABASE, FIELD_NAME_DATABASE, PRIVATE, FINAL)
+        .addJavadoc("The {@link $T} that is used for persistence.\n", SQLITE_DATABASE)
         .build();
   }
 
@@ -112,7 +112,7 @@ public class RepositoryWriter {
   private MethodSpec constructor() {
     return MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addParameter(SQLiteDatabase.class, "database", FINAL)
+        .addParameter(SQLITE_DATABASE, "database", FINAL)
         .addStatement(FIELD_NAME_DATABASE + " = database")
         .build();
   }
@@ -125,8 +125,8 @@ public class RepositoryWriter {
         MethodSpec.methodBuilder("createContentValues")
             .addModifiers(PUBLIC)
             .addParameter(ClassName.get(mTableClass.getEntityTypeElement()), "entity", FINAL)
-            .returns(ContentValues.class)
-            .addStatement("$T result = new $T()", ContentValues.class, ContentValues.class)
+            .returns(CONTENT_VALUES)
+            .addStatement("$T result = new $T()", CONTENT_VALUES, CONTENT_VALUES)
             .addCode("\n");
 
     for (Column column : mTableClass.getColumns()) {
@@ -147,7 +147,7 @@ public class RepositoryWriter {
     Builder methodBuilder =
         MethodSpec.methodBuilder("read")
             .addModifiers(PUBLIC)
-            .addParameter(Cursor.class, "cursor", FINAL)
+            .addParameter(CURSOR, "cursor", FINAL)
             .returns(ClassName.get(mTableClass.getEntityTypeElement()))
             .addStatement("$T result = new $T()", mTableClass.getEntityTypeElement(),
                 mTableClass.getEntityTypeElement())

@@ -1,6 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import android.database.Cursor;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.squareup.javapoet.ClassName;
@@ -8,6 +7,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CURSOR;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -55,11 +55,10 @@ class FindMethodCreator implements MethodCreator {
                 ".where(\"id=?\", id)" +
                 ".limit(\"1\")" +
                 ".fetchFrom($N)",
-            Cursor.class,
+            CURSOR,
             ClassName.bestGuess("com.nhaarman.trinity.query.Select"),
             mRepositoryClass.getTableClass().getTableName(),
-            mDatabaseFieldSpec
-        )
+            mDatabaseFieldSpec)
         .beginControlFlow("try")
         .beginControlFlow("if (cursor.moveToFirst())")
         .addStatement("result = $N(cursor)", mReadCursorSpec)
