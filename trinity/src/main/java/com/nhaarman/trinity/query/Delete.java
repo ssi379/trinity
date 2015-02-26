@@ -17,14 +17,14 @@
 
 package com.nhaarman.trinity.query;
 
-@SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
+@SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass" })
 public final class Delete extends QueryBase {
 
   public Delete() {
     super(null, null);
   }
 
-  public From from(String table) {
+  public From from(final String table) {
     return new From(this, table);
   }
 
@@ -37,10 +37,6 @@ public final class Delete extends QueryBase {
 
     private From(final Delete parent, final String table) {
       super(parent, table);
-    }
-
-    public Where where(final String where) {
-      return where(where, (Object[]) null);
     }
 
     public Where where(final String where, final Object... args) {

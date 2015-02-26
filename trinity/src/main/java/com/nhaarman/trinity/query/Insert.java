@@ -20,15 +20,11 @@ package com.nhaarman.trinity.query;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-@SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
+@SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass" })
 public final class Insert extends QueryBase {
 
   public Insert() {
     super(null, null);
-  }
-
-  public Into into(final String table) {
-    return new Into(this, table);
   }
 
   public Into into(final String table, final String... columns) {
@@ -55,14 +51,18 @@ public final class Insert extends QueryBase {
 
     @Override
     protected String getPartSql() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(256);
       builder.append("INTO ");
       builder.append(getTable());
       if (mColumns != null && mColumns.length > 0) {
-        builder.append("(").append(TextUtils.join(", ", mColumns)).append(")");
+        builder.append('(').append(TextUtils.join(", ", mColumns)).append(')');
       }
 
       return builder.toString();
+    }
+
+    private String[] getColumns() {
+      return mColumns;
     }
   }
 
@@ -77,8 +77,8 @@ public final class Insert extends QueryBase {
 
     @Override
     public void execute(final SQLiteDatabase database) {
-      if (((Into) getParent()).mColumns != null
-          && ((Into) getParent()).mColumns.length != mValuesArgs.length) {
+      if (((Into) getParent()).getColumns() != null
+          && ((Into) getParent()).getColumns().length != mValuesArgs.length) {
         throw new MalformedQueryException("Number of columns does not match number of values.");
       }
       super.execute(database);
@@ -86,15 +86,15 @@ public final class Insert extends QueryBase {
 
     @Override
     protected String getPartSql() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(256);
       builder.append("VALUES(");
       for (int i = 0; i < mValuesArgs.length; i++) {
         if (i > 0) {
           builder.append(", ");
         }
-        builder.append("?");
+        builder.append('?');
       }
-      builder.append(")");
+      builder.append(')');
       return builder.toString();
     }
 

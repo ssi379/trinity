@@ -24,10 +24,6 @@ public final class Update extends QueryBase {
     super(null, table);
   }
 
-  public Set set(final String set) {
-    return set(set, (Object[]) null);
-  }
-
   public Set set(final String set, final Object... args) {
     return new Set(this, getTable(), set, args);
   }
@@ -46,10 +42,6 @@ public final class Update extends QueryBase {
       super(parent, table);
       mSet = set;
       mSetArgs = args;
-    }
-
-    public Where where(final String where) {
-      return where(where, (Object[]) null);
     }
 
     public Where where(final String where, final Object... args) {

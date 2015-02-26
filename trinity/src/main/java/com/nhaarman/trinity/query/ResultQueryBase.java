@@ -20,7 +20,6 @@ package com.nhaarman.trinity.query;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
 public abstract class ResultQueryBase extends ExecutableQueryBase implements ResultQuery {
 
   protected ResultQueryBase(final Query parent, final String table) {
@@ -29,7 +28,6 @@ public abstract class ResultQueryBase extends ExecutableQueryBase implements Res
 
   @Override
   public Cursor fetchFrom(final SQLiteDatabase database) {
-    System.out.println(getSql());
     return database.rawQuery(getSql(), getArgs());
   }
 }

@@ -19,10 +19,10 @@ package com.nhaarman.trinity.query;
 
 public abstract class QueryBase implements Query {
 
-  private Query mParent;
-  private String mTable;
+  private final Query mParent;
+  private final String mTable;
 
-  protected QueryBase(final Query parent, String table) {
+  protected QueryBase(final Query parent, final String table) {
     mParent = parent;
     mTable = table;
   }
@@ -30,7 +30,7 @@ public abstract class QueryBase implements Query {
   @Override
   public final String getSql() {
     if (mParent != null) {
-      return mParent.getSql() + " " + getPartSql().trim();
+      return mParent.getSql() + ' ' + getPartSql().trim();
     }
     return getPartSql().trim();
   }

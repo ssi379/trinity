@@ -22,14 +22,10 @@ import com.nhaarman.trinity.query.Select.Join.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"HardCodedStringLiteral", "PublicInnerClass"})
+@SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass", "UnusedDeclaration" })
 public final class Select extends QueryBase {
 
   private final String[] mColumns;
-
-  public Select() {
-    this(new String[] {});
-  }
 
   public Select(final String... columns) {
     super(null, null);
@@ -42,10 +38,10 @@ public final class Select extends QueryBase {
 
   @Override
   public String getPartSql() {
-    StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder(256);
     builder.append("SELECT ");
     if (mColumns != null && mColumns.length > 0) {
-      builder.append(TextUtils.join(", ", mColumns)).append(" ");
+      builder.append(TextUtils.join(", ", mColumns)).append(' ');
     } else {
       builder.append("* ");
     }
@@ -101,10 +97,6 @@ public final class Select extends QueryBase {
       return addJoin(table, Type.NATURAL_CROSS);
     }
 
-    public Where where(final String where) {
-      return new Where(this, getTable(), where, null);
-    }
-
     public Where where(final String where, final Object... args) {
       return new Where(this, getTable(), where, args);
     }
@@ -129,12 +121,12 @@ public final class Select extends QueryBase {
 
     @Override
     public String getPartSql() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(256);
       builder.append("FROM ");
-      builder.append(getTable()).append(" ");
+      builder.append(getTable()).append(' ');
 
       for (Join join : mJoins) {
-        builder.append(join.getPartSql()).append(" ");
+        builder.append(join.getPartSql()).append(' ');
       }
 
       return builder.toString();
@@ -157,13 +149,13 @@ public final class Select extends QueryBase {
     }
 
     public From using(final String... columns) {
-      mConstraint = "USING (" + TextUtils.join(", ", columns) + ")";
+      mConstraint = "USING (" + TextUtils.join(", ", columns) + ')';
       return (From) getParent();
     }
 
     @Override
     public String getPartSql() {
-      return mType.getKeyword() + " " + getTable() + " " + mConstraint;
+      return mType.getKeyword() + ' ' + getTable() + ' ' + mConstraint;
     }
 
     public enum Type {
