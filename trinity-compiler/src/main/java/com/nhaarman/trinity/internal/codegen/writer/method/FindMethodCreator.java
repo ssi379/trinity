@@ -54,9 +54,9 @@ class FindMethodCreator implements MethodCreator {
                 ".from($S)" +
                 ".where(\"id=?\", id)" +
                 ".limit(\"1\")" +
-                ".fetchFrom($N)",
+                ".queryOn($N)",
             CURSOR,
-            ClassName.bestGuess("com.nhaarman.trinity.query.Select"),
+            ClassName.bestGuess("com.nhaarman.trinity.query.select.Select"),
             mRepositoryClass.getTableClass().getTableName(),
             mDatabaseFieldSpec)
         .beginControlFlow("try")

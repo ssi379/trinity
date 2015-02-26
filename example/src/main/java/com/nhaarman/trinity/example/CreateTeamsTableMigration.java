@@ -3,10 +3,10 @@ package com.nhaarman.trinity.example;
 import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.annotations.Migration;
 import com.nhaarman.trinity.migrations.MigrationAdapter;
+import com.nhaarman.trinity.query.create.Create;
 
-import static com.nhaarman.trinity.query.Create.Column.Type.INTEGER;
-import static com.nhaarman.trinity.query.Create.Column.Type.TEXT;
-import static com.nhaarman.trinity.query.Create.create;
+import static com.nhaarman.trinity.query.create.Column.integer;
+import static com.nhaarman.trinity.query.create.Column.text;
 
 @Migration(version = 2, order = CreateTeamsTableMigration.VERSION)
 public class CreateTeamsTableMigration extends MigrationAdapter {
@@ -19,11 +19,13 @@ public class CreateTeamsTableMigration extends MigrationAdapter {
 
   @Override
   public void onUpgrade(final SQLiteDatabase database) {
-    create()
+    Create.create()
         .table("teams")
-        .withColumn("id").type(INTEGER).withPrimaryKey()
-        .and().withColumn("name").withType(TEXT)
-        .and().withColumn("club_id").withType(INTEGER)
+        .columns(
+            integer("id").primaryKey(),
+            text("name"),
+            integer("club_id").references("clubs").columns("id")
+        )
         .executeOn(database);
   }
 }

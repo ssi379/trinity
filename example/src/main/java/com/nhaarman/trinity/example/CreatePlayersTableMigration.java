@@ -4,9 +4,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.annotations.Migration;
 import com.nhaarman.trinity.migrations.MigrationAdapter;
 
-import static com.nhaarman.trinity.query.Create.Column.Type.INTEGER;
-import static com.nhaarman.trinity.query.Create.Column.Type.TEXT;
-import static com.nhaarman.trinity.query.Create.create;
+import static com.nhaarman.trinity.query.create.Column.integer;
+import static com.nhaarman.trinity.query.create.Column.text;
+import static com.nhaarman.trinity.query.create.Create.create;
 
 @Migration(version = 3, order = CreatePlayersTableMigration.VERSION)
 public class CreatePlayersTableMigration extends MigrationAdapter {
@@ -20,9 +20,11 @@ public class CreatePlayersTableMigration extends MigrationAdapter {
   @Override
   public void onUpgrade(final SQLiteDatabase database) {
     create().table("players")
-        .withColumn("id").type(INTEGER).withPrimaryKey()
-        .and().withColumn("name").withType(TEXT)
-        .and().withColumn("team_id").withType(INTEGER)
+        .columns(
+            integer("id").primaryKey(),
+            text("name"),
+            integer("team_id").references("teams").columns("id")
+        )
         .executeOn(database);
   }
 }

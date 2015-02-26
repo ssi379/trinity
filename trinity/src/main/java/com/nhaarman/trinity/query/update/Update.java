@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.query;
+package com.nhaarman.trinity.query.update;
 
-import android.database.sqlite.SQLiteDatabase;
+import com.nhaarman.trinity.query.SqlPart;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class ExecutableQueryBase extends QueryBase implements ExecutableQuery {
+public final class Update extends SqlPart {
 
-  protected ExecutableQueryBase(final Query parent, final String tableName) {
-    super(parent, tableName);
+  @NotNull
+  private final String mTableName;
+
+  public Update(@NotNull final String tableName) {
+    super(null);
+    mTableName = tableName;
   }
 
+  public Set set(@NotNull final String set, @NotNull final Object... args) {
+    return new Set(this, set, args);
+  }
+
+  @NotNull
   @Override
-  public void executeOn(final SQLiteDatabase database) {
-    String sql = getSql();
-    String[] args = getArgs();
-    if (args == null) {
-      database.execSQL(sql);
-    } else {
-      database.execSQL(sql, args);
-    }
+  public String getPartSql() {
+    return "UPDATE " + mTableName;
   }
 }

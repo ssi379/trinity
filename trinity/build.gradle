@@ -19,6 +19,7 @@ apply from: rootProject.projectDir.absolutePath + '/gradle/bintray.gradle'
 apply from: rootProject.projectDir.absolutePath + '/gradle/artifactory.gradle'
 
 dependencies {
+  compile 'org.jetbrains:annotations:13.0'
   compile 'javax.annotation:jsr250-api:1.0'
 
   /* Tests */

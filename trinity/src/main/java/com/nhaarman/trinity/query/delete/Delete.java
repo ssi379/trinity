@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.query;
+package com.nhaarman.trinity.query.delete;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import com.nhaarman.trinity.query.SqlStart;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class ResultQueryBase extends ExecutableQueryBase implements ResultQuery {
+public final class Delete extends SqlStart {
 
-  protected ResultQueryBase(final Query parent, final String table) {
-    super(parent, table);
+  public From from(final String table) {
+    return new From(this, table);
   }
 
   @Override
-  public Cursor fetchFrom(final SQLiteDatabase database) {
-    return database.rawQuery(getSql(), getArgs());
+  @NotNull
+  public String getPartSql() {
+    return "DELETE";
+  }
+
+  public static Delete delete() {
+    return new Delete();
   }
 }

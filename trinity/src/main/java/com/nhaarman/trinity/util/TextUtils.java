@@ -23,7 +23,7 @@ public class TextUtils {
    * @param tokens an array objects to be joined. Strings will be formed from
    * the objects by calling object.toString().
    */
-  public static String join(CharSequence delimiter, Object[] tokens) {
+  public static String join(final CharSequence delimiter, final Object[] tokens) {
     StringBuilder sb = new StringBuilder();
     boolean firstTime = true;
     for (Object token : tokens) {
@@ -35,5 +35,37 @@ public class TextUtils {
       sb.append(token);
     }
     return sb.toString();
+  }
+
+  public static String[] toStringArray(final Object[] array) {
+    if (array == null) {
+      return null;
+    }
+    final String[] transformedArray = new String[array.length];
+    for (int i = 0; i < array.length; i++) {
+      transformedArray[i] = String.valueOf(array[i]);
+    }
+    return transformedArray;
+  }
+
+  public static String[] join(final String[] array1, final String... array2) {
+    if (array1 == null) {
+      return clone(array2);
+    }
+    if (array2 == null) {
+      return clone(array1);
+    }
+
+    final String[] joinedArray = new String[array1.length + array2.length];
+    System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+    System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+    return joinedArray;
+  }
+
+  private static String[] clone(final String[] array) {
+    if (array == null) {
+      return null;
+    }
+    return array.clone();
   }
 }

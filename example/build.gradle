@@ -19,10 +19,6 @@ android {
   }
 }
 
-repositories {
-  maven { url 'http://oss.jfrog.org/oss-snapshot-local/' }
-}
-
 dependencies {
   compile project(':trinity')
   provided project(':trinity-annotations')

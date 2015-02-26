@@ -15,11 +15,24 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.query;
+package com.nhaarman.trinity.query.insert;
 
-public interface Query {
+import com.nhaarman.trinity.query.SqlStart;
+import org.jetbrains.annotations.NotNull;
 
-  String getSql();
+public final class Insert extends SqlStart {
 
-  String[] getArgs();
+  public Into into(@NotNull final String table, @NotNull final String... columns) {
+    return new Into(this, table, columns);
+  }
+
+  @Override
+  @NotNull
+  public String getPartSql() {
+    return "INSERT";
+  }
+
+  public static Insert insert() {
+    return new Insert();
+  }
 }
