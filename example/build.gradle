@@ -24,9 +24,9 @@ repositories {
 }
 
 dependencies {
-  compile 'com.nhaarman:trinity:0.0.1-SNAPSHOT'
-  provided 'com.nhaarman:trinity-annotations:0.0.1-SNAPSHOT'
-  apt 'com.nhaarman:trinity-compiler:0.0.1-SNAPSHOT'
+  compile project(':trinity')
+  provided project(':trinity-annotations')
+  apt project(':trinity-compiler')
 
   compile 'javax.annotation:jsr250-api:1.0'
 }
