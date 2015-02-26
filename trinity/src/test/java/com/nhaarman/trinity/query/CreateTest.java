@@ -70,7 +70,7 @@ public class CreateTest {
     /* Given */
     Create.Table table = create()
         .table("MyTable")
-        .withColumn("MyColumn");
+        .withColumn("MyColumn").and();
 
     /* When */
     String partSql = table.getPartSql();
@@ -80,13 +80,41 @@ public class CreateTest {
   }
 
   @Test
+  public void createTable_partSql_withSinglePrimaryKeyColumn_returnsProperStatement() {
+    /* Given */
+    Create.Table table = create()
+        .table("MyTable")
+        .withColumn("MyColumn").withPrimaryKey().getTable();
+
+    /* When */
+    String partSql = table.getPartSql();
+
+    /* Then */
+    assertThat(partSql, is("MyTable(MyColumn PRIMARY KEY)"));
+  }
+
+  @Test
+  public void createTable_partSql_withSingleTypedPrimaryKeyColumn_returnsProperStatement() {
+    /* Given */
+    Create.Table table = create()
+        .table("MyTable")
+        .withColumn("MyColumn").withType(INTEGER).withPrimaryKey().getTable();
+
+    /* When */
+    String partSql = table.getPartSql();
+
+    /* Then */
+    assertThat(partSql, is("MyTable(MyColumn INTEGER PRIMARY KEY)"));
+  }
+
+  @Test
   public void createTable_partSql_withMultipleColumns_returnsProperStatement() {
     /* Given */
     Create.Table table = create()
         .table("MyTable")
         .withColumn("MyColumn1")
-        .withColumn("MyColumn2")
-        .withColumn("MyColumn3");
+        .and().withColumn("MyColumn2")
+        .and().withColumn("MyColumn3").getTable();
 
     /* When */
     String partSql = table.getPartSql();
@@ -100,7 +128,7 @@ public class CreateTest {
     /* Given */
     Create.Table table = create()
         .table("MyTable")
-        .withColumn("MyColumn", TEXT);
+        .withColumn("MyColumn").withType(TEXT).getTable();
 
     /* When */
     String partSql = table.getPartSql();
@@ -114,11 +142,11 @@ public class CreateTest {
     /* Given */
     Create.Table table = create()
         .table("MyTable")
-        .withColumn("MyColumn1", INTEGER)
-        .withColumn("MyColumn2", TEXT)
-        .withColumn("MyColumn3", NONE)
-        .withColumn("MyColumn4", REAL)
-        .withColumn("MyColumn5", NUMERIC);
+        .withColumn("MyColumn1").withType(INTEGER)
+        .and().withColumn("MyColumn2").withType(TEXT)
+        .and().withColumn("MyColumn3").withType(NONE)
+        .and().withColumn("MyColumn4").withType(REAL)
+        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
 
     /* When */
     String partSql = table.getPartSql();
@@ -132,7 +160,7 @@ public class CreateTest {
     create()
         .table("MyTable")
         .withColumn("MyColumn")
-        .withColumn("MyColumn");
+        .and().withColumn("MyColumn");
   }
 
   @Test
@@ -141,11 +169,11 @@ public class CreateTest {
     Create.Table table = create()
         .temporary()
         .table("MyTable")
-        .withColumn("MyColumn1", INTEGER)
-        .withColumn("MyColumn2", TEXT)
-        .withColumn("MyColumn3", NONE)
-        .withColumn("MyColumn4", REAL)
-        .withColumn("MyColumn5", NUMERIC);
+        .withColumn("MyColumn1").withType(INTEGER)
+        .and().withColumn("MyColumn2").withType(TEXT)
+        .and().withColumn("MyColumn3").withType(NONE)
+        .and().withColumn("MyColumn4").withType(REAL)
+        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
 
     /* When */
     String sql = table.getSql();
@@ -160,14 +188,14 @@ public class CreateTest {
     Create.Table table = create()
         .temporary()
         .table("MyTable")
-        .withColumn("MyColumn1", INTEGER)
-        .withColumn("MyColumn2", TEXT)
-        .withColumn("MyColumn3", NONE)
-        .withColumn("MyColumn4", REAL)
-        .withColumn("MyColumn5", NUMERIC);
+        .withColumn("MyColumn1").withType(INTEGER)
+        .and().withColumn("MyColumn2").withType(TEXT)
+        .and().withColumn("MyColumn3").withType(NONE)
+        .and().withColumn("MyColumn4").withType(REAL)
+        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
 
     /* When */
-    table.execute(mDatabaseMock);
+    table.executeOn(mDatabaseMock);
 
     /* Then */
     verify(mDatabaseMock).execSQL(eq("CREATE TEMPORARY MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"), any(String[].class));

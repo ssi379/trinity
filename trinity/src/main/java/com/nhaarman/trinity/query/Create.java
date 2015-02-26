@@ -40,22 +40,19 @@ public class Create extends QueryBase {
       mColumns = new LinkedHashSet<>();
     }
 
-    public Table withColumn(final String column) {
-      return withColumn(column, null);
-    }
-
-    public Table withColumn(final String columnName, final Column.Type type) {
-      if (!mColumns.add(new Column(columnName, type))) {
+    public Column withColumn(final String columnName) {
+      Column column = new Column(this, columnName);
+      if (!mColumns.add(column)) {
         throw new MalformedQueryException(String.format("Column with name '%s' already exists!", columnName));
       }
-      return this;
+      return column;
     }
 
     @Override
     protected String getPartSql() {
       StringBuilder stringBuilder = new StringBuilder(256);
 
-      stringBuilder.append(getTable());
+      stringBuilder.append(getTableName());
       if (!mColumns.isEmpty()) {
         stringBuilder.append('(');
 
@@ -66,6 +63,10 @@ public class Create extends QueryBase {
           stringBuilder.append(column.getColumnName());
           if (column.getType() != null) {
             stringBuilder.append(' ').append(column.getType());
+          }
+
+          if (column.isPrimaryKey()) {
+            stringBuilder.append(" PRIMARY KEY");
           }
 
           if (iterator.hasNext()) {
@@ -80,21 +81,38 @@ public class Create extends QueryBase {
     }
   }
 
-  public static final class Column {
+  public static final class Column extends ExecutableQueryBase {
 
+    private final Table mTable;
     private final String mColumnName;
-    private final Type mType;
 
-    private Column(final String columnName, final Type type) {
+    private Type mType;
+    private boolean mPrimaryKey;
+
+    private Column(final Table table, final String columnName) {
+      super(table, table.getTableName());
+      mTable = table;
       mColumnName = columnName;
-      mType = type;
     }
 
-    public String getColumnName() {
+    public Column withType(final Type type) {
+      mType = type;
+      return this;
+    }
+
+    public Table and() {
+      return mTable;
+    }
+
+    public Table getTable() {
+      return mTable;
+    }
+
+    String getColumnName() {
       return mColumnName;
     }
 
-    public Type getType() {
+    Type getType() {
       return mType;
     }
 
@@ -114,6 +132,15 @@ public class Create extends QueryBase {
     @Override
     public int hashCode() {
       return mColumnName.hashCode();
+    }
+
+    public Column withPrimaryKey() {
+      mPrimaryKey = true;
+      return this;
+    }
+
+    private boolean isPrimaryKey() {
+      return mPrimaryKey;
     }
 
     public enum Type {

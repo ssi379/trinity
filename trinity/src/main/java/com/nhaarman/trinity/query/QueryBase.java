@@ -47,7 +47,7 @@ public abstract class QueryBase implements Query {
     return mParent;
   }
 
-  public String getTable() {
+  public String getTableName() {
     return mTable;
   }
 

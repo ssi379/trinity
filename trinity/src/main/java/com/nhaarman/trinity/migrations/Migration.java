@@ -1,18 +1,22 @@
 package com.nhaarman.trinity.migrations;
 
+import android.database.sqlite.SQLiteDatabase;
+
 public interface Migration extends Comparable<Migration> {
 
   int getVersion();
 
-  void beforeUp();
+  long getOrder();
 
-  String[] getUpStatements();
+  void beforeUp(final SQLiteDatabase database);
 
-  void afterUp();
+  void onUpgrade(final SQLiteDatabase database);
 
-  void beforeDown();
+  void afterUp(final SQLiteDatabase database);
 
-  String[] getDownStatements();
+  void beforeDown(final SQLiteDatabase database);
 
-  void afterDown();
+  void onDowngrade(final SQLiteDatabase database);
+
+  void afterDown(final SQLiteDatabase database);
 }

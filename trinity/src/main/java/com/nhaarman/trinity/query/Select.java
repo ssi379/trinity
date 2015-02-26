@@ -98,19 +98,19 @@ public final class Select extends QueryBase {
     }
 
     public Where where(final String where, final Object... args) {
-      return new Where(this, getTable(), where, args);
+      return new Where(this, getTableName(), where, args);
     }
 
     public GroupBy groupBy(final String groupBy) {
-      return new GroupBy(this, getTable(), groupBy);
+      return new GroupBy(this, getTableName(), groupBy);
     }
 
     public OrderBy orderBy(final String orderBy) {
-      return new OrderBy(this, getTable(), orderBy);
+      return new OrderBy(this, getTableName(), orderBy);
     }
 
     public Limit limit(final String limit) {
-      return new Limit(this, getTable(), limit);
+      return new Limit(this, getTableName(), limit);
     }
 
     private Join addJoin(final String table, final Type type) {
@@ -123,7 +123,7 @@ public final class Select extends QueryBase {
     public String getPartSql() {
       StringBuilder builder = new StringBuilder(256);
       builder.append("FROM ");
-      builder.append(getTable()).append(' ');
+      builder.append(getTableName()).append(' ');
 
       for (Join join : mJoins) {
         builder.append(join.getPartSql()).append(' ');
@@ -155,7 +155,7 @@ public final class Select extends QueryBase {
 
     @Override
     public String getPartSql() {
-      return mType.getKeyword() + ' ' + getTable() + ' ' + mConstraint;
+      return mType.getKeyword() + ' ' + getTableName() + ' ' + mConstraint;
     }
 
     public enum Type {
@@ -198,11 +198,11 @@ public final class Select extends QueryBase {
     }
 
     public OrderBy orderBy(final String orderBy) {
-      return new OrderBy(this, getTable(), orderBy);
+      return new OrderBy(this, getTableName(), orderBy);
     }
 
     public Limit limit(final String limits) {
-      return new Limit(this, getTable(), limits);
+      return new Limit(this, getTableName(), limits);
     }
 
     @Override
@@ -226,15 +226,15 @@ public final class Select extends QueryBase {
     }
 
     public Having having(final String having) {
-      return new Having(this, getTable(), having);
+      return new Having(this, getTableName(), having);
     }
 
     public OrderBy orderBy(final String orderBy) {
-      return new OrderBy(this, getTable(), orderBy);
+      return new OrderBy(this, getTableName(), orderBy);
     }
 
     public Limit limit(final String limits) {
-      return new Limit(this, getTable(), limits);
+      return new Limit(this, getTableName(), limits);
     }
 
     @Override
@@ -253,11 +253,11 @@ public final class Select extends QueryBase {
     }
 
     public OrderBy orderBy(final String orderBy) {
-      return new OrderBy(this, getTable(), orderBy);
+      return new OrderBy(this, getTableName(), orderBy);
     }
 
     public Limit limit(final String limits) {
-      return new Limit(this, getTable(), limits);
+      return new Limit(this, getTableName(), limits);
     }
 
     @Override
@@ -276,7 +276,7 @@ public final class Select extends QueryBase {
     }
 
     public Limit limit(final String limits) {
-      return new Limit(this, getTable(), limits);
+      return new Limit(this, getTableName(), limits);
     }
 
     @Override
@@ -295,7 +295,7 @@ public final class Select extends QueryBase {
     }
 
     public Offset offset(final String offset) {
-      return new Offset(this, getTable(), offset);
+      return new Offset(this, getTableName(), offset);
     }
 
     @Override

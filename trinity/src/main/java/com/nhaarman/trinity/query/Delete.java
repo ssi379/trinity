@@ -40,12 +40,12 @@ public final class Delete extends QueryBase {
     }
 
     public Where where(final String where, final Object... args) {
-      return new Where(this, getTable(), where, args);
+      return new Where(this, getTableName(), where, args);
     }
 
     @Override
     public String getPartSql() {
-      return "FROM " + getTable();
+      return "FROM " + getTableName();
     }
   }
 

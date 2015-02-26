@@ -16,15 +16,24 @@
 
 package com.nhaarman.trinity.migrations;
 
+import android.database.sqlite.SQLiteDatabase;
+
 public class MigrationAdapter implements Migration {
 
-  private int mVersion;
+  private final int mVersion;
+  private final long mOrder;
 
   public MigrationAdapter() {
+    this(0);
   }
 
   public MigrationAdapter(final int version) {
+    this(version, 0);
+  }
+
+  public MigrationAdapter(final int version, final long order) {
     mVersion = version;
+    mOrder = order;
   }
 
   @Override
@@ -33,34 +42,32 @@ public class MigrationAdapter implements Migration {
   }
 
   @Override
-  public void beforeUp() {
-  }
-
-  /**
-   * Returns the SQL statements which are to be executed in order to perform this migration.
-   *
-   * @return The SQL statements.
-   */
-  @Override
-  public String[] getUpStatements() {
-    return new String[0];
+  public long getOrder() {
+    return mOrder;
   }
 
   @Override
-  public void afterUp() {
+  public void beforeUp(final SQLiteDatabase database) {
   }
 
   @Override
-  public void beforeDown() {
+  public void onUpgrade(final SQLiteDatabase database) {
   }
 
   @Override
-  public String[] getDownStatements() {
-    return new String[0];
+  public void afterUp(final SQLiteDatabase database) {
   }
 
   @Override
-  public void afterDown() {
+  public void beforeDown(final SQLiteDatabase database) {
+  }
+
+  @Override
+  public void onDowngrade(final SQLiteDatabase database) {
+  }
+
+  @Override
+  public void afterDown(final SQLiteDatabase database) {
   }
 
   @Override

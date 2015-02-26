@@ -5,9 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Migrations {
 
+  /**
+   * The migrations to run on the database.
+   * Keys are database versions.
+   */
   private final Map<Integer, List<Migration>> mMigrations;
 
   public Migrations() {
@@ -28,5 +33,20 @@ public class Migrations {
 
   private List<Migration> getMigrations(final int version) {
     return mMigrations.get(version) == null ? new ArrayList<Migration>() : mMigrations.get(version);
+  }
+
+  /**
+   * Returns the highest version of the added Migrations.
+   */
+  public int getVersionNumber() {
+    Set<Integer> integers = mMigrations.keySet();
+    int max = Integer.MIN_VALUE;
+    for (Integer version : integers) {
+      if (version > max) {
+        max = version;
+      }
+    }
+
+    return max;
   }
 }

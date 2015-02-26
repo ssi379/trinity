@@ -25,12 +25,12 @@ public final class Update extends QueryBase {
   }
 
   public Set set(final String set, final Object... args) {
-    return new Set(this, getTable(), set, args);
+    return new Set(this, getTableName(), set, args);
   }
 
   @Override
   public String getPartSql() {
-    return "UPDATE " + getTable();
+    return "UPDATE " + getTableName();
   }
 
   public static final class Set extends ExecutableQueryBase {
@@ -45,7 +45,7 @@ public final class Update extends QueryBase {
     }
 
     public Where where(final String where, final Object... args) {
-      return new Where(this, getTable(), where, args);
+      return new Where(this, getTableName(), where, args);
     }
 
     @Override

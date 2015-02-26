@@ -10,28 +10,25 @@ import java.util.ListIterator;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
-  private static final int VERSION = 3;
-
   private final Migrations mMigrations;
 
-  public SQLiteDatabaseHelper(final Context context, final Migrations migrations) {
-    super(context, "name", null, VERSION);
+  public SQLiteDatabaseHelper(final Context context, final String databaseName, final Migrations migrations) {
+    super(context, databaseName, null, findVersionNumber(migrations));
     mMigrations = migrations;
   }
 
   @Override
   public void onCreate(final SQLiteDatabase db) {
-    System.out.println("Executing create statements");
     executeUpMigrations(db, 1);
 
-    if (VERSION > 1) {
-      onUpgrade(db, 1, VERSION);
+    int versionNumber = findVersionNumber(mMigrations);
+    if (versionNumber > 1) {
+      onUpgrade(db, 1, versionNumber);
     }
   }
 
   @Override
   public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-    System.out.println("Upgrading database from version " + oldVersion + " to " + newVersion);
     for (int version = oldVersion + 1; version <= newVersion; version++) {
       executeUpMigrations(db, version);
     }
@@ -52,14 +49,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
   }
 
   private void executeUpMigration(final SQLiteDatabase database, final Migration migration) {
-    migration.beforeUp();
-
-    for (String statement : migration.getUpStatements()) {
-      System.out.println(statement);
-      database.execSQL(statement);
-    }
-
-    migration.afterUp();
+    migration.beforeUp(database);
+    migration.onUpgrade(database);
+    migration.afterUp(database);
   }
 
   private void executeDownMigrations(final SQLiteDatabase database, final int version) {
@@ -73,13 +65,12 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
   }
 
   private void executeDownMigration(final SQLiteDatabase database, final Migration migration) {
-    migration.beforeDown();
+    migration.beforeDown(database);
+    migration.onDowngrade(database);
+    migration.afterDown(database);
+  }
 
-    for (String statement : migration.getDownStatements()) {
-      System.out.println(statement);
-      database.execSQL(statement);
-    }
-
-    migration.afterDown();
+  private static int findVersionNumber(final Migrations migrations) {
+    return migrations.getVersionNumber();
   }
 }

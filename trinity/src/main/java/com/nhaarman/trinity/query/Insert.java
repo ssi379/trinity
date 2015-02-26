@@ -46,14 +46,14 @@ public final class Insert extends QueryBase {
     }
 
     public Values values(final Object... args) {
-      return new Values(this, getTable(), args);
+      return new Values(this, getTableName(), args);
     }
 
     @Override
     protected String getPartSql() {
       StringBuilder builder = new StringBuilder(256);
       builder.append("INTO ");
-      builder.append(getTable());
+      builder.append(getTableName());
       if (mColumns != null && mColumns.length > 0) {
         builder.append('(').append(TextUtils.join(", ", mColumns)).append(')');
       }
@@ -76,12 +76,12 @@ public final class Insert extends QueryBase {
     }
 
     @Override
-    public void execute(final SQLiteDatabase database) {
+    public void executeOn(final SQLiteDatabase database) {
       if (((Into) getParent()).getColumns() != null
           && ((Into) getParent()).getColumns().length != mValuesArgs.length) {
         throw new MalformedQueryException("Number of columns does not match number of values.");
       }
-      super.execute(database);
+      super.executeOn(database);
     }
 
     @Override

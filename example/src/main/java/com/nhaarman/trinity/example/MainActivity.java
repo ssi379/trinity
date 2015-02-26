@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import com.nhaarman.trinity.SQLiteDatabaseHelper;
 import com.nhaarman.trinity.migrations.Migrations;
 
@@ -28,7 +27,7 @@ public class MainActivity extends Activity {
     migrations.addMigration(new CreateTeamsTableMigration());
     migrations.addMigration(new CreatePlayersTableMigration());
 
-    SQLiteDatabaseHelper databaseHelper = new SQLiteDatabaseHelper(this, migrations);
+    SQLiteDatabaseHelper databaseHelper = new SQLiteDatabaseHelper(this, "Sample", migrations);
     SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
     mClubRepository = new com.nhaarman.trinity.example.Trinity_ClubRepository(database);

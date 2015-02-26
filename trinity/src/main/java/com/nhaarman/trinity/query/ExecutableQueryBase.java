@@ -26,7 +26,7 @@ public abstract class ExecutableQueryBase extends QueryBase implements Executabl
   }
 
   @Override
-  public void execute(final SQLiteDatabase database) {
+  public void executeOn(final SQLiteDatabase database) {
     database.execSQL(getSql(), getArgs());
   }
 }
