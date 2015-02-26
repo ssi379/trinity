@@ -59,8 +59,7 @@ public class DeleteTest {
   @Test
   public void deleteFromWhere_partArguments_returnsProperArguments() {
     /* Given */
-    Object[] arguments = { "Test", "Test2" };
-    Delete.Where where = delete().from("MyTable").where("something", arguments);
+    Delete.Where where = delete().from("MyTable").where("something", "Test", "Test2");
 
     /* When */
     String[] partArguments = where.getPartArguments();

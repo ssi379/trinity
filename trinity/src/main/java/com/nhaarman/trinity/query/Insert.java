@@ -18,7 +18,7 @@
 package com.nhaarman.trinity.query;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
+import com.nhaarman.trinity.util.TextUtils;
 
 @SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass" })
 public final class Insert extends QueryBase {
@@ -34,6 +34,10 @@ public final class Insert extends QueryBase {
   @Override
   public String getPartSql() {
     return "INSERT";
+  }
+
+  public static Insert insert() {
+    return new Insert();
   }
 
   public static final class Into extends QueryBase {
@@ -55,7 +59,7 @@ public final class Insert extends QueryBase {
       builder.append("INTO ");
       builder.append(getTableName());
       if (mColumns != null && mColumns.length > 0) {
-        builder.append('(').append(TextUtils.join(", ", mColumns)).append(')');
+        builder.append('(').append(TextUtils.join(",", mColumns)).append(')');
       }
 
       return builder.toString();
@@ -90,7 +94,7 @@ public final class Insert extends QueryBase {
       builder.append("VALUES(");
       for (int i = 0; i < mValuesArgs.length; i++) {
         if (i > 0) {
-          builder.append(", ");
+          builder.append(',');
         }
         builder.append('?');
       }
