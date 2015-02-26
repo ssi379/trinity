@@ -19,6 +19,11 @@ android {
     }
 }
 
+apply from: rootProject.projectDir.absolutePath + '/gradle/androidCompile.gradle';
+apply from: rootProject.projectDir.absolutePath + '/gradle/publishing.gradle'
+apply from: rootProject.projectDir.absolutePath + '/gradle/bintray.gradle'
+apply from: rootProject.projectDir.absolutePath + '/gradle/artifactory.gradle'
+
 dependencies {
     compile project(':trinity-core')
 

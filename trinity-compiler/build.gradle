@@ -1,5 +1,10 @@
 apply plugin: 'java'
 
+apply from: rootProject.projectDir.absolutePath + '/gradle/javaCompile.gradle';
+apply from: rootProject.projectDir.absolutePath + '/gradle/publishing.gradle'
+apply from: rootProject.projectDir.absolutePath + '/gradle/bintray.gradle'
+apply from: rootProject.projectDir.absolutePath + '/gradle/artifactory.gradle'
+
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 

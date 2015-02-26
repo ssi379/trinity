@@ -2,27 +2,31 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+  compileSdkVersion 21
+  buildToolsVersion "21.1.2"
 
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+  defaultConfig {
+    minSdkVersion 16
+    targetSdkVersion 21
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+  }
+}
+
+repositories {
+  maven { url 'http://oss.jfrog.org/oss-snapshot-local/' }
 }
 
 dependencies {
-    compile project(':trinity-sql')
-    compile project(':trinity-core')
-    apt project(':trinity-compiler')
+  compile 'com.nhaarman:trinity-sql:0.0.1-SNAPSHOT'
+  compile 'com.nhaarman:trinity-core:0.0.1-SNAPSHOT'
+  apt 'com.nhaarman:trinity-compiler:0.0.1-SNAPSHOT'
 
-    compile 'javax.annotation:jsr250-api:1.0'
+  compile 'javax.annotation:jsr250-api:1.0'
 }

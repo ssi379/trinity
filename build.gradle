@@ -1,16 +1,32 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-    }
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:1.1.0'
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    classpath 'com.github.dcendents:android-maven-plugin:1.2'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.4'
+  }
 }
 
 allprojects {
-    repositories {
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+  repositories {
+    jcenter()
+  }
+
+  project.apply from: rootProject.projectDir.absolutePath + '/gradle/tagging.gradle';
+
+  afterEvaluate { project ->
+    if (project.hasProperty('android')) {
+      project.android.compileSdkVersion 21;
+      project.android.buildToolsVersion "21.1.2"
+      project.android.defaultConfig.minSdkVersion 16;
+      project.android.defaultConfig.targetSdkVersion 21;
     }
+  }
 }
+
+println ext.versionName
+

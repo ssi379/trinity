@@ -1,14 +1,14 @@
 <manifest
-  package="com.nhaarman.trinity.example"
-  xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.nhaarman.trinity.example">
 
   <application android:allowBackup="true">
     <activity android:name=".MainActivity">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+        <action android:name="android.intent.action.MAIN"/>
+        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
 
-        <category android:name="android.intent.category.LAUNCHER" />
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
   </application>

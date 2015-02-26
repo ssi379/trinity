@@ -7,10 +7,13 @@ android:
   - build-tools-21.1.2
 
 script:
- - ./gradlew clean test assemble --stacktrace
+ - ./gradlew clean build assemble --stacktrace
+
+after_success:
+ - ./gradlew artifactoryPublish
 
 notifications:
-  email: false
+  email: change
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/4a9094212020b1f7a094

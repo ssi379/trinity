@@ -1,0 +1,21 @@
+task sourceJar(type: Jar) {
+  from sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+//task javadoc(type: Javadoc) {
+//  source = sourceSets.main.java.srcDirs
+//}
+//
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+configurations {
+  published
+}
+
+artifacts {
+  published sourceJar
+}
