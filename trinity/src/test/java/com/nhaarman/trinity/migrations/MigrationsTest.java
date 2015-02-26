@@ -1,6 +1,6 @@
 package com.nhaarman.trinity.migrations;
 
-import java.util.List;
+import java.util.SortedSet;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,8 +9,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class MigrationsTest {
 
@@ -24,7 +22,7 @@ public class MigrationsTest {
   @Test
   public void initially_migrationsAreEmpty() {
     /* When */
-    List<Migration> migrations = mMigrations.getMigrationsForVersion(0);
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(0);
 
     /* Then */
     assertThat(migrations, is(emptyCollectionOf(Migration.class)));
@@ -33,12 +31,11 @@ public class MigrationsTest {
   @Test
   public void afterAddingAMigration_itIsPresentInThatVersionsMigration() {
     /* Given */
-    Migration migration = mock(Migration.class);
-    when(migration.getVersion()).thenReturn(1);
+    Migration migration = new MigrationAdapter(1);
     mMigrations.addMigration(migration);
 
     /* When */
-    List<Migration> migrations = mMigrations.getMigrationsForVersion(1);
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(1);
 
     /* Then */
     assertThat(migrations, contains(migration));
@@ -47,12 +44,11 @@ public class MigrationsTest {
   @Test
   public void afterAddingAMigration_itIsNotPresentInAnotherVersionsMigration() {
     /* Given */
-    Migration migration = mock(Migration.class);
-    when(migration.getVersion()).thenReturn(1);
+    Migration migration = new MigrationAdapter(5);
     mMigrations.addMigration(migration);
 
     /* When */
-    List<Migration> migrations = mMigrations.getMigrationsForVersion(0);
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(0);
 
     /* Then */
     assertThat(migrations, not(contains(migration)));
@@ -60,17 +56,14 @@ public class MigrationsTest {
 
   @Test
   public void getVersionNumber_returnsProperVersionNumber() {
-     /* Given */
-    Migration migration1 = mock(Migration.class);
-    when(migration1.getVersion()).thenReturn(1);
+    /* Given */
+    Migration migration1 = new MigrationAdapter(1);
     mMigrations.addMigration(migration1);
 
-    Migration migration5 = mock(Migration.class);
-    when(migration5.getVersion()).thenReturn(5);
+    Migration migration5 = new MigrationAdapter(5);
     mMigrations.addMigration(migration5);
 
-    Migration migration3 = mock(Migration.class);
-    when(migration3.getVersion()).thenReturn(3);
+    Migration migration3 = new MigrationAdapter(3);
     mMigrations.addMigration(migration3);
 
     /* When */
@@ -78,5 +71,24 @@ public class MigrationsTest {
 
     /* Then */
     assertThat(versionNumber, is(5));
+  }
+
+  @Test
+  public void addingMigrationsInNonSortedOrder_returnsSortedMigrations() {
+    /* Given */
+    Migration migration1 = new MigrationAdapter(1, 1);
+    mMigrations.addMigration(migration1);
+
+    Migration migration2 = new MigrationAdapter(1, 3);
+    mMigrations.addMigration(migration2);
+
+    Migration migration3 = new MigrationAdapter(1, 2);
+    mMigrations.addMigration(migration3);
+
+    /* When */
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(1);
+
+    /* Then */
+    assertThat(migrations, contains(migration1, migration3, migration2));
   }
 }

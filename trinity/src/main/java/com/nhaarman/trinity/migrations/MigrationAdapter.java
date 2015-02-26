@@ -72,6 +72,6 @@ public class MigrationAdapter implements Migration {
 
   @Override
   public int compareTo(final Migration another) {
-    return Integer.valueOf(mVersion).compareTo(another.getVersion());
+    return Long.valueOf(mOrder).compareTo(another.getOrder());
   }
 }

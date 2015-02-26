@@ -1,11 +1,12 @@
 package com.nhaarman.trinity.migrations;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Migrations {
 
@@ -13,26 +14,25 @@ public class Migrations {
    * The migrations to run on the database.
    * Keys are database versions.
    */
-  private final Map<Integer, List<Migration>> mMigrations;
+  private final Map<Integer, SortedSet<Migration>> mMigrations;
 
   public Migrations() {
     mMigrations = new HashMap<>();
   }
 
-  public List<Migration> getMigrationsForVersion(final int version) {
-    List<Migration> migrations = getMigrations(version);
-    Collections.sort(migrations);
-    return Collections.unmodifiableList(migrations);
+  public SortedSet<Migration> getMigrationsForVersion(final int version) {
+    SortedSet<Migration> migrations = getMigrations(version);
+    return Collections.unmodifiableSortedSet(migrations);
   }
 
   public void addMigration(final Migration migration) {
-    List<Migration> migrations = getMigrations(migration.getVersion());
+    SortedSet<Migration> migrations = getMigrations(migration.getVersion());
     migrations.add(migration);
     mMigrations.put(migration.getVersion(), migrations);
   }
 
-  private List<Migration> getMigrations(final int version) {
-    return mMigrations.get(version) == null ? new ArrayList<Migration>() : mMigrations.get(version);
+  private SortedSet<Migration> getMigrations(final int version) {
+    return mMigrations.get(version) == null ? new TreeSet<Migration>() : mMigrations.get(version);
   }
 
   /**

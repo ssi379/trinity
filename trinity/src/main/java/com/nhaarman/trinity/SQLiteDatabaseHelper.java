@@ -5,8 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.nhaarman.trinity.migrations.Migration;
 import com.nhaarman.trinity.migrations.Migrations;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.SortedSet;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
@@ -42,7 +41,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
   }
 
   private void executeUpMigrations(final SQLiteDatabase database, final int version) {
-    List<Migration> migrations = mMigrations.getMigrationsForVersion(version);
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(version);
     for (Migration migration : migrations) {
       executeUpMigration(database, migration);
     }
@@ -55,12 +54,11 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
   }
 
   private void executeDownMigrations(final SQLiteDatabase database, final int version) {
-    List<Migration> migrations = mMigrations.getMigrationsForVersion(version);
+    SortedSet<Migration> migrations = mMigrations.getMigrationsForVersion(version);
 
-    ListIterator<Migration> iterator = migrations.listIterator(migrations.size());
-    while (iterator.hasPrevious()) {
-      Migration migration = iterator.previous();
-      executeDownMigration(database, migration);
+    Migration[] migrationsArray = migrations.toArray(new Migration[migrations.size()]);
+    for (int i = migrationsArray.length - 1; i >= 0; i--) {
+      executeDownMigration(database, migrationsArray[i]);
     }
   }
 
