@@ -211,7 +211,7 @@ public final class Select extends QueryBase {
     }
 
     @Override
-    public String[] getPartArgs() {
+    public String[] getPartArguments() {
       return toStringArray(mWhereArgs);
     }
   }

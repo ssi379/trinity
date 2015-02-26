@@ -33,6 +33,10 @@ public final class Delete extends QueryBase {
     return "DELETE";
   }
 
+  public static Delete delete() {
+    return new Delete();
+  }
+
   public static final class From extends ExecutableQueryBase {
 
     private From(final Delete parent, final String table) {
@@ -66,7 +70,7 @@ public final class Delete extends QueryBase {
     }
 
     @Override
-    public String[] getPartArgs() {
+    public String[] getPartArguments() {
       return toStringArray(mWhereArgs);
     }
   }

@@ -38,9 +38,9 @@ public abstract class QueryBase implements Query {
   @Override
   public final String[] getArgs() {
     if (mParent != null) {
-      return join(mParent.getArgs(), getPartArgs());
+      return join(mParent.getArgs(), getPartArguments());
     }
-    return getPartArgs();
+    return getPartArguments();
   }
 
   public Query getParent() {
@@ -55,7 +55,7 @@ public abstract class QueryBase implements Query {
     return null;
   }
 
-  protected String[] getPartArgs() {
+  protected String[] getPartArguments() {
     return null;
   }
 

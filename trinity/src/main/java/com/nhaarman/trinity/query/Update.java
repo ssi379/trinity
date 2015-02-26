@@ -54,7 +54,7 @@ public final class Update extends QueryBase {
     }
 
     @Override
-    public String[] getPartArgs() {
+    public String[] getPartArguments() {
       return toStringArray(mSetArgs);
     }
   }
@@ -76,7 +76,7 @@ public final class Update extends QueryBase {
     }
 
     @Override
-    public String[] getPartArgs() {
+    public String[] getPartArguments() {
       return toStringArray(mWhereArgs);
     }
   }

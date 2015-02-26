@@ -198,6 +198,6 @@ public class CreateTest {
     table.executeOn(mDatabaseMock);
 
     /* Then */
-    verify(mDatabaseMock).execSQL(eq("CREATE TEMPORARY MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"), any(String[].class));
+    verify(mDatabaseMock).execSQL(eq("CREATE TEMPORARY MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
   }
 }

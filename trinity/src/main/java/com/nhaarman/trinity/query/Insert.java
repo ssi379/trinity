@@ -99,7 +99,7 @@ public final class Insert extends QueryBase {
     }
 
     @Override
-    protected String[] getPartArgs() {
+    protected String[] getPartArguments() {
       return toStringArray(mValuesArgs);
     }
   }
