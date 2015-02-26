@@ -24,8 +24,8 @@ repositories {
 }
 
 dependencies {
-  compile 'com.nhaarman:trinity-sql:0.0.1-SNAPSHOT'
-  compile 'com.nhaarman:trinity-core:0.0.1-SNAPSHOT'
+  compile 'com.nhaarman:trinity:0.0.1-SNAPSHOT'
+  provided 'com.nhaarman:trinity-annotations:0.0.1-SNAPSHOT'
   apt 'com.nhaarman:trinity-compiler:0.0.1-SNAPSHOT'
 
   compile 'javax.annotation:jsr250-api:1.0'

@@ -24,8 +24,8 @@ sourceSets {
 }
 
 dependencies {
-  compile project(':trinity-sql')
-  compile project(':trinity-core')
+  compile project(':trinity')
+  compile project(':trinity-annotations')
 
   compile 'com.squareup:javapoet:1.0.0'
 

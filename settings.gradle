@@ -1,3 +1,5 @@
 include ':example'
 
-include ':trinity-sql', ':trinity-core', ':trinity-compiler'
+include ':trinity'
+include ':trinity-annotations'
+include ':trinity-compiler'
