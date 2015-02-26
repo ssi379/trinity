@@ -17,19 +17,16 @@
 
 package com.nhaarman.trinity.query;
 
-import android.text.TextUtils;
-import com.nhaarman.trinity.query.Select.Join.Type;
-import java.util.ArrayList;
-import java.util.List;
+import com.nhaarman.trinity.util.TextUtils;
 
-@SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass", "UnusedDeclaration" })
+@SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass", })
 public final class Select extends QueryBase {
 
-  private final String[] mColumns;
+  private final String[] mColumnNames;
 
-  public Select(final String... columns) {
+  public Select(final String... columnNames) {
     super(null, null);
-    mColumns = columns;
+    mColumnNames = columnNames;
   }
 
   public From from(final String table) {
@@ -40,61 +37,23 @@ public final class Select extends QueryBase {
   public String getPartSql() {
     StringBuilder builder = new StringBuilder(256);
     builder.append("SELECT ");
-    if (mColumns != null && mColumns.length > 0) {
-      builder.append(TextUtils.join(", ", mColumns)).append(' ');
+    if (mColumnNames != null && mColumnNames.length > 0) {
+      builder.append(TextUtils.join(",", mColumnNames));
     } else {
-      builder.append("* ");
+      builder.append('*');
     }
 
     return builder.toString();
   }
 
-  public static final class From extends ResultQueryBase {
+  public static Select select(final String... columnNames) {
+    return new Select(columnNames);
+  }
 
-    private final List<Join> mJoins = new ArrayList<>();
+  public static final class From extends ResultQueryBase {
 
     private From(final Select parent, final String table) {
       super(parent, table);
-    }
-
-    public Join join(final String table) {
-      return addJoin(table, Type.JOIN);
-    }
-
-    public Join leftJoin(final String table) {
-      return addJoin(table, Type.LEFT);
-    }
-
-    public Join leftOuterJoin(final String table) {
-      return addJoin(table, Type.LEFT_OUTER);
-    }
-
-    public Join innerJoin(final String table) {
-      return addJoin(table, Type.INNER);
-    }
-
-    public Join crossJoin(final String table) {
-      return addJoin(table, Type.CROSS);
-    }
-
-    public Join naturalJoin(final String table) {
-      return addJoin(table, Type.NATURAL_JOIN);
-    }
-
-    public Join naturalLeftJoin(final String table) {
-      return addJoin(table, Type.NATURAL_LEFT);
-    }
-
-    public Join naturalLeftOuterJoin(final String table) {
-      return addJoin(table, Type.NATURAL_LEFT_OUTER);
-    }
-
-    public Join naturalInnerJoin(final String table) {
-      return addJoin(table, Type.NATURAL_INNER);
-    }
-
-    public Join naturalCrossJoin(final String table) {
-      return addJoin(table, Type.NATURAL_CROSS);
     }
 
     public Where where(final String where, final Object... args) {
@@ -113,72 +72,9 @@ public final class Select extends QueryBase {
       return new Limit(this, getTableName(), limit);
     }
 
-    private Join addJoin(final String table, final Type type) {
-      final Join join = new Join(this, table, type);
-      mJoins.add(join);
-      return join;
-    }
-
     @Override
     public String getPartSql() {
-      StringBuilder builder = new StringBuilder(256);
-      builder.append("FROM ");
-      builder.append(getTableName()).append(' ');
-
-      for (Join join : mJoins) {
-        builder.append(join.getPartSql()).append(' ');
-      }
-
-      return builder.toString();
-    }
-  }
-
-  public static final class Join extends QueryBase {
-
-    private final Type mType;
-    private String mConstraint;
-
-    private Join(final From parent, final String table, final Type type) {
-      super(parent, table);
-      mType = type;
-    }
-
-    public From on(final String constraint) {
-      mConstraint = "ON " + constraint;
-      return (From) getParent();
-    }
-
-    public From using(final String... columns) {
-      mConstraint = "USING (" + TextUtils.join(", ", columns) + ')';
-      return (From) getParent();
-    }
-
-    @Override
-    public String getPartSql() {
-      return mType.getKeyword() + ' ' + getTableName() + ' ' + mConstraint;
-    }
-
-    public enum Type {
-      JOIN("JOIN"),
-      LEFT("LEFT JOIN"),
-      LEFT_OUTER("LEFT OUTER JOIN"),
-      INNER("INNER JOIN"),
-      CROSS("CROSS JOIN"),
-      NATURAL_JOIN("NATURAL JOIN"),
-      NATURAL_LEFT("NATURAL LEFT JOIN"),
-      NATURAL_LEFT_OUTER("NATURAL LEFT OUTER JOIN"),
-      NATURAL_INNER("NATURAL INNER JOIN"),
-      NATURAL_CROSS("NATURAL CROSS JOIN");
-
-      private final String mKeyword;
-
-      Type(final String keyword) {
-        mKeyword = keyword;
-      }
-
-      public String getKeyword() {
-        return mKeyword;
-      }
+      return "FROM " + getTableName();
     }
   }
 
@@ -193,8 +89,8 @@ public final class Select extends QueryBase {
       mWhereArgs = args;
     }
 
-    public GroupBy groupBy() {
-      return null;
+    public GroupBy groupBy(final String groupBy) {
+      return new GroupBy(this, getTableName(), groupBy);
     }
 
     public OrderBy orderBy(final String orderBy) {

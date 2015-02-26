@@ -20,17 +20,17 @@ package com.nhaarman.trinity.query;
 public abstract class QueryBase implements Query {
 
   private final Query mParent;
-  private final String mTable;
+  private final String mTablename;
 
-  protected QueryBase(final Query parent, final String table) {
+  protected QueryBase(final Query parent, final String tablename) {
     mParent = parent;
-    mTable = table;
+    mTablename = tablename;
   }
 
   @Override
   public final String getSql() {
     if (mParent != null) {
-      return mParent.getSql() + ' ' + getPartSql().trim();
+      return (mParent.getSql() + ' ' + getPartSql()).trim();
     }
     return getPartSql().trim();
   }
@@ -48,11 +48,11 @@ public abstract class QueryBase implements Query {
   }
 
   public String getTableName() {
-    return mTable;
+    return mTablename;
   }
 
   protected String getPartSql() {
-    return null;
+    throw new UnsupportedOperationException("Implement getPartSql in " + getClass().getCanonicalName());
   }
 
   protected String[] getPartArguments() {

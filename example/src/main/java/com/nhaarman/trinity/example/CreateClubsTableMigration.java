@@ -21,7 +21,7 @@ public class CreateClubsTableMigration extends MigrationAdapter {
   public void onUpgrade(final SQLiteDatabase database) {
     create()
         .table("clubs")
-        .withColumn("id").withType(INTEGER).withPrimaryKey()
+        .withColumn("id").type(INTEGER).withPrimaryKey()
         .and().withColumn("name").withType(TEXT)
         .executeOn(database);
   }

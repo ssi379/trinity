@@ -4,55 +4,105 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import static com.nhaarman.trinity.query.Create.Column.Type.INTEGER;
+import static com.nhaarman.trinity.query.Create.Column.Type.NONE;
+import static com.nhaarman.trinity.query.Create.Column.Type.NUMERIC;
+import static com.nhaarman.trinity.query.Create.Column.Type.REAL;
+import static com.nhaarman.trinity.query.Create.Column.Type.TEXT;
+
 @SuppressWarnings({ "HardCodedStringLiteral", "PublicInnerClass" })
 public class Create extends QueryBase {
-
-  private boolean mTemporary;
 
   public Create() {
     super(null, null);
   }
 
-  public Table table(final String table) {
-    return new Table(this, table);
+  public Temporary temporary() {
+    return new Temporary(this, getTableName());
+  }
+
+  public Table table(final String tableName) {
+    return new Table(this, tableName);
+  }
+
+  public TableIfNotExists tableIfNotExists(final String tableName) {
+    return new TableIfNotExists(this, tableName);
   }
 
   @Override
   protected String getPartSql() {
-    return "CREATE" + (mTemporary ? " TEMPORARY" : "");
-  }
-
-  public Create temporary() {
-    mTemporary = true;
-    return this;
+    return "CREATE";
   }
 
   public static Create create() {
     return new Create();
   }
 
-  public static final class Table extends ExecutableQueryBase {
+  public static class Temporary extends ExecutableQueryBase {
+
+    private Temporary(final Query parent, final String table) {
+      super(parent, table);
+    }
+
+    public Table table(final String tableName) {
+      return new Table(this, tableName);
+    }
+
+    public TableIfNotExists tableIfNotExists(final String tableName) {
+      return new TableIfNotExists(this, tableName);
+    }
+
+    @Override
+    protected String getPartSql() {
+      return "TEMPORARY";
+    }
+  }
+
+  public static class Table extends ExecutableQueryBase {
+
+    private Table(final Query parent, final String tableName) {
+      super(parent, tableName);
+    }
+
+    public Columns columns(final Column... columns) {
+      return new Columns(this, getTableName(), columns);
+    }
+
+    @Override
+    protected String getPartSql() {
+      return "TABLE " + getTableName();
+    }
+  }
+
+  public static class TableIfNotExists extends Table {
+
+    private TableIfNotExists(final Query parent, final String tableName) {
+      super(parent, tableName);
+    }
+
+    @Override
+    protected String getPartSql() {
+      return "TABLE IF NOT EXISTS " + getTableName();
+    }
+  }
+
+  public static class Columns extends ExecutableQueryBase {
 
     private final Collection<Column> mColumns;
 
-    private Table(final Create parent, final String table) {
-      super(parent, table);
+    private Columns(final Query parent, final String tableName, final Column[] columns) {
+      super(parent, tableName);
       mColumns = new LinkedHashSet<>();
-    }
-
-    public Column withColumn(final String columnName) {
-      Column column = new Column(this, columnName);
-      if (!mColumns.add(column)) {
-        throw new MalformedQueryException(String.format("Column with name '%s' already exists!", columnName));
+      for (Column column : columns) {
+        if (!mColumns.add(column)) {
+          throw new MalformedQueryException(String.format("Duplicate column name '%s'", column.mColumnName));
+        }
       }
-      return column;
     }
 
     @Override
     protected String getPartSql() {
       StringBuilder stringBuilder = new StringBuilder(256);
-
-      stringBuilder.append(getTableName());
       if (!mColumns.isEmpty()) {
         stringBuilder.append('(');
 
@@ -60,12 +110,12 @@ public class Create extends QueryBase {
         while (iterator.hasNext()) {
           Column column = iterator.next();
 
-          stringBuilder.append(column.getColumnName());
-          if (column.getType() != null) {
-            stringBuilder.append(' ').append(column.getType());
+          stringBuilder.append(column.mColumnName);
+          if (column.mType != null) {
+            stringBuilder.append(' ').append(column.mType);
           }
 
-          if (column.isPrimaryKey()) {
+          if (column.mPrimaryKey) {
             stringBuilder.append(" PRIMARY KEY");
           }
 
@@ -76,44 +126,25 @@ public class Create extends QueryBase {
 
         stringBuilder.append(')');
       }
-
       return stringBuilder.toString();
     }
   }
 
-  public static final class Column extends ExecutableQueryBase {
+  public static class Column {
 
-    private final Table mTable;
     private final String mColumnName;
+    private final Type mType;
 
-    private Type mType;
     private boolean mPrimaryKey;
 
-    private Column(final Table table, final String columnName) {
-      super(table, table.getTableName());
-      mTable = table;
+    public Column(final String columnName, final Type type) {
       mColumnName = columnName;
-    }
-
-    public Column withType(final Type type) {
       mType = type;
+    }
+
+    public Column primary() {
+      mPrimaryKey = true;
       return this;
-    }
-
-    public Table and() {
-      return mTable;
-    }
-
-    public Table getTable() {
-      return mTable;
-    }
-
-    String getColumnName() {
-      return mColumnName;
-    }
-
-    Type getType() {
-      return mType;
     }
 
     @Override
@@ -134,13 +165,24 @@ public class Create extends QueryBase {
       return mColumnName.hashCode();
     }
 
-    public Column withPrimaryKey() {
-      mPrimaryKey = true;
-      return this;
+    public static Column integer(final String columnName) {
+      return new Column(columnName, INTEGER);
     }
 
-    private boolean isPrimaryKey() {
-      return mPrimaryKey;
+    public static Column text(final String columnName) {
+      return new Column(columnName, TEXT);
+    }
+
+    public static Column none(final String columnName) {
+      return new Column(columnName, NONE);
+    }
+
+    public static Column real(final String columnName) {
+      return new Column(columnName, REAL);
+    }
+
+    public static Column numeric(final String columnName) {
+      return new Column(columnName, NUMERIC);
     }
 
     public enum Type {

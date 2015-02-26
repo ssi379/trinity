@@ -4,15 +4,14 @@ import android.database.sqlite.SQLiteDatabase;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.nhaarman.trinity.query.Create.Column.Type.INTEGER;
-import static com.nhaarman.trinity.query.Create.Column.Type.NONE;
-import static com.nhaarman.trinity.query.Create.Column.Type.NUMERIC;
-import static com.nhaarman.trinity.query.Create.Column.Type.REAL;
-import static com.nhaarman.trinity.query.Create.Column.Type.TEXT;
+import static com.nhaarman.trinity.query.Create.Column.integer;
+import static com.nhaarman.trinity.query.Create.Column.none;
+import static com.nhaarman.trinity.query.Create.Column.numeric;
+import static com.nhaarman.trinity.query.Create.Column.real;
+import static com.nhaarman.trinity.query.Create.Column.text;
 import static com.nhaarman.trinity.query.Create.create;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,14 +41,14 @@ public class CreateTest {
   @Test
   public void createTemporary_partSql_returnsProperStatement() {
     /* Given */
-    Create create = create()
+    Create.Temporary temporary = create()
         .temporary();
 
     /* When */
-    String partSql = create.getPartSql();
+    String partSql = temporary.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("CREATE TEMPORARY"));
+    assertThat(partSql, is("TEMPORARY"));
   }
 
   @Test
@@ -62,142 +61,137 @@ public class CreateTest {
     String partSql = table.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("MyTable"));
+    assertThat(partSql, is("TABLE MyTable"));
   }
 
   @Test
-  public void createTable_partSql_withSingleColumn_returnsProperStatement() {
-    /* Given */
+  public void createTableIfNotExists_partSql_returnsProperStatement() {
+     /* Given */
     Create.Table table = create()
-        .table("MyTable")
-        .withColumn("MyColumn").and();
+        .tableIfNotExists("MyTable");
 
     /* When */
     String partSql = table.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("MyTable(MyColumn)"));
+    assertThat(partSql, is("TABLE IF NOT EXISTS MyTable"));
+  }
+
+  @Test
+  public void createTemporaryTableIfNotExists_partSql_returnsProperStatement() {
+    /* Given */
+    QueryBase query = create()
+        .temporary()
+        .tableIfNotExists("MyTable");
+
+    /* When */
+    String partSql = query.getPartSql();
+
+    /* Then */
+    assertThat(partSql, is("TABLE IF NOT EXISTS MyTable"));
   }
 
   @Test
   public void createTable_partSql_withSinglePrimaryKeyColumn_returnsProperStatement() {
     /* Given */
-    Create.Table table = create()
+    QueryBase query = create()
         .table("MyTable")
-        .withColumn("MyColumn").withPrimaryKey().getTable();
+        .columns(
+            integer("MyColumn").primary()
+        );
 
     /* When */
-    String partSql = table.getPartSql();
+    String partSql = query.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("MyTable(MyColumn PRIMARY KEY)"));
+    assertThat(partSql, is("(MyColumn INTEGER PRIMARY KEY)"));
   }
 
   @Test
-  public void createTable_partSql_withSingleTypedPrimaryKeyColumn_returnsProperStatement() {
+  public void createTable_partSql_withSingleColumn_returnsProperStatement() {
     /* Given */
-    Create.Table table = create()
+    QueryBase query = create()
         .table("MyTable")
-        .withColumn("MyColumn").withType(INTEGER).withPrimaryKey().getTable();
+        .columns(
+            text("MyColumn")
+        );
 
     /* When */
-    String partSql = table.getPartSql();
+    String partSql = query.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("MyTable(MyColumn INTEGER PRIMARY KEY)"));
+    assertThat(partSql, is("(MyColumn TEXT)"));
   }
 
   @Test
   public void createTable_partSql_withMultipleColumns_returnsProperStatement() {
     /* Given */
-    Create.Table table = create()
+    QueryBase query = create()
         .table("MyTable")
-        .withColumn("MyColumn1")
-        .and().withColumn("MyColumn2")
-        .and().withColumn("MyColumn3").getTable();
+        .columns(
+            integer("MyColumn1"),
+            text("MyColumn2"),
+            none("MyColumn3"),
+            real("MyColumn4"),
+            numeric("MyColumn5")
+        );
 
     /* When */
-    String partSql = table.getPartSql();
+    String partSql = query.getPartSql();
 
     /* Then */
-    assertThat(partSql, is("MyTable(MyColumn1,MyColumn2,MyColumn3)"));
-  }
-
-  @Test
-  public void createTable_partSql_withSingleTypedColumn_returnsProperStatement() {
-    /* Given */
-    Create.Table table = create()
-        .table("MyTable")
-        .withColumn("MyColumn").withType(TEXT).getTable();
-
-    /* When */
-    String partSql = table.getPartSql();
-
-    /* Then */
-    assertThat(partSql, is("MyTable(MyColumn TEXT)"));
-  }
-
-  @Test
-  public void createTable_partSql_withMultipleTypedColumns_returnsProperStatement() {
-    /* Given */
-    Create.Table table = create()
-        .table("MyTable")
-        .withColumn("MyColumn1").withType(INTEGER)
-        .and().withColumn("MyColumn2").withType(TEXT)
-        .and().withColumn("MyColumn3").withType(NONE)
-        .and().withColumn("MyColumn4").withType(REAL)
-        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
-
-    /* When */
-    String partSql = table.getPartSql();
-
-    /* Then */
-    assertThat(partSql, is("MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
+    assertThat(partSql, is("(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
   }
 
   @Test(expected = MalformedQueryException.class)
-  public void createTable_withTwoEqualColumnNames_throwsException() {
+  public void createTable_twoEqualColumnNames_throwsException() {
     create()
         .table("MyTable")
-        .withColumn("MyColumn")
-        .and().withColumn("MyColumn");
+        .columns(
+            integer("MyColumn"),
+            integer("MyColumn")
+        );
   }
 
   @Test
   public void createFullTable_returnsProperStatement() {
     /* Given */
-    Create.Table table = create()
+    QueryBase query = create()
         .temporary()
         .table("MyTable")
-        .withColumn("MyColumn1").withType(INTEGER)
-        .and().withColumn("MyColumn2").withType(TEXT)
-        .and().withColumn("MyColumn3").withType(NONE)
-        .and().withColumn("MyColumn4").withType(REAL)
-        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
+        .columns(
+            integer("MyColumn1"),
+            text("MyColumn2"),
+            none("MyColumn3"),
+            real("MyColumn4"),
+            numeric("MyColumn5")
+        );
 
     /* When */
-    String sql = table.getSql();
+    String sql = query.getSql();
 
     /* Then */
-    assertThat(sql, is("CREATE TEMPORARY MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
+    assertThat(sql, is("CREATE TEMPORARY TABLE MyTable (MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
   }
 
   @Test
   public void executingCreateFullTableStatement_callsDatabase() {
     /* Given */
-    Create.Table table = create()
+    ExecutableQuery query = create()
         .temporary()
         .table("MyTable")
-        .withColumn("MyColumn1").withType(INTEGER)
-        .and().withColumn("MyColumn2").withType(TEXT)
-        .and().withColumn("MyColumn3").withType(NONE)
-        .and().withColumn("MyColumn4").withType(REAL)
-        .and().withColumn("MyColumn5").withType(NUMERIC).getTable();
+        .columns(
+            integer("MyColumn1"),
+            text("MyColumn2"),
+            none("MyColumn3"),
+            real("MyColumn4"),
+            numeric("MyColumn5")
+        );
 
     /* When */
-    table.executeOn(mDatabaseMock);
+    query.executeOn(mDatabaseMock);
 
     /* Then */
-    verify(mDatabaseMock).execSQL(eq("CREATE TEMPORARY MyTable(MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
+    verify(mDatabaseMock).execSQL(eq("CREATE TEMPORARY TABLE MyTable (MyColumn1 INTEGER,MyColumn2 TEXT,MyColumn3 NONE,MyColumn4 REAL,MyColumn5 NUMERIC)"));
   }
 }

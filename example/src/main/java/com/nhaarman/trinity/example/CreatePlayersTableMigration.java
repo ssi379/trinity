@@ -20,7 +20,7 @@ public class CreatePlayersTableMigration extends MigrationAdapter {
   @Override
   public void onUpgrade(final SQLiteDatabase database) {
     create().table("players")
-        .withColumn("id").withType(INTEGER).withPrimaryKey()
+        .withColumn("id").type(INTEGER).withPrimaryKey()
         .and().withColumn("name").withType(TEXT)
         .and().withColumn("team_id").withType(INTEGER)
         .executeOn(database);
