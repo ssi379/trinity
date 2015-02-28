@@ -24,7 +24,7 @@ public class TextUtils {
    * the objects by calling object.toString().
    */
   public static String join(final CharSequence delimiter, final Object[] tokens) {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder(256);
     boolean firstTime = true;
     for (Object token : tokens) {
       if (firstTime) {

@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.example;
+package com.nhaarman.trinity.sample;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.annotations.Migration;
@@ -8,22 +8,22 @@ import static com.nhaarman.trinity.query.create.Column.integer;
 import static com.nhaarman.trinity.query.create.Column.text;
 import static com.nhaarman.trinity.query.create.Create.create;
 
-@Migration(version = 1, order = CreateClubsTableMigration.VERSION)
-public class CreateClubsTableMigration extends MigrationAdapter {
+@Migration(version = 3, order = CreatePlayersTableMigration.VERSION)
+public class CreatePlayersTableMigration extends MigrationAdapter {
 
-  static final int VERSION = 1;
+  static final int VERSION = 3;
 
-  public CreateClubsTableMigration() {
+  public CreatePlayersTableMigration() {
     super(VERSION);
   }
 
   @Override
   public void onUpgrade(final SQLiteDatabase database) {
-    create()
-        .table("clubs")
+    create().table("players")
         .columns(
             integer("id").primaryKey(),
-            text("name")
+            text("name"),
+            integer("team_id").references("teams").columns("id")
         )
         .executeOn(database);
   }

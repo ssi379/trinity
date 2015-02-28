@@ -1,9 +1,9 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nhaarman.trinity.example">
+    package="com.nhaarman.trinity.sample">
 
   <application android:allowBackup="true">
-    <activity android:name=".MainActivity">
+    <activity android:name="com.nhaarman.trinity.sample.MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>

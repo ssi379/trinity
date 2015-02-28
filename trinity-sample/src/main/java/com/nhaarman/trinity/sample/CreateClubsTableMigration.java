@@ -1,30 +1,29 @@
-package com.nhaarman.trinity.example;
+package com.nhaarman.trinity.sample;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.trinity.annotations.Migration;
 import com.nhaarman.trinity.migrations.MigrationAdapter;
-import com.nhaarman.trinity.query.create.Create;
 
 import static com.nhaarman.trinity.query.create.Column.integer;
 import static com.nhaarman.trinity.query.create.Column.text;
+import static com.nhaarman.trinity.query.create.Create.create;
 
-@Migration(version = 2, order = CreateTeamsTableMigration.VERSION)
-public class CreateTeamsTableMigration extends MigrationAdapter {
+@Migration(version = 1, order = CreateClubsTableMigration.VERSION)
+public class CreateClubsTableMigration extends MigrationAdapter {
 
-  static final int VERSION = 2;
+  static final int VERSION = 1;
 
-  public CreateTeamsTableMigration() {
+  public CreateClubsTableMigration() {
     super(VERSION);
   }
 
   @Override
   public void onUpgrade(final SQLiteDatabase database) {
-    Create.create()
-        .table("teams")
+    create()
+        .table("clubs")
         .columns(
             integer("id").primaryKey(),
-            text("name"),
-            integer("club_id").references("clubs").columns("id")
+            text("name")
         )
         .executeOn(database);
   }

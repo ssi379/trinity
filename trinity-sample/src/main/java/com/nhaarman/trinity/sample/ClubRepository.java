@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.example;
+package com.nhaarman.trinity.sample;
 
 import com.nhaarman.trinity.annotations.Repository;
 

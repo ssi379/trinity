@@ -1,5 +1,5 @@
-include ':example'
-
 include ':trinity'
 include ':trinity-annotations'
 include ':trinity-compiler'
+
+include ':trinity-sample'

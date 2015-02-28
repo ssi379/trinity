@@ -1,18 +1,22 @@
-package com.nhaarman.trinity.example;
+package com.nhaarman.trinity.sample;
 
 import com.nhaarman.trinity.annotations.Column;
+import com.nhaarman.trinity.annotations.Foreign;
 import com.nhaarman.trinity.annotations.PrimaryKey;
 import com.nhaarman.trinity.annotations.Table;
 
-@Table(name = "clubs")
-public class Club {
+@Table(name = "teams")
+public class Team {
+
 
   private Long mId;
 
   private String mName;
 
-  @Column("id")
+  private Long mClubId;
+
   @PrimaryKey
+  @Column("id")
   public Long getId() {
     return mId;
   }
@@ -30,5 +34,16 @@ public class Club {
   @Column("name")
   public void setName(final String name) {
     mName = name;
+  }
+
+  @Foreign(tableName = "clubs", columnName = "id")
+  @Column("club_id")
+  public Long getClubId() {
+    return mClubId;
+  }
+
+  @Column("club_id")
+  public void setClubId(final Long clubId) {
+    mClubId = clubId;
   }
 }
