@@ -20,7 +20,7 @@ import com.nhaarman.trinity.annotations.Column;
 import com.nhaarman.trinity.annotations.Repository;
 import com.nhaarman.trinity.annotations.Table;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryInfoFactory;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryClassFactory;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClassFactory;
 import com.nhaarman.trinity.internal.codegen.validator.ColumnTypeValidator;
@@ -94,9 +94,9 @@ public class TrinityProcessor extends AbstractProcessor {
     Set<? extends Element> columnElements = findAndValidateColumnElements(roundEnv);
     Set<? extends Element> repositoryElements = findAndValidateRepositoryElements(roundEnv);
     Set<? extends TableClass> tableClasses = findAndValidateTableClasses(tableElements);
-    Set<? extends RepositoryClass> repositoryClasses = findAndValidateRepositoryClasses(repositoryElements, tableClasses);
+    Set<? extends RepositoryClass> repositoryClasses = findAndValidateRepositoryClasses(repositoryElements);
 
-    writeRepositoryClasses(repositoryClasses);
+    writeRepositoryClasses(repositoryClasses, tableClasses);
   }
 
   private Set<? extends Element> findAndValidateTabelElements(@NotNull final RoundEnvironment roundEnv) throws ProcessingException {
@@ -123,15 +123,24 @@ public class TrinityProcessor extends AbstractProcessor {
     return tableClasses;
   }
 
-  private Set<? extends RepositoryClass> findAndValidateRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements,
-                                                                          @NotNull final Set<? extends TableClass> tableClasses) {
-    return new RepositoryInfoFactory().createRepositoryInfo(repositoryElements, tableClasses);
+  private Set<? extends RepositoryClass> findAndValidateRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements) {
+    return new RepositoryClassFactory().createRepositoryClasses(repositoryElements);
   }
 
-  private void writeRepositoryClasses(final Set<? extends RepositoryClass> repositoryClasses) throws IOException, ProcessingException {
+  private void writeRepositoryClasses(@NotNull final Set<? extends RepositoryClass> repositoryClasses, @NotNull final Set<? extends TableClass> tableClasses)
+      throws IOException, ProcessingException {
     for (RepositoryClass repositoryClass : repositoryClasses) {
-      TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass).create();
-      mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
+      for (TableClass tableClass : tableClasses) {
+        if (repositoryClass.getTableClassName().equals(tableClass.getClassName())
+            && repositoryClass.getTableClassPackageName().equals(tableClass.getPackageName())) {
+          writeRepositoryClass(repositoryClass, tableClass);
+        }
+      }
     }
+  }
+
+  private void writeRepositoryClass(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass) throws IOException, ProcessingException {
+    TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass, tableClass).create();
+    mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
   }
 }

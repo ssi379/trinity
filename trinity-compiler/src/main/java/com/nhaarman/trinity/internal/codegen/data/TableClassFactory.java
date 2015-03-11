@@ -16,20 +16,38 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
+import com.nhaarman.trinity.annotations.Table;
+import com.nhaarman.trinity.internal.codegen.data.TableClass.Builder;
 import java.util.HashSet;
 import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import org.jetbrains.annotations.NotNull;
 
 public class TableClassFactory {
 
-  public Set<TableClass> createTableClasses(final Set<? extends Element> tableElements) {
+  public Set<TableClass> createTableClasses(@NotNull final Set<? extends Element> tableElements) {
     Set<TableClass> tableClasses = new HashSet<>(tableElements.size());
 
     for (Element tableElement : tableElements) {
-      tableClasses.add(new TableClass((TypeElement) tableElement));
+      tableClasses.add(createTableClass((TypeElement) tableElement));
     }
 
     return tableClasses;
+  }
+
+  public TableClass createTableClass(@NotNull final TypeElement tableElement) {
+    Builder builder = new Builder();
+
+    String className = tableElement.getSimpleName().toString();
+    String packageName = tableElement.getQualifiedName().toString().substring(0, tableElement.getQualifiedName().toString().indexOf(className) - 1);
+
+    builder.withTableName(tableElement.getAnnotation(Table.class).name());
+    builder.withClassName(className);
+    builder.withPackageName(packageName);
+    builder.withColumns(new ColumnFactory().createColumns(tableElement.getEnclosedElements()));
+    builder.withElement(tableElement);
+
+    return builder.build();
   }
 }

@@ -18,58 +18,150 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RepositoryClass {
 
-  private final TypeElement mRepositoryElement;
+  @NotNull
+  private final String mClassName;
 
-  private final TableClass mTableClass;
+  @NotNull
+  private final String mPackageName;
 
-  private final Collection<RepositoryMethod> mMethods = new LinkedHashSet<>();
+  @NotNull
+  private final String mTableClassName;
 
-  public RepositoryClass(final TypeElement repositoryElement, final TableClass tableClass) {
-    mRepositoryElement = repositoryElement;
-    mTableClass = tableClass;
+  @NotNull
+  private final String mTableClassPackageName;
 
-    List<? extends Element> enclosedElements = repositoryElement.getEnclosedElements();
-    for (Element element : enclosedElements) {
-      if (element.getKind() == ElementKind.METHOD && element.getModifiers()
-          .contains(Modifier.ABSTRACT)) {
-        mMethods.add(new RepositoryMethod((ExecutableElement) element));
-      }
-    }
+  @NotNull
+  private final Element mElement;
+
+  @NotNull
+  private final Collection<RepositoryMethod> mMethods;
+
+  private RepositoryClass(@NotNull final String className,
+                          @NotNull final String packageName,
+                          @NotNull final String tableClassName,
+                          @NotNull final String tableClassPackageName,
+                          @NotNull final Collection<RepositoryMethod> methods,
+                          @NotNull final Element element) {
+    mClassName = className;
+    mPackageName = packageName;
+    mTableClassName = tableClassName;
+    mTableClassPackageName = tableClassPackageName;
+    mElement = element;
+    mMethods = methods;
   }
 
-  public TypeElement getRepositoryElement() {
-    return mRepositoryElement;
+  @NotNull
+  public String getClassName() {
+    return mClassName;
   }
 
-  public boolean isInterface() {
-    return mRepositoryElement.getKind() == ElementKind.INTERFACE;
+  @NotNull
+  public String getPackageName() {
+    return mPackageName;
   }
 
+  @NotNull
+  public String getTableClassName() {
+    return mTableClassName;
+  }
+
+  @NotNull
+  public String getTableClassPackageName() {
+    return mTableClassPackageName;
+  }
+
+  @NotNull
   public Collection<RepositoryMethod> getMethods() {
     return Collections.unmodifiableCollection(mMethods);
   }
 
-  public String getPackageName() {
-    return mRepositoryElement.getQualifiedName()
-        .toString()
-        .substring(0, mRepositoryElement.getQualifiedName().toString().lastIndexOf('.'));
+  @NotNull
+  public Element getElement() {
+    return mElement;
   }
 
-  public TableClass getTableClass() {
-    return mTableClass;
-  }
+  public static class Builder {
 
-  public String getClassName() {
-    return mRepositoryElement.getSimpleName().toString();
+    @Nullable
+    private String mClassName;
+
+    @Nullable
+    private String mPackageName;
+
+    @Nullable
+    private String mTableClassName;
+
+    @Nullable
+    private String mTableClassPackageName;
+
+    @Nullable
+    private Collection<RepositoryMethod> mMethods;
+
+    @Nullable
+    private Element mElement;
+
+    public RepositoryClass build() {
+      if (mClassName == null) {
+        throw new IllegalStateException("RepositoryClass needs a class name.");
+      }
+
+      if (mPackageName == null) {
+        throw new IllegalStateException("RepositoryClass needs a package name.");
+      }
+
+      if (mTableClassName == null) {
+        throw new IllegalStateException("RepositoryClass needs a table class name.");
+      }
+
+      if (mTableClassPackageName == null) {
+        throw new IllegalStateException("RepositoryClass needs a table class package name.");
+      }
+
+      if (mMethods == null) {
+        throw new IllegalStateException("RepositoryClass needs methods");
+      }
+
+      if (mElement == null) {
+        throw new IllegalStateException("RepositoryClass needs an Element");
+      }
+
+      return new RepositoryClass(mClassName, mPackageName, mTableClassName, mTableClassPackageName, mMethods, mElement);
+    }
+
+    public Builder withClassName(@NotNull final String className) {
+      mClassName = className;
+      return this;
+    }
+
+    public Builder withPackageName(@NotNull final String packageName) {
+      mPackageName = packageName;
+      return this;
+    }
+
+    public Builder withTableClassName(@NotNull final String tableClassName) {
+      mTableClassName = tableClassName;
+      return this;
+    }
+
+    public Builder withTableClassPackageName(@NotNull final String tableClassPackageName) {
+      mTableClassPackageName = tableClassPackageName;
+      return this;
+    }
+
+    public Builder withMethods(@NotNull final Collection<RepositoryMethod> methods) {
+      mMethods = methods;
+      return this;
+    }
+
+    public Builder withElement(@NotNull final Element element) {
+      mElement = element;
+      return this;
+    }
   }
 }

@@ -16,58 +16,158 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
-import com.nhaarman.trinity.annotations.PrimaryKey;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A class which holds information about a getter or setter method for a column.
+ */
 public class ColumnMethod {
 
+  /**
+   * The name of the method.
+   */
   @NotNull
-  private final ExecutableElement mExecutableElement;
+  private final String mName;
 
-  @Nullable
-  private final PrimaryKeyInfo mPrimaryKeyInfo;
+  /**
+   * The type of the column.
+   */
+  @NotNull
+  private final TypeMirror mType;
 
-  public ColumnMethod(@NotNull final ExecutableElement executableElement) {
-    mExecutableElement = executableElement;
-    if (mExecutableElement.getAnnotation(PrimaryKey.class) != null) {
-      mPrimaryKeyInfo =
-          new PrimaryKeyInfo(mExecutableElement.getAnnotation(PrimaryKey.class).autoIncrement());
-    } else {
-      mPrimaryKeyInfo = null;
-    }
+  /**
+   * Whether this method is a getter.
+   */
+  private final boolean mIsGetter;
+
+  /**
+   * Whether this column is a primary column.
+   */
+  private final boolean mIsPrimary;
+
+  @NotNull
+  private final Element mElement;
+
+  private ColumnMethod(@NotNull final String name,
+                       @NotNull final TypeMirror type,
+                       final boolean isGetter,
+                       final boolean isPrimary,
+                       @NotNull final Element element) {
+    mName = name;
+    mType = type;
+    mElement = element;
+    mIsPrimary = isPrimary;
+    mIsGetter = isGetter;
   }
 
+  /**
+   * Returns the name of the method.
+   */
+  @NotNull
+  public String getName() {
+    return mName;
+  }
+
+  /**
+   * Returns the type of the column.
+   */
+  @NotNull
+  public TypeMirror getType() {
+    return mType;
+  }
+
+  /**
+   * Returns true if the method is a getter.
+   */
+  public boolean isGetter() {
+    return mIsGetter;
+  }
+
+  /**
+   * Returns true if the method is a setter.
+   */
+  public boolean isSetter() {
+    return !mIsGetter;
+  }
+
+  /**
+   * Returns true if the column is a primary column.
+   */
+  public boolean isPrimary() {
+    return mIsPrimary;
+  }
+
+  /**
+   * Returns the Element belonging to this method.
+   */
   @NotNull
   public Element getElement() {
-    return mExecutableElement;
+    return mElement;
   }
 
-  public boolean isGetter() {
-    return mExecutableElement.getReturnType().getKind() != TypeKind.VOID;
-  }
+  public static class Builder {
 
-  public String getName() {
-    return mExecutableElement.getSimpleName().toString();
-  }
+    @Nullable
+    private String mName;
 
-  public boolean isSetter() {
-    return mExecutableElement.getReturnType().getKind() == TypeKind.VOID;
-  }
+    @Nullable
+    private TypeMirror mType;
 
-  public TypeMirror getType() {
-    if (isGetter()) {
-      return mExecutableElement.getReturnType();
-    } else {
-      return mExecutableElement.getParameters().iterator().next().asType();
+    private boolean mIsGetter;
+
+    @Nullable
+    private Element mElement;
+
+    private boolean mIsPrimary;
+
+    @NotNull
+    public ColumnMethod build() {
+      if (mName == null) {
+        throw new IllegalStateException("ColumnMethod needs a name.");
+      }
+
+      if (mType == null) {
+        throw new IllegalStateException("ColumnMethod needs a type");
+      }
+
+      if (mElement == null) {
+        throw new IllegalStateException("ColumnMethod needs an Element.");
+      }
+
+      return new ColumnMethod(mName, mType, mIsGetter, mIsPrimary, mElement);
     }
-  }
 
-  public boolean isPrimary() {
-    return mPrimaryKeyInfo != null;
+    public Builder withName(@NotNull final String name) {
+      mName = name;
+      return this;
+    }
+
+    public Builder withType(@NotNull final TypeMirror type) {
+      mType = type;
+      return this;
+    }
+
+    public Builder isGetter() {
+      mIsGetter = true;
+      return this;
+    }
+
+    public Builder isSetter() {
+      mIsGetter = false;
+      return this;
+    }
+
+    public Builder isPrimary() {
+      mIsPrimary = true;
+      return this;
+    }
+
+    public Builder withElement(@NotNull final Element executableElement) {
+      mElement = executableElement;
+      return this;
+    }
   }
 }

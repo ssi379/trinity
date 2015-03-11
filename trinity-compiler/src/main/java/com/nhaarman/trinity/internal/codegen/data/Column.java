@@ -19,15 +19,23 @@ package com.nhaarman.trinity.internal.codegen.data;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A class which holds information about a column in a table.
+ */
 public class Column {
 
+  /**
+   * The name of the column.
+   */
   @NotNull
   private final String mColumnName;
 
+  /**
+   * The ColumnMethods for this column.
+   */
   @NotNull
   private final Collection<ColumnMethod> mMethods = new LinkedHashSet<>();
 
@@ -35,8 +43,8 @@ public class Column {
     mColumnName = columnName;
   }
 
-  public void addExecutableElement(@NotNull final ExecutableElement executableElement) {
-    mMethods.add(new ColumnMethod(executableElement));
+  public void addMethod(@NotNull final ColumnMethod method) {
+    mMethods.add(method);
   }
 
   @Nullable
@@ -68,9 +76,7 @@ public class Column {
    */
   @NotNull
   public String getFullyQualifiedJavaType() {
-    if (mMethods.isEmpty()) {
-      throw new IllegalStateException("No methods for this column."); // TODO: Proper exception handling.
-    }
+    assert !mMethods.isEmpty();
 
     return mMethods.iterator().next().getType().toString();
   }

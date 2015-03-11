@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
@@ -35,16 +34,18 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FindMethodCreatorTest {
 
+  public static final String FIND = "find";
   private static final String DATABASE_FIELD = "mDatabase";
   private static final String TABLE_NAME = "my_table";
   private static final String RETURN_TYPE = "MyClass";
+  private static final String PACKAGE = "mypackage";
   private static final String PARAMETER_TYPE = "java.lang.Long";
   private static final String PARAMETER_NAME = "id";
-
   private static final String EXPECTED_JAVADOC = ""
       + "Performs a query for a " + RETURN_TYPE + " with given id.\n"
       + "If no such instance is found, null is returned.\n"
@@ -52,13 +53,12 @@ public class FindMethodCreatorTest {
       + "@param " + PARAMETER_NAME + " The id of the instance to find."
       + "\n"
       + "@return The " + RETURN_TYPE + " with given id, or null if it doesn't exist.";
-
   private static final String EXPECTED_CODE = ""
       + "if (id == null) {\n"
       + "  return null;\n"
       + "}\n"
       + "\n"
-      + RETURN_TYPE + " result = null;\n"
+      + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
       + "\n"
       + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
       + "from(\"" + TABLE_NAME + "\").where(\"id=?\", id).limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
@@ -72,7 +72,6 @@ public class FindMethodCreatorTest {
       + "\n"
       + "return result;\n"
       + "";
-
   private FindMethodCreator mFindMethodCreator;
 
   @Before
@@ -82,22 +81,20 @@ public class FindMethodCreatorTest {
     MethodSpec readCursorMethod = MethodSpec.methodBuilder("readCursor").build();
 
     TableClass tableClassMock = mock(TableClass.class);
-    when(tableClassMock.getEntityFullyQualifiedName()).thenReturn(RETURN_TYPE);
+    when(tableClassMock.getClassName()).thenReturn(RETURN_TYPE);
+    when(tableClassMock.getPackageName()).thenReturn(PACKAGE);
     when(tableClassMock.getTableName()).thenReturn(TABLE_NAME);
-
-    RepositoryClass repositoryClassMock = mock(RepositoryClass.class);
-    when(repositoryClassMock.getTableClass()).thenReturn(tableClassMock);
 
     Parameter parameterMock = mock(Parameter.class);
     when(parameterMock.getName()).thenReturn(PARAMETER_NAME);
     when(parameterMock.getType()).thenReturn(PARAMETER_TYPE);
 
     RepositoryMethod repositoryMethodMock = mock(RepositoryMethod.class);
-    when(repositoryMethodMock.getMethodName()).thenReturn("find");
+    when(repositoryMethodMock.getMethodName()).thenReturn(FIND);
     when(repositoryMethodMock.getParameter()).thenReturn(parameterMock);
     when(repositoryMethodMock.getReturnType()).thenReturn(RETURN_TYPE);
 
-    mFindMethodCreator = new FindMethodCreator(repositoryClassMock, databaseFieldSpec, readCursorMethod, repositoryMethodMock);
+    mFindMethodCreator = new FindMethodCreator(tableClassMock, databaseFieldSpec, readCursorMethod, repositoryMethodMock);
   }
 
   @Test
@@ -124,7 +121,7 @@ public class FindMethodCreatorTest {
     MethodSpec methodSpec = mFindMethodCreator.create();
 
     /* Then */
-    assertThat(methodSpec.name, is("find"));
+    assertThat(methodSpec.name, is(FIND));
   }
 
   @Test

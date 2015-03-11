@@ -16,11 +16,12 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CURSOR;
@@ -30,7 +31,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 class FindMethodCreator implements MethodCreator {
 
   @NotNull
-  private final RepositoryClass mRepositoryClass;
+  private final TableClass mTableClass;
 
   @NotNull
   private final FieldSpec mDatabaseFieldSpec;
@@ -41,11 +42,11 @@ class FindMethodCreator implements MethodCreator {
   @NotNull
   private final RepositoryMethod mMethod;
 
-  FindMethodCreator(@NotNull final RepositoryClass repositoryClass,
+  FindMethodCreator(@NotNull final TableClass tableClass,
                     @NotNull final FieldSpec databaseFieldSpec,
                     @NotNull final MethodSpec readCursorSpec,
                     @NotNull final RepositoryMethod method) {
-    mRepositoryClass = repositoryClass;
+    mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
     mMethod = method;
@@ -53,17 +54,19 @@ class FindMethodCreator implements MethodCreator {
 
   @Override
   public MethodSpec create() {
+    ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
+
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .addParameter(ClassName.bestGuess(mMethod.getParameter().getType()), mMethod.getParameter().getName(), FINAL)
-        .returns(ClassName.bestGuess(mMethod.getReturnType()))
+        .returns(ClassName.get(mMethod.getReturnType()))
         .beginControlFlow("if (id == null)")
         .addStatement("return null")
         .endControlFlow()
         .addCode("\n")
-        .addStatement("$T result = null", ClassName.bestGuess(mRepositoryClass.getTableClass().getEntityFullyQualifiedName()))
+        .addStatement("$T result = null", entityClassName)
         .addCode("\n")
         .addStatement(
             "$T cursor = new $T()" +
@@ -73,7 +76,7 @@ class FindMethodCreator implements MethodCreator {
                 ".queryOn($N)",
             CURSOR,
             ClassName.bestGuess("com.nhaarman.trinity.query.select.Select"),
-            mRepositoryClass.getTableClass().getTableName(),
+            mTableClass.getTableName(),
             mDatabaseFieldSpec)
         .beginControlFlow("try")
         .beginControlFlow("if (cursor.moveToFirst())")
@@ -87,13 +90,14 @@ class FindMethodCreator implements MethodCreator {
         .build();
   }
 
+  @NonNls
   private String createJavadoc() {
     return ""
         + "Performs a query for a " + mMethod.getReturnType() + " with given id.\n"
         + "If no such instance is found, null is returned.\n"
-        + "\n"
+        + '\n'
         + "@param " + mMethod.getParameter().getName() + " The id of the instance to find."
-        + "\n"
+        + '\n'
         + "@return The " + mMethod.getReturnType() + " with given id, or null if it doesn't exist.";
   }
 }

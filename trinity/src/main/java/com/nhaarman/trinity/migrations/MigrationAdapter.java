@@ -17,6 +17,7 @@
 package com.nhaarman.trinity.migrations;
 
 import android.database.sqlite.SQLiteDatabase;
+import org.jetbrains.annotations.NotNull;
 
 public class MigrationAdapter implements Migration {
 
@@ -71,7 +72,7 @@ public class MigrationAdapter implements Migration {
   }
 
   @Override
-  public int compareTo(final Migration another) {
+  public int compareTo(@NotNull final Migration another) {
     return Long.valueOf(mOrder).compareTo(another.getOrder());
   }
 }

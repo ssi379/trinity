@@ -16,75 +16,71 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
-import com.nhaarman.trinity.annotations.Table;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * A class that holds information about a class that is annotated with the @Table annotation.
+ */
 public class TableClass {
 
+  @NotNull
+  private final String mClassName;
+
+  @NotNull
+  private final String mPackageName;
+
+  @NotNull
+  private final String mTableName;
+
+  @NotNull
   private final Collection<Column> mColumns;
 
-  private final TypeElement mTypeElement;
+  @NotNull
+  private final Element mElement;
 
-  public TableClass(final TypeElement typeElement) {
-    mTypeElement = typeElement;
+  public TableClass(@NotNull final String tableName,
+                    @NotNull final String className,
+                    @NotNull final String packageName,
+                    @NotNull final Collection<Column> columns,
+                    @NotNull final Element element) {
 
-    Map<String, Column> columns = new HashMap<>();
-    for (Element element : typeElement.getEnclosedElements()) {
-      if (element.getKind() == ElementKind.METHOD && element.getAnnotation(com.nhaarman.trinity.annotations.Column.class) != null) {
-        ExecutableElement executableElement = (ExecutableElement) element;
-        String columnName = executableElement.getAnnotation(com.nhaarman.trinity.annotations.Column.class).value();
-        Column column = columns.get(columnName);
-        if (column == null) {
-          column = new Column(columnName);
-          columns.put(columnName, column);
-        }
-        column.addExecutableElement(executableElement);
-      }
-    }
-    mColumns = columns.values();
+    mTableName = tableName;
+    mClassName = className;
+    mPackageName = packageName;
+    mColumns = columns;
+    mElement = element;
   }
 
+  @NotNull
   public String getTableName() {
-    return mTypeElement.getAnnotation(Table.class).name();
+    return mTableName;
   }
 
+  @NotNull
   public Collection<Column> getColumns() {
     return Collections.unmodifiableCollection(mColumns);
   }
 
-  public TypeElement getTypeElement() {
-    return mTypeElement;
+  @NotNull
+  public Element getElement() {
+    return mElement;
   }
 
-  public AnnotationMirror getTableAnnotationMirror() {
-    AnnotationMirror result = null;
-
-    List<? extends AnnotationMirror> annotationMirrors = mTypeElement.getAnnotationMirrors();
-    for (AnnotationMirror annotationMirror : annotationMirrors) {
-      if (annotationMirror.getAnnotationType().toString().equals(Table.class.getCanonicalName())) {
-        result = annotationMirror;
-      }
-    }
-    return result;
+  @NotNull
+  public String getClassName() {
+    return mClassName;
   }
 
-  public String getEntityFullyQualifiedName() {
-    return mTypeElement.getQualifiedName().toString();
+  @NotNull
+  public String getPackageName() {
+    return mPackageName;
   }
 
-  public TypeElement getEntityTypeElement() {
-    return mTypeElement;
-  }
-
+  @Nullable
   public Column getPrimaryKeyColumn() {
     for (Column column : mColumns) {
       if (column.isPrimary()) {
@@ -92,5 +88,75 @@ public class TableClass {
       }
     }
     return null;
+  }
+
+  /**
+   * A Builder for the TableClass class.
+   */
+  public static class Builder {
+
+    @Nullable
+    private String mTableName;
+
+    @Nullable
+    private String mClassName;
+
+    @Nullable
+    private String mPackageName;
+
+    @Nullable
+    private Collection<Column> mColumns;
+
+    @Nullable
+    private Element mElement;
+
+    public TableClass build() {
+      if (mTableName == null) {
+        throw new IllegalStateException("TableClass needs a table name.");
+      }
+
+      if (mClassName == null) {
+        throw new IllegalStateException("TableClass needs a class name.");
+      }
+
+      if (mPackageName == null) {
+        throw new IllegalStateException("TableClass needs a package name");
+      }
+
+      if (mColumns == null) {
+        throw new IllegalStateException("TableClass needs columns.");
+      }
+
+      if (mElement == null) {
+        throw new IllegalStateException("TableClass needs an Element");
+      }
+
+      return new TableClass(mTableName, mClassName, mPackageName, mColumns, mElement);
+    }
+
+    public Builder withTableName(@NotNull final String tableName) {
+      mTableName = tableName;
+      return this;
+    }
+
+    public Builder withClassName(@NotNull final String className) {
+      mClassName = className;
+      return this;
+    }
+
+    public Builder withPackageName(@NotNull final String packageName) {
+      mPackageName = packageName;
+      return this;
+    }
+
+    public Builder withColumns(@NotNull final Collection<Column> columns) {
+      mColumns = columns;
+      return this;
+    }
+
+    public Builder withElement(@NotNull final Element element) {
+      mElement = element;
+      return this;
+    }
   }
 }

@@ -41,6 +41,6 @@ public class TableClassValidator implements Validator<Set<? extends TableClass>>
   }
 
   private void throwProcessingException(@NotNull final TableClass tableClass) throws ProcessingException {
-    throw new ProcessingException("Cannot create two tables with the same name", tableClass.getTypeElement(), tableClass.getTableAnnotationMirror());
+    throw new ProcessingException("Cannot create two tables with the same name", tableClass.getElement());
   }
 }

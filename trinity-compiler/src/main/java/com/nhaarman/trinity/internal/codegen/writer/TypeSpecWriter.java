@@ -46,7 +46,6 @@ public class TypeSpecWriter {
     JavaFileObject sourceFile = mFiler.createSourceFile(typeSpec.name);
     try (Writer writer = sourceFile.openWriter()) {
       javaFile.writeTo(writer);
-      //writer.flush();
     }
   }
 }

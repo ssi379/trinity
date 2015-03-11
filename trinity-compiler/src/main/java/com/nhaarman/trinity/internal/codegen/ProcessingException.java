@@ -24,10 +24,10 @@ import org.jetbrains.annotations.Nullable;
 public class ProcessingException extends Exception {
 
   @NotNull
-  private final Element mElement;
+  private final transient Element mElement;
 
   @Nullable
-  private final AnnotationMirror mAnnotationMirror;
+  private final transient AnnotationMirror mAnnotationMirror;
 
   public ProcessingException(@NotNull final String message,
                              @NotNull final Element element) {

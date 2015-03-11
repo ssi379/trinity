@@ -15,6 +15,9 @@
  */
 package com.nhaarman.trinity.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public class TextUtils {
 
   /**
@@ -23,7 +26,7 @@ public class TextUtils {
    * @param tokens an array objects to be joined. Strings will be formed from
    * the objects by calling object.toString().
    */
-  public static String join(final CharSequence delimiter, final Object[] tokens) {
+  public static String join(@NotNull final CharSequence delimiter, @NotNull final Object[] tokens) {
     StringBuilder sb = new StringBuilder(256);
     boolean firstTime = true;
     for (Object token : tokens) {
@@ -37,7 +40,7 @@ public class TextUtils {
     return sb.toString();
   }
 
-  public static String[] toStringArray(final Object[] array) {
+  public static String[] toStringArray(@Nullable final Object[] array) {
     if (array == null) {
       return null;
     }
@@ -48,7 +51,7 @@ public class TextUtils {
     return transformedArray;
   }
 
-  public static String[] join(final String[] array1, final String... array2) {
+  public static String[] join(@Nullable final String[] array1, @Nullable final String... array2) {
     if (array1 == null) {
       return clone(array2);
     }
@@ -62,7 +65,7 @@ public class TextUtils {
     return joinedArray;
   }
 
-  private static String[] clone(final String[] array) {
+  private static String[] clone(@Nullable final String[] array) {
     if (array == null) {
       return null;
     }

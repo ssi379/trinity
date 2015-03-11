@@ -52,9 +52,9 @@ public class RepositoryTypeSpecCreator {
   @NotNull
   private final TableClass mTableClass;
 
-  public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass) {
+  public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass) {
     mRepositoryClass = repositoryClass;
-    mTableClass = repositoryClass.getTableClass();
+    mTableClass = tableClass;
   }
 
   public TypeSpec create() throws ProcessingException {
@@ -63,22 +63,18 @@ public class RepositoryTypeSpecCreator {
     MethodSpec readCursorSpec = readCursor();
     MethodSpec createContentValuesSpec = createContentValues();
 
-    MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mRepositoryClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
+    MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mRepositoryClass, mTableClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
 
     TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName());
     repositoryBuilder.addModifiers(PUBLIC, FINAL);
-    repositoryBuilder.addOriginatingElement(mRepositoryClass.getRepositoryElement());
+    repositoryBuilder.addOriginatingElement(mRepositoryClass.getElement());
     repositoryBuilder.addField(databaseFieldSpec);
     repositoryBuilder.addMethod(constructor);
     repositoryBuilder.addMethod(createContentValuesSpec);
     repositoryBuilder.addMethod(readCursorSpec);
 
-    ClassName superclass = ClassName.get(mRepositoryClass.getRepositoryElement());
-    if (mRepositoryClass.isInterface()) {
-      repositoryBuilder.addSuperinterface(superclass);
-    } else {
-      repositoryBuilder.superclass(superclass);
-    }
+    ClassName superclass = ClassName.get(mRepositoryClass.getPackageName(), mRepositoryClass.getClassName());
+    repositoryBuilder.addSuperinterface(superclass);
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
       repositoryBuilder.addMethod(methodCreatorFactory.creatorFor(repositoryMethod).create());
@@ -111,10 +107,12 @@ public class RepositoryTypeSpecCreator {
    * Creates the createContentValues method.
    */
   private MethodSpec createContentValues() {
+    ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
+
     Builder methodBuilder =
         MethodSpec.methodBuilder("createContentValues")
             .addModifiers(PUBLIC)
-            .addParameter(ClassName.get(mTableClass.getEntityTypeElement()), "entity", FINAL)
+            .addParameter(entityClassName, "entity", FINAL)
             .returns(CONTENT_VALUES)
             .addStatement("$T result = new $T()", CONTENT_VALUES, CONTENT_VALUES)
             .addCode("\n");
@@ -134,13 +132,18 @@ public class RepositoryTypeSpecCreator {
    * Creates the readCursor method.
    */
   private MethodSpec readCursor() throws ProcessingException {
+    ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
+
     Builder methodBuilder =
         MethodSpec.methodBuilder("read")
             .addModifiers(PUBLIC)
             .addParameter(CURSOR, "cursor", FINAL)
-            .returns(ClassName.get(mTableClass.getEntityTypeElement()))
-            .addStatement("$T result = new $T()", mTableClass.getEntityTypeElement(),
-                mTableClass.getEntityTypeElement())
+            .returns(entityClassName)
+            .addStatement(
+                "$T result = new $T()",
+                entityClassName,
+                entityClassName
+            )
             .addCode("\n");
 
     ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor");

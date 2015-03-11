@@ -17,9 +17,10 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.jetbrains.annotations.NotNull;
@@ -38,16 +39,23 @@ class CreateMethodCreator implements MethodCreator {
 
   @NotNull
   private final RepositoryClass mRepositoryClass;
+
+  @NotNull
+  private final TableClass mTableClass;
+
   @NotNull
   private final MethodSpec mCreateContentValuesSpec;
+
   @NotNull
   private final RepositoryMethod mMethod;
 
   CreateMethodCreator(@NotNull final RepositoryClass repositoryClass,
+                      @NotNull final TableClass tableClass,
                       @NotNull final MethodSpec createContentValuesSpec,
                       @NotNull final RepositoryMethod method) {
 
     mRepositoryClass = repositoryClass;
+    mTableClass = tableClass;
     mCreateContentValuesSpec = createContentValuesSpec;
     mMethod = method;
   }
@@ -55,18 +63,18 @@ class CreateMethodCreator implements MethodCreator {
   @Override
   public MethodSpec create() {
     Parameter parameter = mMethod.getParameter();
-    Column primaryKeyColumn = mRepositoryClass.getTableClass().getPrimaryKeyColumn();
+    Column primaryKeyColumn = mTableClass.getPrimaryKeyColumn();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .addParameter(ClassName.bestGuess(parameter.getType()), parameter.getName(), FINAL)
-        .returns(ClassName.bestGuess(mMethod.getReturnType()))
+        .returns(ClassName.get(mMethod.getReturnType()))
         .addStatement("$T result = null", Long.class)
         .addCode("\n")
         .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getName())
-        .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mRepositoryClass.getTableClass().getTableName())
+        .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mTableClass.getTableName())
         .beginControlFlow("if (id != -1)")
         .addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())
         .addStatement("result = id")

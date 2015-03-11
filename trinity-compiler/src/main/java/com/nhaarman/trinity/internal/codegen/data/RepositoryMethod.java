@@ -22,27 +22,42 @@ import java.util.LinkedHashSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RepositoryMethod {
 
-  private final ExecutableElement mExecutableElement;
+  @NotNull
+  private final String mName;
 
-  private final Collection<Parameter> mParameters = new LinkedHashSet<>();
+  @NotNull
+  private final TypeMirror mType;
 
-  public RepositoryMethod(final ExecutableElement executableElement) {
-    mExecutableElement = executableElement;
+  @NotNull
+  private final Collection<Parameter> mParameters;
 
-    for (VariableElement variableElement : mExecutableElement.getParameters()) {
-      mParameters.add(new Parameter(variableElement));
-    }
+  @NotNull
+  private final Element mElement;
+
+  public RepositoryMethod(@NotNull final String name,
+                          @NotNull final TypeMirror type,
+                          @NotNull final Collection<Parameter> parameters,
+                          @NotNull final Element element) {
+    mName = name;
+    mType = type;
+    mParameters = parameters;
+    mElement = element;
   }
 
+  @NotNull
   public String getMethodName() {
-    return mExecutableElement.getSimpleName().toString();
+    return mName;
   }
 
-  public String getReturnType() {
-    return mExecutableElement.getReturnType().toString();
+  @NotNull
+  public TypeMirror getReturnType() {
+    return mType;
   }
 
   public Collection<Parameter> getParameters() {
@@ -53,27 +68,68 @@ public class RepositoryMethod {
     return mParameters.iterator().next();
   }
 
+  @NotNull
   public Element getElement() {
-    return mExecutableElement;
+    return mElement;
   }
 
-  public static class Parameter {
+  public static class Builder {
 
-    private final String mType;
+    @Nullable
+    private String mName;
 
-    private final String mName;
+    @Nullable
+    private TypeMirror mType;
 
-    public Parameter(final VariableElement variableElement) {
-      mType = variableElement.asType().toString();
-      mName = variableElement.getSimpleName().toString();
+    @Nullable
+    private Collection<Parameter> mParameters;
+
+    @Nullable
+    private Element mElement;
+
+    @NotNull
+    public RepositoryMethod build() {
+      if (mName == null) {
+        throw new IllegalStateException("RepositoryMethod needs a name.");
+      }
+
+      if (mType == null) {
+        throw new IllegalStateException("RepositoryMethod needs a type");
+      }
+
+      if (mParameters == null) {
+        throw new IllegalStateException("RepositoryMethod needs parameters");
+      }
+
+      if (mElement == null) {
+        throw new IllegalStateException("RepositoryMethod needs an Element");
+      }
+
+      return new RepositoryMethod(mName, mType, mParameters, mElement);
     }
 
-    public String getType() {
-      return mType;
+    @NotNull
+    public Builder withName(@NotNull final String name) {
+      mName = name;
+      return this;
     }
 
-    public String getName() {
-      return mName;
+    @NotNull
+    public Builder withType(@NotNull final TypeMirror type) {
+      mType = type;
+      return this;
+    }
+
+    @NotNull
+    public Builder withParameters(@NotNull final Collection<Parameter> parameters) {
+      mParameters = parameters;
+      return this;
+    }
+
+    @NotNull
+    public Builder withElement(@NotNull final Element element) {
+      mElement = element;
+      return this;
     }
   }
 }

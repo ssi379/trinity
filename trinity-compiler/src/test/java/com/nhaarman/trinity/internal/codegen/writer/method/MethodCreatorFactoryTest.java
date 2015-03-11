@@ -19,6 +19,7 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
@@ -42,7 +43,7 @@ public class MethodCreatorFactoryTest {
     FieldSpec databaseFieldSpec = FieldSpec.builder(SQLITE_DATABASE, "mDatabase").build();
     MethodSpec readCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
-    mMethodCreatorFactory = new MethodCreatorFactory(mock(RepositoryClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);
+    mMethodCreatorFactory = new MethodCreatorFactory(mock(RepositoryClass.class), mock(TableClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec);
   }
 
   @Test

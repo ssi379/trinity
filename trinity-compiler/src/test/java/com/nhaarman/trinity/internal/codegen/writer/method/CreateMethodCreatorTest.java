@@ -94,9 +94,8 @@ public class CreateMethodCreatorTest {
     when(tableClassMock.getPrimaryKeyColumn()).thenReturn(primaryColumnMock);
 
     RepositoryClass repositoryClassMock = mock(RepositoryClass.class);
-    when(repositoryClassMock.getTableClass()).thenReturn(tableClassMock);
 
-    mCreateMethodCreator = new CreateMethodCreator(repositoryClassMock, createContentValuesSpec, methodMock);
+    mCreateMethodCreator = new CreateMethodCreator(repositoryClassMock, tableClassMock, createContentValuesSpec, methodMock);
   }
 
   @Test

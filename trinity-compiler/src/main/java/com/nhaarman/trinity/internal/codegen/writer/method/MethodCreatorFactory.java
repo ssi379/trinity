@@ -19,6 +19,7 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Locale;
@@ -30,6 +31,9 @@ public class MethodCreatorFactory {
   private final RepositoryClass mRepositoryClass;
 
   @NotNull
+  private final TableClass mTableClass;
+
+  @NotNull
   private final FieldSpec mDatabaseFieldSpec;
 
   @NotNull
@@ -39,10 +43,12 @@ public class MethodCreatorFactory {
   private final MethodSpec mCreateContentValuesSpec;
 
   public MethodCreatorFactory(@NotNull final RepositoryClass repositoryClass,
+                              @NotNull final TableClass tableClass,
                               @NotNull final FieldSpec databaseFieldSpec,
                               @NotNull final MethodSpec readCursorSpec,
                               @NotNull final MethodSpec createContentValuesSpec) {
     mRepositoryClass = repositoryClass;
+    mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
     mCreateContentValuesSpec = createContentValuesSpec;
@@ -52,9 +58,9 @@ public class MethodCreatorFactory {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
-        return new FindMethodCreator(mRepositoryClass, mDatabaseFieldSpec, mReadCursorSpec, method);
+        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method);
       case "create":
-        return new CreateMethodCreator(mRepositoryClass, mCreateContentValuesSpec, method);
+        return new CreateMethodCreator(mRepositoryClass, mTableClass, mCreateContentValuesSpec, method);
       default:
         throw new ProcessingException(String.format("Cannot implement %s: unknown method.", method.getMethodName()), method.getElement());
     }
