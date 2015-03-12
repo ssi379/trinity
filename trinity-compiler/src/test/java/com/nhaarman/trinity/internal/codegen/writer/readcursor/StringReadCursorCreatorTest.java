@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
-import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
 import org.junit.Before;
@@ -27,7 +26,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class StringReadCursorCreatorTest {
 
@@ -44,13 +44,13 @@ public class StringReadCursorCreatorTest {
   @Before
   public void setUp() {
     ColumnMethod setterMock = mock(ColumnMethod.class);
-    when(setterMock.getName()).thenReturn(SETTER_NAME);
+    when(setterMock.getMethodName()).thenReturn(SETTER_NAME);
 
-    Column columnMock = mock(Column.class);
-    when(columnMock.setter()).thenReturn(setterMock);
-    when(columnMock.getName()).thenReturn(COLUMN_NAME);
+    //Column columnMock = mock(Column.class);
+    //when(columnMock.setter()).thenReturn(setterMock);
+    //when(columnMock.getName()).thenReturn(COLUMN_NAME);
 
-    mStringReadCursorCreator = new StringReadCursorCreator(columnMock, RESULT, CURSOR);
+    //mStringReadCursorCreator = new StringReadCursorCreator(columnMock, RESULT, CURSOR);
   }
 
   @Test

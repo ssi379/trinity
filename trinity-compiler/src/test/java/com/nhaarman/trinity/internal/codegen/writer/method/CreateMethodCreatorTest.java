@@ -84,7 +84,7 @@ public class CreateMethodCreatorTest {
     when(methodMock.getReturnType()).thenReturn(RETURN_TYPE);
 
     ColumnMethod setterMock = mock(ColumnMethod.class);
-    when(setterMock.getName()).thenReturn("setId");
+    when(setterMock.getMethodName()).thenReturn("setId");
 
     Column primaryColumnMock = mock(Column.class);
     when(primaryColumnMock.setter()).thenReturn(setterMock);

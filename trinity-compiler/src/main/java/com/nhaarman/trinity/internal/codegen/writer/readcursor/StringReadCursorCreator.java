@@ -16,7 +16,7 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
-import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ public class StringReadCursorCreator implements ReadCursorCreator {
   private static final String STATEMENT = "$L.$L($L.getString($L.getColumnIndex($S)))";
 
   @NotNull
-  private final Column mColumn;
+  private final ColumnMethod mColumn;
 
   @NotNull
   private final String mEntityVariableName;
@@ -38,7 +38,7 @@ public class StringReadCursorCreator implements ReadCursorCreator {
   @NotNull
   private final String mCursorVariableName;
 
-  public StringReadCursorCreator(@NotNull final Column column,
+  public StringReadCursorCreator(@NotNull final ColumnMethod column,
                                  @NotNull final String entityVariableName,
                                  @NotNull final String cursorVariableName) {
     mColumn = column;
@@ -52,10 +52,10 @@ public class StringReadCursorCreator implements ReadCursorCreator {
         .addStatement(
             STATEMENT,
             mEntityVariableName,
-            mColumn.setter().getName(),
+            mColumn.getMethodName(),
             mCursorVariableName,
             mCursorVariableName,
-            mColumn.getName())
+            mColumn.getMethodName())
         .build();
   }
 }

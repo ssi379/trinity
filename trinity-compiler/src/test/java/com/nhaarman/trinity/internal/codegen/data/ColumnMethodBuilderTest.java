@@ -52,7 +52,7 @@ public class ColumnMethodBuilderTest {
         .build();
 
     /* Then */
-    assertThat(columnMethod.getName(), is(name));
+    assertThat(columnMethod.getMethodName(), is(name));
   }
 
   @Test

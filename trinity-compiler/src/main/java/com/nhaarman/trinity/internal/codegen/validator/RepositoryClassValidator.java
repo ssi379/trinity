@@ -19,16 +19,11 @@ package com.nhaarman.trinity.internal.codegen.validator;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import java.util.Collection;
 import javax.annotation.processing.Messager;
+import org.jetbrains.annotations.NotNull;
 
 public class RepositoryClassValidator {
 
-  private final Messager mMessager;
-
-  public RepositoryClassValidator(final Messager messager) {
-    mMessager = messager;
-  }
-
-  public boolean validate(final Collection<RepositoryClass> repositoryClasses) {
+  public boolean validate(@NotNull final Collection<RepositoryClass> repositoryClasses) {
     boolean result = true;
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
@@ -38,7 +33,7 @@ public class RepositoryClassValidator {
     return result;
   }
 
-  private boolean validate(final RepositoryClass repositoryClass) {
+  private boolean validate(@NotNull final RepositoryClass repositoryClass) {
     return true;
   }
 }

@@ -17,7 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
-import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import org.jetbrains.annotations.NotNull;
 
 public class ReadCursorCreatorFactory {
@@ -40,8 +40,9 @@ public class ReadCursorCreatorFactory {
     mCursorVariableName = cursorVariableName;
   }
 
-  public ReadCursorCreator createReadCursorCreator(@NotNull final Column column) throws ProcessingException {
-    String typeString = column.getFullyQualifiedJavaType();
+  @NotNull
+  public ReadCursorCreator createReadCursorCreator(@NotNull final ColumnMethod column) throws ProcessingException {
+    String typeString = column.getType().toString();
 
     ReadCursorCreator result;
 

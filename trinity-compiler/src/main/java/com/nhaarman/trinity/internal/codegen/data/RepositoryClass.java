@@ -67,6 +67,11 @@ public class RepositoryClass {
   }
 
   @NotNull
+  public String getFullyQualifiedName() {
+    return mPackageName + '.' + mClassName;
+  }
+
+  @NotNull
   public String getTableClassName() {
     return mTableClassName;
   }
@@ -74,6 +79,11 @@ public class RepositoryClass {
   @NotNull
   public String getTableClassPackageName() {
     return mTableClassPackageName;
+  }
+
+  @NotNull
+  public String getTableClassFullyQualifiedName() {
+    return mTableClassPackageName + '.' + mTableClassName;
   }
 
   @NotNull

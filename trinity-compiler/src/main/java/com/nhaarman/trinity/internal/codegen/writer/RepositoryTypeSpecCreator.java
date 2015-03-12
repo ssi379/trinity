@@ -17,8 +17,8 @@
 package com.nhaarman.trinity.internal.codegen.writer;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
-import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
@@ -30,6 +30,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
+import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
@@ -52,9 +53,15 @@ public class RepositoryTypeSpecCreator {
   @NotNull
   private final TableClass mTableClass;
 
-  public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass) {
+  @NotNull
+  private final ColumnMethodRepository mColumnMethodRepository;
+
+  public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass,
+                                   @NotNull final TableClass tableClass,
+                                   @NotNull final ColumnMethodRepository columnMethodRepository) {
     mRepositoryClass = repositoryClass;
     mTableClass = tableClass;
+    mColumnMethodRepository = columnMethodRepository;
   }
 
   public TypeSpec create() throws ProcessingException {
@@ -107,6 +114,8 @@ public class RepositoryTypeSpecCreator {
    * Creates the createContentValues method.
    */
   private MethodSpec createContentValues() {
+    Collection<ColumnMethod> getters = mColumnMethodRepository.findGettersForTableClass(mTableClass.getFullyQualifiedName());
+
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
 
     Builder methodBuilder =
@@ -117,9 +126,8 @@ public class RepositoryTypeSpecCreator {
             .addStatement("$T result = new $T()", CONTENT_VALUES, CONTENT_VALUES)
             .addCode("\n");
 
-    for (Column column : mTableClass.getColumns()) {
-      ColumnMethod getter = column.getter();
-      methodBuilder.addStatement("result.put($S, entity.$L())", column.getName(), getter.getName());
+    for (ColumnMethod getter : getters) {
+      methodBuilder.addStatement("result.put($S, entity.$L())", getter.getColumnName(), getter.getMethodName());
     }
 
     methodBuilder.addCode("\n");
@@ -132,6 +140,8 @@ public class RepositoryTypeSpecCreator {
    * Creates the readCursor method.
    */
   private MethodSpec readCursor() throws ProcessingException {
+    Collection<ColumnMethod> setters = mColumnMethodRepository.findSettersForTableClass(mTableClass.getFullyQualifiedName());
+
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
 
     Builder methodBuilder =
@@ -147,8 +157,8 @@ public class RepositoryTypeSpecCreator {
             .addCode("\n");
 
     ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor");
-    for (Column column : mTableClass.getColumns()) {
-      ReadCursorCreator readCursorCreator = creatorFactory.createReadCursorCreator(column);
+    for (ColumnMethod setter : setters) {
+      ReadCursorCreator readCursorCreator = creatorFactory.createReadCursorCreator(setter);
       methodBuilder.addCode(readCursorCreator.create());
     }
 

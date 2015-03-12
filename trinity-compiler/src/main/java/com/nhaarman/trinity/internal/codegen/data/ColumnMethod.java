@@ -30,7 +30,16 @@ public class ColumnMethod {
    * The name of the method.
    */
   @NotNull
-  private final String mName;
+  private final String mMethodName;
+
+  /**
+   * The name of the TableClass this method is a member of.
+   */
+  @NotNull
+  private final String mFullyQualifiedTableClassName;
+
+  @NotNull
+  private final String mColumnName;
 
   /**
    * The type of the column.
@@ -51,24 +60,43 @@ public class ColumnMethod {
   @NotNull
   private final Element mElement;
 
-  private ColumnMethod(@NotNull final String name,
+  private ColumnMethod(@NotNull final String methodName,
+                       @NotNull final String fullyQualifiedTableClassName,
+                       @NotNull final String columnName,
                        @NotNull final TypeMirror type,
                        final boolean isGetter,
                        final boolean isPrimary,
                        @NotNull final Element element) {
-    mName = name;
+    mMethodName = methodName;
+    mFullyQualifiedTableClassName = fullyQualifiedTableClassName;
+    mColumnName = columnName;
     mType = type;
-    mElement = element;
-    mIsPrimary = isPrimary;
     mIsGetter = isGetter;
+    mIsPrimary = isPrimary;
+    mElement = element;
   }
 
   /**
    * Returns the name of the method.
    */
   @NotNull
-  public String getName() {
-    return mName;
+  public String getMethodName() {
+    return mMethodName;
+  }
+
+  @NotNull
+  public String getFullyQualifiedTableClassName() {
+    return mFullyQualifiedTableClassName;
+  }
+
+  @NotNull
+  public String getId() {
+    return mFullyQualifiedTableClassName + '$' + mMethodName;
+  }
+
+  @NotNull
+  public String getColumnName() {
+    return mColumnName;
   }
 
   /**
@@ -79,18 +107,8 @@ public class ColumnMethod {
     return mType;
   }
 
-  /**
-   * Returns true if the method is a getter.
-   */
   public boolean isGetter() {
     return mIsGetter;
-  }
-
-  /**
-   * Returns true if the method is a setter.
-   */
-  public boolean isSetter() {
-    return !mIsGetter;
   }
 
   /**
@@ -114,19 +132,33 @@ public class ColumnMethod {
     private String mName;
 
     @Nullable
+    private String mFullyQualifiedTableClassName;
+
+    @Nullable
+    private String mColumnName;
+
+    @Nullable
     private TypeMirror mType;
 
     private boolean mIsGetter;
 
+    private boolean mIsPrimary;
+
     @Nullable
     private Element mElement;
-
-    private boolean mIsPrimary;
 
     @NotNull
     public ColumnMethod build() {
       if (mName == null) {
         throw new IllegalStateException("ColumnMethod needs a name.");
+      }
+
+      if (mFullyQualifiedTableClassName == null) {
+        throw new IllegalStateException("ColumnMethod needs a fully qualified table class name.");
+      }
+
+      if (mColumnName == null) {
+        throw new IllegalStateException("ColumnMethod needs a column name");
       }
 
       if (mType == null) {
@@ -137,11 +169,21 @@ public class ColumnMethod {
         throw new IllegalStateException("ColumnMethod needs an Element.");
       }
 
-      return new ColumnMethod(mName, mType, mIsGetter, mIsPrimary, mElement);
+      return new ColumnMethod(mName, mFullyQualifiedTableClassName, mColumnName, mType, mIsGetter, mIsPrimary, mElement);
     }
 
     public Builder withName(@NotNull final String name) {
       mName = name;
+      return this;
+    }
+
+    public Builder withFullyQualifiedTableClassName(@NotNull final String fullyQualifiedTableClassName) {
+      mFullyQualifiedTableClassName = fullyQualifiedTableClassName;
+      return this;
+    }
+
+    public Builder withColumnName(@NotNull final String columnName) {
+      mColumnName = columnName;
       return this;
     }
 

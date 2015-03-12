@@ -26,11 +26,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class TableClassFactory {
 
-  public Set<TableClass> createTableClasses(@NotNull final Set<? extends Element> tableElements) {
+  public Set<TableClass> createTableClasses(@NotNull final Set<? extends TypeElement> tableElements) {
     Set<TableClass> tableClasses = new HashSet<>(tableElements.size());
 
-    for (Element tableElement : tableElements) {
-      tableClasses.add(createTableClass((TypeElement) tableElement));
+    for (TypeElement tableElement : tableElements) {
+      tableClasses.add(createTableClass(tableElement));
     }
 
     return tableClasses;
@@ -45,7 +45,6 @@ public class TableClassFactory {
     builder.withTableName(tableElement.getAnnotation(Table.class).name());
     builder.withClassName(className);
     builder.withPackageName(packageName);
-    builder.withColumns(new ColumnFactory().createColumns(tableElement.getEnclosedElements()));
     builder.withElement(tableElement);
 
     return builder.build();

@@ -16,8 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
-import java.util.Collection;
-import java.util.Collections;
 import javax.lang.model.element.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,32 +35,22 @@ public class TableClass {
   private final String mTableName;
 
   @NotNull
-  private final Collection<Column> mColumns;
-
-  @NotNull
   private final Element mElement;
 
   public TableClass(@NotNull final String tableName,
                     @NotNull final String className,
                     @NotNull final String packageName,
-                    @NotNull final Collection<Column> columns,
                     @NotNull final Element element) {
 
     mTableName = tableName;
     mClassName = className;
     mPackageName = packageName;
-    mColumns = columns;
     mElement = element;
   }
 
   @NotNull
   public String getTableName() {
     return mTableName;
-  }
-
-  @NotNull
-  public Collection<Column> getColumns() {
-    return Collections.unmodifiableCollection(mColumns);
   }
 
   @NotNull
@@ -80,14 +68,9 @@ public class TableClass {
     return mPackageName;
   }
 
-  @Nullable
-  public Column getPrimaryKeyColumn() {
-    for (Column column : mColumns) {
-      if (column.isPrimary()) {
-        return column;
-      }
-    }
-    return null;
+  @NotNull
+  public String getFullyQualifiedName() {
+    return mPackageName + '.' + mClassName;
   }
 
   /**
@@ -105,9 +88,6 @@ public class TableClass {
     private String mPackageName;
 
     @Nullable
-    private Collection<Column> mColumns;
-
-    @Nullable
     private Element mElement;
 
     public TableClass build() {
@@ -123,15 +103,11 @@ public class TableClass {
         throw new IllegalStateException("TableClass needs a package name");
       }
 
-      if (mColumns == null) {
-        throw new IllegalStateException("TableClass needs columns.");
-      }
-
       if (mElement == null) {
         throw new IllegalStateException("TableClass needs an Element");
       }
 
-      return new TableClass(mTableName, mClassName, mPackageName, mColumns, mElement);
+      return new TableClass(mTableName, mClassName, mPackageName, mElement);
     }
 
     public Builder withTableName(@NotNull final String tableName) {
@@ -146,11 +122,6 @@ public class TableClass {
 
     public Builder withPackageName(@NotNull final String packageName) {
       mPackageName = packageName;
-      return this;
-    }
-
-    public Builder withColumns(@NotNull final Collection<Column> columns) {
-      mColumns = columns;
       return this;
     }
 

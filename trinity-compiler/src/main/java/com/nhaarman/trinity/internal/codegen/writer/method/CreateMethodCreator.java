@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
@@ -63,7 +62,8 @@ class CreateMethodCreator implements MethodCreator {
   @Override
   public MethodSpec create() {
     Parameter parameter = mMethod.getParameter();
-    Column primaryKeyColumn = mTableClass.getPrimaryKeyColumn();
+    //TODO
+    //Column primaryKeyColumn = mTableClass.getPrimaryKeyColumn();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
@@ -76,7 +76,7 @@ class CreateMethodCreator implements MethodCreator {
         .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getName())
         .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mTableClass.getTableName())
         .beginControlFlow("if (id != -1)")
-        .addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())
+            //.addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())
         .addStatement("result = id")
         .endControlFlow()
         .addCode("\n")

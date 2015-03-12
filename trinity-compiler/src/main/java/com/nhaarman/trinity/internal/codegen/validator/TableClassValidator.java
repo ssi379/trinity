@@ -18,18 +18,19 @@ package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
-public class TableClassValidator implements Validator<Set<? extends TableClass>> {
+public class TableClassValidator implements Validator<Collection<? extends TableClass>> {
 
   @Override
-  public void validate(@NotNull final Set<? extends TableClass> tableClasses) throws ProcessingException {
+  public void validate(@NotNull final Collection<? extends TableClass> tableClasses) throws ProcessingException {
     validateTableNames(tableClasses);
   }
 
-  private void validateTableNames(@NotNull final Set<? extends TableClass> tableClasses) throws ProcessingException {
+  private void validateTableNames(@NotNull final Collection<? extends TableClass> tableClasses) throws ProcessingException {
     Set<String> tableNames = new HashSet<>();
     for (TableClass tableClass : tableClasses) {
       if (tableNames.contains(tableClass.getTableName())) {

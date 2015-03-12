@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
-import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
 import org.junit.Before;
@@ -44,13 +43,13 @@ public class LongReadCursorCreatorTest {
   @Before
   public void setUp() {
     ColumnMethod setterMock = mock(ColumnMethod.class);
-    when(setterMock.getName()).thenReturn(SETTER_NAME);
+    when(setterMock.getMethodName()).thenReturn(SETTER_NAME);
 
-    Column columnMock = mock(Column.class);
-    when(columnMock.setter()).thenReturn(setterMock);
-    when(columnMock.getName()).thenReturn(COLUMN_NAME);
+    //Column columnMock = mock(Column.class);
+    //when(columnMock.setter()).thenReturn(setterMock);
+    //when(columnMock.getName()).thenReturn(COLUMN_NAME);
 
-    mLongReadCursorCreator = new LongReadCursorCreator(columnMock, RESULT, CURSOR);
+    //mLongReadCursorCreator = new LongReadCursorCreator(columnMock, RESULT, CURSOR);
   }
 
   @Test

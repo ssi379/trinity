@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class RepositoryClassFactory {
 
-  public Set<? extends RepositoryClass> createRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements) {
+  public Collection<RepositoryClass> createRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements) {
     Set<RepositoryClass> results = new HashSet<>();
 
     for (Element repositoryElement : repositoryElements) {
