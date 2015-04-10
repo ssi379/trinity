@@ -58,7 +58,8 @@ public class RepositoryWriterStep implements ProcessingStep {
     }
   }
 
-  private void writeRepositoryClass(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass) throws IOException, ProcessingException {
+  private void writeRepositoryClass(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass)
+      throws IOException, ProcessingException {
     TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass, tableClass, mColumnMethodRepository).create();
     mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
   }

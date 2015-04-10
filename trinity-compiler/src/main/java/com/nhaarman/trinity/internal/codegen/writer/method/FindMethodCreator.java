@@ -16,6 +16,7 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.ClassName;
@@ -28,6 +29,7 @@ import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CURSOR;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+@SuppressWarnings("HardCodedStringLiteral")
 class FindMethodCreator implements MethodCreator {
 
   @NotNull
@@ -42,27 +44,35 @@ class FindMethodCreator implements MethodCreator {
   @NotNull
   private final RepositoryMethod mMethod;
 
+  @NotNull
+  private final ColumnMethod mPrimaryKeyGetter;
+
   FindMethodCreator(@NotNull final TableClass tableClass,
                     @NotNull final FieldSpec databaseFieldSpec,
                     @NotNull final MethodSpec readCursorSpec,
-                    @NotNull final RepositoryMethod method) {
+                    @NotNull final RepositoryMethod method,
+                    @NotNull final ColumnMethod primaryKeyGetter) {
     mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
     mMethod = method;
+    mPrimaryKeyGetter = primaryKeyGetter;
   }
 
+  @NotNull
   @Override
   public MethodSpec create() {
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
+    String parameterName = mMethod.getParameter().getName();
+    String columnName = mPrimaryKeyGetter.getColumnName();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(ClassName.bestGuess(mMethod.getParameter().getType()), mMethod.getParameter().getName(), FINAL)
-        .returns(ClassName.get(mMethod.getReturnType()))
-        .beginControlFlow("if (id == null)")
+        .addParameter(ClassName.bestGuess(mMethod.getParameter().getType()), parameterName, FINAL)
+        .returns(ClassName.bestGuess(mMethod.getReturnType()))
+        .beginControlFlow("if (" + parameterName + " == null)")
         .addStatement("return null")
         .endControlFlow()
         .addCode("\n")
@@ -71,7 +81,7 @@ class FindMethodCreator implements MethodCreator {
         .addStatement(
             "$T cursor = new $T()" +
                 ".from($S)" +
-                ".where(\"id=?\", id)" +
+                ".where(\"" + columnName + "=?\", " + parameterName + ')' +
                 ".limit(\"1\")" +
                 ".queryOn($N)",
             CURSOR,

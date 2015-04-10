@@ -56,8 +56,8 @@ public class RepositoryMethod {
   }
 
   @NotNull
-  public TypeMirror getReturnType() {
-    return mType;
+  public String getReturnType() {
+    return mType.toString();
   }
 
   public Collection<Parameter> getParameters() {

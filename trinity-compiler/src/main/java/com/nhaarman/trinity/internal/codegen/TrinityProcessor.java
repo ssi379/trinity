@@ -17,12 +17,12 @@
 package com.nhaarman.trinity.internal.codegen;
 
 import com.nhaarman.trinity.internal.codegen.data.RepositoryGateway;
-import com.nhaarman.trinity.internal.codegen.step.RepositoryClassConversionStep;
-import com.nhaarman.trinity.internal.codegen.step.RepositoryWriterStep;
 import com.nhaarman.trinity.internal.codegen.step.ColumnMethodConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.ColumnMethodValidationStep;
 import com.nhaarman.trinity.internal.codegen.step.ProcessingStep;
+import com.nhaarman.trinity.internal.codegen.step.RepositoryClassConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.RepositoryClassValidationStep;
+import com.nhaarman.trinity.internal.codegen.step.RepositoryWriterStep;
 import com.nhaarman.trinity.internal.codegen.step.TableClassConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.TableClassValidationStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateColumnElementsStep;

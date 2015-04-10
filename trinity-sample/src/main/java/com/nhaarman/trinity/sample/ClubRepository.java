@@ -21,7 +21,7 @@ import com.nhaarman.trinity.annotations.Repository;
 @Repository(Club.class)
 public interface ClubRepository {
 
-  Club find(Long id);
+  Club find(String key);
 
   Long create(Club club);
 

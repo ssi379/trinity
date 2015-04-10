@@ -37,6 +37,7 @@ public class Player {
   }
 
   @Column("id")
+  @PrimaryKey
   public void setId(final Long id) {
     mId = id;
   }

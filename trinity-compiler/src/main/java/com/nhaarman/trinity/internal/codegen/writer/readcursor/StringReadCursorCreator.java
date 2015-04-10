@@ -17,6 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.CodeBlock;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +56,7 @@ public class StringReadCursorCreator implements ReadCursorCreator {
             mColumn.getMethodName(),
             mCursorVariableName,
             mCursorVariableName,
-            mColumn.getMethodName())
+            mColumn.getColumnName())
         .build();
   }
 }

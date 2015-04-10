@@ -16,13 +16,15 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.Parameter;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
 import static javax.lang.model.element.Modifier.FINAL;
@@ -34,10 +36,8 @@ import static javax.lang.model.element.Modifier.PUBLIC;
  * The `Long create(T t)` method takes an entity of a class annotated with the @Table annotation as a parameter,
  * and inserts the entity into the database. It returns a Long value, based on the result of `insert`.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 class CreateMethodCreator implements MethodCreator {
-
-  @NotNull
-  private final RepositoryClass mRepositoryClass;
 
   @NotNull
   private final TableClass mTableClass;
@@ -48,40 +48,47 @@ class CreateMethodCreator implements MethodCreator {
   @NotNull
   private final RepositoryMethod mMethod;
 
-  CreateMethodCreator(@NotNull final RepositoryClass repositoryClass,
-                      @NotNull final TableClass tableClass,
-                      @NotNull final MethodSpec createContentValuesSpec,
-                      @NotNull final RepositoryMethod method) {
+  @Nullable
+  private final ColumnMethod mPrimaryKeySetter;
 
-    mRepositoryClass = repositoryClass;
+  CreateMethodCreator(@NotNull final TableClass tableClass,
+                      @NotNull final MethodSpec createContentValuesSpec,
+                      @NotNull final RepositoryMethod method,
+                      @Nullable final ColumnMethod primaryKeySetter) {
+
     mTableClass = tableClass;
     mCreateContentValuesSpec = createContentValuesSpec;
     mMethod = method;
+    mPrimaryKeySetter = primaryKeySetter;
   }
 
+  @NotNull
   @Override
   public MethodSpec create() {
     Parameter parameter = mMethod.getParameter();
-    //TODO
-    //Column primaryKeyColumn = mTableClass.getPrimaryKeyColumn();
 
-    return MethodSpec.methodBuilder(mMethod.getMethodName())
+    Builder builder = MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .addParameter(ClassName.bestGuess(parameter.getType()), parameter.getName(), FINAL)
-        .returns(ClassName.get(mMethod.getReturnType()))
+        .returns(ClassName.bestGuess(mMethod.getReturnType()))
         .addStatement("$T result = null", Long.class)
         .addCode("\n")
         .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getName())
         .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mTableClass.getTableName())
-        .beginControlFlow("if (id != -1)")
-            //.addStatement("$L.$L(id)", parameter.getName(), primaryKeyColumn.setter().getName())
-        .addStatement("result = id")
+        .beginControlFlow("if (id != -1)");
+
+    if (mPrimaryKeySetter != null && Long.class.getName().equals(mPrimaryKeySetter.getType())) {
+      builder.addStatement("$L.$L(id)", parameter.getName(), mPrimaryKeySetter.getMethodName());
+    }
+
+    builder.addStatement("result = id")
         .endControlFlow()
         .addCode("\n")
-        .addStatement("return result")
-        .build();
+        .addStatement("return result");
+
+    return builder.build();
   }
 
   private String createJavadoc() {

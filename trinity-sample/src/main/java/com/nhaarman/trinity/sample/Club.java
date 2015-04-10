@@ -23,18 +23,19 @@ import com.nhaarman.trinity.annotations.Table;
 @Table(name = "clubs")
 public class Club {
 
-  private Long mId;
+  private String mId;
 
   private String mName;
 
   @Column("id")
   @PrimaryKey
-  public Long getId() {
+  public String getId() {
     return mId;
   }
 
   @Column("id")
-  public void setId(final Long id) {
+  @PrimaryKey
+  public void setId(final String id) {
     mId = id;
   }
 

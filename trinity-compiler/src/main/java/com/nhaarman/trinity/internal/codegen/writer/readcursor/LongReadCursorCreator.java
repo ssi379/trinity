@@ -55,7 +55,7 @@ public class LongReadCursorCreator implements ReadCursorCreator {
             mColumn.getMethodName(),
             mColumnVariableName,
             mColumnVariableName,
-            mColumn.getMethodName())
+            mColumn.getColumnName())
         .build();
   }
 }

@@ -16,11 +16,9 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.data.Column;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.MethodSpec;
 import org.junit.Before;
@@ -68,7 +66,21 @@ public class CreateMethodCreatorTest {
       + "return result;\n"
       + "";
 
+  private static final String EXPECTED_CODE_FOR_STRING_ID = ""
+      + "java.lang.Long result = null;\n"
+      + "\n"
+      + "android.content.ContentValues contentValues = createContentValues(entity);\n"
+      + "long id = mDatabase.insert(\"" + TABLE_NAME + "\", null, contentValues);\n"
+      + "if (id != -1) {\n"
+      + "  result = id;\n"
+      + "}\n"
+      + "\n"
+      + "return result;\n"
+      + "";
+
   private CreateMethodCreator mCreateMethodCreator;
+
+  private ColumnMethod mPrimaryKeySetterMock;
 
   @Before
   public void setUp() {
@@ -83,19 +95,14 @@ public class CreateMethodCreatorTest {
     when(methodMock.getParameter()).thenReturn(parameterMock);
     when(methodMock.getReturnType()).thenReturn(RETURN_TYPE);
 
-    ColumnMethod setterMock = mock(ColumnMethod.class);
-    when(setterMock.getMethodName()).thenReturn("setId");
-
-    Column primaryColumnMock = mock(Column.class);
-    when(primaryColumnMock.setter()).thenReturn(setterMock);
+    mPrimaryKeySetterMock = mock(ColumnMethod.class);
+    when(mPrimaryKeySetterMock.getMethodName()).thenReturn("setId");
+    when(mPrimaryKeySetterMock.getType()).thenReturn("java.lang.Long");
 
     TableClass tableClassMock = mock(TableClass.class);
     when(tableClassMock.getTableName()).thenReturn(TABLE_NAME);
-    when(tableClassMock.getPrimaryKeyColumn()).thenReturn(primaryColumnMock);
 
-    RepositoryClass repositoryClassMock = mock(RepositoryClass.class);
-
-    mCreateMethodCreator = new CreateMethodCreator(repositoryClassMock, tableClassMock, createContentValuesSpec, methodMock);
+    mCreateMethodCreator = new CreateMethodCreator(tableClassMock, createContentValuesSpec, methodMock, mPrimaryKeySetterMock);
   }
 
   @Test
@@ -172,5 +179,17 @@ public class CreateMethodCreatorTest {
 
     /* Then */
     assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE)));
+  }
+
+  @Test
+  public void createdMethodSpec_forTableWithStringId_doesNotSetId() {
+    /* Given */
+    when(mPrimaryKeySetterMock.getType()).thenReturn("java.lang.String");
+
+    /* When */
+    MethodSpec methodSpec = mCreateMethodCreator.create();
+
+    /* Then */
+    assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE_FOR_STRING_ID)));
   }
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ColumnMethodRepository {
 
@@ -54,5 +55,27 @@ public class ColumnMethodRepository {
 
   public void clear() {
     mColumnMethods.clear();
+  }
+
+  @Nullable
+  public ColumnMethod findPrimaryKeySetter(@NotNull final String fullyQualifiedName) {
+    for (ColumnMethod columnMethod : mColumnMethods.values()) {
+      if (!columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedName)) {
+        return columnMethod;
+      }
+    }
+
+    return null;
+  }
+
+  @Nullable
+  public ColumnMethod findPrimaryKeyGetter(@NotNull final String fullyQualifiedName) {
+    for (ColumnMethod columnMethod : mColumnMethods.values()) {
+      if (columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedName)) {
+        return columnMethod;
+      }
+    }
+
+    return null;
   }
 }

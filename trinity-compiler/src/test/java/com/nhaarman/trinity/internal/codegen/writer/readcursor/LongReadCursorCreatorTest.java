@@ -26,14 +26,17 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class LongReadCursorCreatorTest {
 
   private static final String RESULT = "result";
+
   private static final String CURSOR = "cursor";
 
   private static final String SETTER_NAME = "setId";
+
   private static final String COLUMN_NAME = "id";
 
   private static final String EXPECTED_CODE = "result.setId(cursor.getLong(cursor.getColumnIndex(\"id\")));\n";
@@ -44,12 +47,9 @@ public class LongReadCursorCreatorTest {
   public void setUp() {
     ColumnMethod setterMock = mock(ColumnMethod.class);
     when(setterMock.getMethodName()).thenReturn(SETTER_NAME);
+    when(setterMock.getColumnName()).thenReturn(COLUMN_NAME);
 
-    //Column columnMock = mock(Column.class);
-    //when(columnMock.setter()).thenReturn(setterMock);
-    //when(columnMock.getName()).thenReturn(COLUMN_NAME);
-
-    //mLongReadCursorCreator = new LongReadCursorCreator(columnMock, RESULT, CURSOR);
+    mLongReadCursorCreator = new LongReadCursorCreator(setterMock, RESULT, CURSOR);
   }
 
   @Test

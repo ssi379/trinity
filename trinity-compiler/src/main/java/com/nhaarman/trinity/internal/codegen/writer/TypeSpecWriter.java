@@ -42,7 +42,6 @@ public class TypeSpecWriter {
    */
   public void writeToFile(@NotNull final String packageName, @NotNull final TypeSpec typeSpec) throws IOException {
     JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
-
     JavaFileObject sourceFile = mFiler.createSourceFile(typeSpec.name);
     try (Writer writer = sourceFile.openWriter()) {
       javaFile.writeTo(writer);

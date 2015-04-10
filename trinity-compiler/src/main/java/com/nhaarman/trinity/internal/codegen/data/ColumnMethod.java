@@ -103,8 +103,8 @@ public class ColumnMethod {
    * Returns the type of the column.
    */
   @NotNull
-  public TypeMirror getType() {
-    return mType;
+  public String getType() {
+    return mType.toString();
   }
 
   public boolean isGetter() {

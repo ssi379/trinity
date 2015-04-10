@@ -56,11 +56,12 @@ public class MainActivity extends Activity {
     super.onStart();
     Club club = new Club();
     club.setName("Club");
-    Long clubId = mClubRepository.create(club);
+    club.setId("Club");
+    mClubRepository.create(club);
 
     Team team = new Team();
     team.setName("Team");
-    team.setClubId(clubId);
+    team.setClubId("Club");
     Long teamId = mTeamRepository.create(team);
 
     Player player = new Player();

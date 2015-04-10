@@ -5,7 +5,6 @@ import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClassFactory;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClassRepository;
-import com.nhaarman.trinity.internal.codegen.step.ProcessingStep;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.processing.RoundEnvironment;

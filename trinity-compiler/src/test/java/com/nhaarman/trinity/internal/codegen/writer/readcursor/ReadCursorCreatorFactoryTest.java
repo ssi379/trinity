@@ -17,7 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
-import com.nhaarman.trinity.internal.codegen.data.Column;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,18 +31,18 @@ public class ReadCursorCreatorFactoryTest {
 
   private ReadCursorCreatorFactory mReadCursorCreatorFactory;
 
-  private Column mColumnMock;
+  private ColumnMethod mColumnMock;
 
   @Before
   public void setUp() {
-    mColumnMock = mock(Column.class);
+    mColumnMock = mock(ColumnMethod.class);
     mReadCursorCreatorFactory = new ReadCursorCreatorFactory("result", "cursor");
   }
 
   @Test
   public void javaLangString_returnsStringReadCursorCreator() throws ProcessingException {
     /* Given */
-    when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("java.lang.String");
+    when(mColumnMock.getType()).thenReturn("java.lang.String");
 
     /* When */
     ReadCursorCreator readCursorCreator = mReadCursorCreatorFactory.createReadCursorCreator(mColumnMock);
@@ -54,7 +54,7 @@ public class ReadCursorCreatorFactoryTest {
   @Test
   public void javaLangLong_returnsStringReadCursorCreator()  throws ProcessingException {
     /* Given */
-    when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("java.lang.Long");
+    when(mColumnMock.getType()).thenReturn("java.lang.Long");
 
     /* When */
     ReadCursorCreator readCursorCreator = mReadCursorCreatorFactory.createReadCursorCreator(mColumnMock);
@@ -66,7 +66,7 @@ public class ReadCursorCreatorFactoryTest {
   @Test(expected = ProcessingException.class)
   public void unknownType_throwsProcessingException() throws ProcessingException  {
     /* Given */
-    when(mColumnMock.getFullyQualifiedJavaType()).thenReturn("some.type.that.does.not.Exist");
+    when(mColumnMock.getType()).thenReturn("some.type.that.does.not.Exist");
 
     /* When */
     mReadCursorCreatorFactory.createReadCursorCreator(mColumnMock);

@@ -24,12 +24,11 @@ import com.nhaarman.trinity.annotations.Table;
 @Table(name = "teams")
 public class Team {
 
-
   private Long mId;
 
   private String mName;
 
-  private Long mClubId;
+  private String mClubId;
 
   @PrimaryKey
   @Column("id")
@@ -38,6 +37,7 @@ public class Team {
   }
 
   @Column("id")
+  @PrimaryKey
   public void setId(final Long id) {
     mId = id;
   }
@@ -54,12 +54,12 @@ public class Team {
 
   @Foreign(tableName = "clubs", columnName = "id")
   @Column("club_id")
-  public Long getClubId() {
+  public String getClubId() {
     return mClubId;
   }
 
   @Column("club_id")
-  public void setClubId(final Long clubId) {
+  public void setClubId(final String clubId) {
     mClubId = clubId;
   }
 }

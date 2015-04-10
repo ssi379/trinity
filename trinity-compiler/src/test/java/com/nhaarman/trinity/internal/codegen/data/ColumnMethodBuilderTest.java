@@ -8,6 +8,7 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ColumnMethodBuilderTest {
 
@@ -16,6 +17,8 @@ public class ColumnMethodBuilderTest {
     new Builder()
         .withType(mock(TypeMirror.class))
         .withElement(mock(Element.class))
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
+        .withColumnName("ColumnName")
         .isPrimary()
         .build();
   }
@@ -25,6 +28,8 @@ public class ColumnMethodBuilderTest {
     new Builder()
         .withName("Name")
         .withElement(mock(Element.class))
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
+        .withColumnName("ColumnName")
         .isPrimary()
         .build();
   }
@@ -33,7 +38,32 @@ public class ColumnMethodBuilderTest {
   public void missingElement_throwsException() {
     new Builder()
         .withName("Name")
+        .withColumnName("ColumnName")
         .withType(mock(TypeMirror.class))
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
+        .isPrimary()
+        .build();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void missingFullyQualifiedTableClassName_throwsException() {
+    new Builder()
+        .withName("Name")
+        .withColumnName("ColumnName")
+        .withType(mock(TypeMirror.class))
+        .withElement(mock(Element.class))
+        .isPrimary()
+        .build();
+  }
+
+
+  @Test(expected = IllegalStateException.class)
+  public void missingColumnName_throwsException() {
+    new Builder()
+        .withName("Name")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
+        .withType(mock(TypeMirror.class))
+        .withElement(mock(Element.class))
         .isPrimary()
         .build();
   }
@@ -47,6 +77,8 @@ public class ColumnMethodBuilderTest {
     ColumnMethod columnMethod = new Builder()
         .withName(name)
         .withType(mock(TypeMirror.class))
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(mock(Element.class))
         .isPrimary()
         .build();
@@ -59,17 +91,20 @@ public class ColumnMethodBuilderTest {
   public void createdColumnMethod_hasProperType() {
     /* Given */
     TypeMirror typeMirror = mock(TypeMirror.class);
+    when(typeMirror.toString()).thenReturn("myType");
 
     /* When */
     ColumnMethod columnMethod = new Builder()
         .withName("Name")
         .withType(typeMirror)
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(mock(Element.class))
         .isPrimary()
         .build();
 
     /* Then */
-    assertThat(columnMethod.getType(), is(typeMirror));
+    assertThat(columnMethod.getType(), is("myType"));
   }
 
   @Test
@@ -78,6 +113,8 @@ public class ColumnMethodBuilderTest {
     ColumnMethod columnMethod = new Builder()
         .withName("Name")
         .withType(mock(TypeMirror.class))
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(mock(Element.class))
         .isPrimary()
         .isGetter()
@@ -93,13 +130,15 @@ public class ColumnMethodBuilderTest {
     ColumnMethod columnMethod = new Builder()
         .withName("Name")
         .withType(mock(TypeMirror.class))
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(mock(Element.class))
         .isPrimary()
         .isSetter()
         .build();
 
     /* Then */
-    assertThat(columnMethod.isSetter(), is(true));
+    assertThat(columnMethod.isGetter(), is(false));
   }
 
   @Test
@@ -108,6 +147,8 @@ public class ColumnMethodBuilderTest {
     ColumnMethod columnMethod = new Builder()
         .withName("Name")
         .withType(mock(TypeMirror.class))
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(mock(Element.class))
         .isPrimary()
         .build();
@@ -125,6 +166,8 @@ public class ColumnMethodBuilderTest {
     ColumnMethod columnMethod = new Builder()
         .withName("Name")
         .withType(mock(TypeMirror.class))
+        .withColumnName("ColumnName")
+        .withFullyQualifiedTableClassName("FullyQualifiedTableClassName")
         .withElement(element)
         .isPrimary()
         .build();

@@ -45,12 +45,9 @@ public class StringReadCursorCreatorTest {
   public void setUp() {
     ColumnMethod setterMock = mock(ColumnMethod.class);
     when(setterMock.getMethodName()).thenReturn(SETTER_NAME);
+    when(setterMock.getColumnName()).thenReturn(COLUMN_NAME);
 
-    //Column columnMock = mock(Column.class);
-    //when(columnMock.setter()).thenReturn(setterMock);
-    //when(columnMock.getName()).thenReturn(COLUMN_NAME);
-
-    //mStringReadCursorCreator = new StringReadCursorCreator(columnMock, RESULT, CURSOR);
+    mStringReadCursorCreator = new StringReadCursorCreator(setterMock, RESULT, CURSOR);
   }
 
   @Test

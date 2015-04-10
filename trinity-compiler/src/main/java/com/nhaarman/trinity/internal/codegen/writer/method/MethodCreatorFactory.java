@@ -17,7 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.FieldSpec;
@@ -26,9 +26,6 @@ import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 
 public class MethodCreatorFactory {
-
-  @NotNull
-  private final RepositoryClass mRepositoryClass;
 
   @NotNull
   private final TableClass mTableClass;
@@ -42,25 +39,33 @@ public class MethodCreatorFactory {
   @NotNull
   private final MethodSpec mCreateContentValuesSpec;
 
-  public MethodCreatorFactory(@NotNull final RepositoryClass repositoryClass,
-                              @NotNull final TableClass tableClass,
+  @NotNull
+  private final ColumnMethod mPrimaryKeySetter;
+
+  @NotNull
+  private final ColumnMethod mPrimaryKeyGetter;
+
+  public MethodCreatorFactory(@NotNull final TableClass tableClass,
                               @NotNull final FieldSpec databaseFieldSpec,
                               @NotNull final MethodSpec readCursorSpec,
-                              @NotNull final MethodSpec createContentValuesSpec) {
-    mRepositoryClass = repositoryClass;
+                              @NotNull final MethodSpec createContentValuesSpec,
+                              @NotNull final ColumnMethod primaryKeySetter,
+                              @NotNull final ColumnMethod primaryKeyGetter) {
     mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
     mCreateContentValuesSpec = createContentValuesSpec;
+    mPrimaryKeySetter = primaryKeySetter;
+    mPrimaryKeyGetter = primaryKeyGetter;
   }
 
   public MethodCreator creatorFor(@NotNull final RepositoryMethod method) throws ProcessingException {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
-        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method);
+        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeyGetter);
       case "create":
-        return new CreateMethodCreator(mRepositoryClass, mTableClass, mCreateContentValuesSpec, method);
+        return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
       default:
         throw new ProcessingException(String.format("Cannot implement %s: unknown method.", method.getMethodName()), method.getElement());
     }

@@ -22,19 +22,15 @@ import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.writer.method.CreateContentValuesMethodCreator;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreatorFactory;
-import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreator;
-import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreatorFactory;
+import com.nhaarman.trinity.internal.codegen.writer.method.ReadCursorMethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
-import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
-import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CONTENT_VALUES;
-import static com.nhaarman.trinity.internal.codegen.AndroidClasses.CURSOR;
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -70,7 +66,18 @@ public class RepositoryTypeSpecCreator {
     MethodSpec readCursorSpec = readCursor();
     MethodSpec createContentValuesSpec = createContentValues();
 
-    MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mRepositoryClass, mTableClass, databaseFieldSpec, readCursorSpec, createContentValuesSpec);
+    ColumnMethod primaryKeySetter = mColumnMethodRepository.findPrimaryKeySetter(mTableClass.getFullyQualifiedName());
+    ColumnMethod primaryKeyGetter = mColumnMethodRepository.findPrimaryKeyGetter(mTableClass.getFullyQualifiedName());
+
+    MethodCreatorFactory methodCreatorFactory =
+        new MethodCreatorFactory(
+            mTableClass,
+            databaseFieldSpec,
+            readCursorSpec,
+            createContentValuesSpec,
+            primaryKeySetter,
+            primaryKeyGetter
+        );
 
     TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName());
     repositoryBuilder.addModifiers(PUBLIC, FINAL);
@@ -114,57 +121,15 @@ public class RepositoryTypeSpecCreator {
    * Creates the createContentValues method.
    */
   private MethodSpec createContentValues() {
-    Collection<ColumnMethod> getters = mColumnMethodRepository.findGettersForTableClass(mTableClass.getFullyQualifiedName());
-
-    ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
-
-    Builder methodBuilder =
-        MethodSpec.methodBuilder("createContentValues")
-            .addModifiers(PUBLIC)
-            .addParameter(entityClassName, "entity", FINAL)
-            .returns(CONTENT_VALUES)
-            .addStatement("$T result = new $T()", CONTENT_VALUES, CONTENT_VALUES)
-            .addCode("\n");
-
-    for (ColumnMethod getter : getters) {
-      methodBuilder.addStatement("result.put($S, entity.$L())", getter.getColumnName(), getter.getMethodName());
-    }
-
-    methodBuilder.addCode("\n");
-    methodBuilder.addStatement("return result");
-
-    return methodBuilder.build();
+    return new CreateContentValuesMethodCreator(mTableClass, mColumnMethodRepository).create();
   }
 
   /**
    * Creates the readCursor method.
    */
+  @NotNull
   private MethodSpec readCursor() throws ProcessingException {
-    Collection<ColumnMethod> setters = mColumnMethodRepository.findSettersForTableClass(mTableClass.getFullyQualifiedName());
-
-    ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
-
-    Builder methodBuilder =
-        MethodSpec.methodBuilder("read")
-            .addModifiers(PUBLIC)
-            .addParameter(CURSOR, "cursor", FINAL)
-            .returns(entityClassName)
-            .addStatement(
-                "$T result = new $T()",
-                entityClassName,
-                entityClassName
-            )
-            .addCode("\n");
-
-    ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor");
-    for (ColumnMethod setter : setters) {
-      ReadCursorCreator readCursorCreator = creatorFactory.createReadCursorCreator(setter);
-      methodBuilder.addCode(readCursorCreator.create());
-    }
-
-    return methodBuilder.addCode("\n")
-        .addStatement("return result")
-        .build();
+    return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository).create();
   }
 
   /**

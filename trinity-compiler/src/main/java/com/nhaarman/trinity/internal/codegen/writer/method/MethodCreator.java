@@ -16,8 +16,12 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
+import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.squareup.javapoet.MethodSpec;
+import org.jetbrains.annotations.NotNull;
 
 public interface MethodCreator {
-  MethodSpec create();
+
+  @NotNull
+  MethodSpec create() throws ProcessingException;
 }

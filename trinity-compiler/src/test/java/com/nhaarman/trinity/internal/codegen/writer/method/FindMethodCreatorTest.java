@@ -16,8 +16,9 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod.Parameter;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -34,8 +35,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class FindMethodCreatorTest {
 
@@ -46,6 +46,10 @@ public class FindMethodCreatorTest {
   private static final String PACKAGE = "mypackage";
   private static final String PARAMETER_TYPE = "java.lang.Long";
   private static final String PARAMETER_NAME = "id";
+  private static final String COLUMN_NAME = "id";
+  private static final String CUSTOM_PARAMETER_NAME = "key";
+  private static final String CUSTOM_COLUMN_NAME = "key";
+
   private static final String EXPECTED_JAVADOC = ""
       + "Performs a query for a " + RETURN_TYPE + " with given id.\n"
       + "If no such instance is found, null is returned.\n"
@@ -53,15 +57,16 @@ public class FindMethodCreatorTest {
       + "@param " + PARAMETER_NAME + " The id of the instance to find."
       + "\n"
       + "@return The " + RETURN_TYPE + " with given id, or null if it doesn't exist.";
+
   private static final String EXPECTED_CODE = ""
-      + "if (id == null) {\n"
+      + "if (" + PARAMETER_NAME + " == null) {\n"
       + "  return null;\n"
       + "}\n"
       + "\n"
       + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
       + "\n"
       + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
-      + "from(\"" + TABLE_NAME + "\").where(\"id=?\", id).limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + "from(\"" + TABLE_NAME + "\").where(\"" + COLUMN_NAME + "=?\", " + PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
       + "try {\n"
       + "  if (cursor.moveToFirst()) {\n"
       + "    result = readCursor(cursor);\n"
@@ -72,7 +77,51 @@ public class FindMethodCreatorTest {
       + "\n"
       + "return result;\n"
       + "";
+
+  private static final String EXPECTED_CODE_CUSTOM_PARAMETER_NAME = ""
+      + "if (" + CUSTOM_PARAMETER_NAME + " == null) {\n"
+      + "  return null;\n"
+      + "}\n"
+      + "\n"
+      + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
+      + "\n"
+      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
+      + "from(\"" + TABLE_NAME + "\").where(\""+ COLUMN_NAME+"=?\", " + CUSTOM_PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + "try {\n"
+      + "  if (cursor.moveToFirst()) {\n"
+      + "    result = readCursor(cursor);\n"
+      + "  }\n"
+      + "} finally{\n"
+      + "  cursor.close();\n"
+      + "}\n"
+      + "\n"
+      + "return result;\n"
+      + "";
+
+  private static final String EXPECTED_CODE_WITH_CUSTOM_COLUMN_NAME = ""
+      + "if (" + PARAMETER_NAME + " == null) {\n"
+      + "  return null;\n"
+      + "}\n"
+      + "\n"
+      + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
+      + "\n"
+      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
+      + "from(\"" + TABLE_NAME + "\").where(\"" + CUSTOM_COLUMN_NAME + "=?\", " + PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + "try {\n"
+      + "  if (cursor.moveToFirst()) {\n"
+      + "    result = readCursor(cursor);\n"
+      + "  }\n"
+      + "} finally{\n"
+      + "  cursor.close();\n"
+      + "}\n"
+      + "\n"
+      + "return result;\n"
+      + "";
+
   private FindMethodCreator mFindMethodCreator;
+
+  private Parameter mParameterMock;
+  private ColumnMethod mPrimaryKeyGetterMock;
 
   @Before
   public void setUp() {
@@ -85,16 +134,19 @@ public class FindMethodCreatorTest {
     when(tableClassMock.getPackageName()).thenReturn(PACKAGE);
     when(tableClassMock.getTableName()).thenReturn(TABLE_NAME);
 
-    Parameter parameterMock = mock(Parameter.class);
-    when(parameterMock.getName()).thenReturn(PARAMETER_NAME);
-    when(parameterMock.getType()).thenReturn(PARAMETER_TYPE);
+    mParameterMock = mock(Parameter.class);
+    when(mParameterMock.getName()).thenReturn(PARAMETER_NAME);
+    when(mParameterMock.getType()).thenReturn(PARAMETER_TYPE);
 
     RepositoryMethod repositoryMethodMock = mock(RepositoryMethod.class);
     when(repositoryMethodMock.getMethodName()).thenReturn(FIND);
-    when(repositoryMethodMock.getParameter()).thenReturn(parameterMock);
+    when(repositoryMethodMock.getParameter()).thenReturn(mParameterMock);
     when(repositoryMethodMock.getReturnType()).thenReturn(RETURN_TYPE);
 
-    mFindMethodCreator = new FindMethodCreator(tableClassMock, databaseFieldSpec, readCursorMethod, repositoryMethodMock);
+    mPrimaryKeyGetterMock = mock(ColumnMethod.class);
+    when(mPrimaryKeyGetterMock.getColumnName()).thenReturn(COLUMN_NAME);
+
+    mFindMethodCreator = new FindMethodCreator(tableClassMock, databaseFieldSpec, readCursorMethod, repositoryMethodMock, mPrimaryKeyGetterMock);
   }
 
   @Test
@@ -152,7 +204,7 @@ public class FindMethodCreatorTest {
     assertThat(methodSpec.parameters.size(), is(1));
     assertThat(methodSpec.parameters.get(0).modifiers, hasItem(FINAL));
     assertThat(methodSpec.parameters.get(0).type.toString(), is("java.lang.Long"));
-    assertThat(methodSpec.parameters.get(0).name, is("id"));
+    assertThat(methodSpec.parameters.get(0).name, is(PARAMETER_NAME));
   }
 
   @Test
@@ -171,5 +223,44 @@ public class FindMethodCreatorTest {
 
     /* Then */
     assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE)));
+  }
+
+  @Test
+  public void createdMethodSpec_forTableWithStringKey_hasASingleFinalParameterWithCorrectTypeAndName() {
+    /* Given */
+    when(mParameterMock.getType()).thenReturn(String.class.getName());
+
+    /* When */
+    MethodSpec methodSpec = mFindMethodCreator.create();
+
+    /* Then */
+    assertThat(methodSpec.parameters.size(), is(1));
+    assertThat(methodSpec.parameters.get(0).modifiers, hasItem(FINAL));
+    assertThat(methodSpec.parameters.get(0).type.toString(), is("java.lang.String"));
+    assertThat(methodSpec.parameters.get(0).name, is(PARAMETER_NAME));
+  }
+
+  @Test
+  public void createdMethodSpec_withCustomParameterName_hascorrectCode() {
+    /* Given */
+    when(mParameterMock.getName()).thenReturn(CUSTOM_PARAMETER_NAME);
+
+    /* When */
+    MethodSpec methodSpec = mFindMethodCreator.create();
+
+    /* Then */
+    assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE_CUSTOM_PARAMETER_NAME)));
+  }
+
+  @Test
+  public void createdMethodSpec_withCustomColumnName_hascorrectCode() {
+    /* Given */
+    when(mPrimaryKeyGetterMock.getColumnName()).thenReturn(CUSTOM_COLUMN_NAME);
+
+    /* When */
+    MethodSpec methodSpec = mFindMethodCreator.create();
+
+    /* Then */
+    assertThat(methodSpec.code.toString(), is(equalTo(EXPECTED_CODE_WITH_CUSTOM_COLUMN_NAME)));
   }
 }
