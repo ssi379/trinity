@@ -18,10 +18,9 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +70,20 @@ public class RepositoryMethod {
   @NotNull
   public Element getElement() {
     return mElement;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    for (Modifier modifier : mElement.getModifiers()) {
+      stringBuilder.append(modifier).append(' ');
+    }
+
+    stringBuilder.append(((ExecutableElement) mElement).getReturnType()).append(' ');
+    stringBuilder.append(mElement);
+
+    return stringBuilder.toString();
   }
 
   public static class Builder {

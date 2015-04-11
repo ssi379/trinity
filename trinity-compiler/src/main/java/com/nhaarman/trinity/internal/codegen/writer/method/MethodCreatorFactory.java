@@ -64,14 +64,24 @@ public class MethodCreatorFactory {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
-        if (mPrimaryKeyGetter == null && mPrimaryKeySetter == null) {
-          throw new ProcessingException("Missing primary key method.", method.getElement());
-        }
-        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeySetter == null ? mPrimaryKeyGetter : mPrimaryKeySetter);
+        return createFindMethodCreator(method);
       case "create":
-        return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
+        return createCreateMethodCreator(method);
       default:
-        throw new ProcessingException(String.format("Cannot implement %s: unknown method.", method.getMethodName()), method.getElement());
+        throw new ProcessingException(String.format("Cannot implement '%s': unknown method.", method.toString()), method.getElement());
     }
+  }
+
+  @NotNull
+  private MethodCreator createCreateMethodCreator(@NotNull final RepositoryMethod method) {
+    return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
+  }
+
+  @NotNull
+  private MethodCreator createFindMethodCreator(@NotNull final RepositoryMethod method) throws ProcessingException {
+    if (mPrimaryKeyGetter == null && mPrimaryKeySetter == null) {
+      throw new ProcessingException("Missing primary key method.", method.getElement());
+    }
+    return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeySetter == null ? mPrimaryKeyGetter : mPrimaryKeySetter);
   }
 }

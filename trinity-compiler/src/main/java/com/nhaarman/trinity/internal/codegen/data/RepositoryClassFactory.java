@@ -61,6 +61,10 @@ public class RepositoryClassFactory {
     builder.withTableClassName(tableClassName);
     builder.withTableClassPackageName(tablePackageName);
 
+    if(typeElement.getKind() == ElementKind.INTERFACE){
+      builder.isInterface();
+    }
+
     RepositoryMethodFactory repositoryMethodFactory = new RepositoryMethodFactory();
     Collection<RepositoryMethod> repositoryMethods = new HashSet<>();
     List<? extends Element> enclosedElements = typeElement.getEnclosedElements();

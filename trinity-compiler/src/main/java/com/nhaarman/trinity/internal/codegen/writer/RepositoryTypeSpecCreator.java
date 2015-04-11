@@ -88,7 +88,11 @@ public class RepositoryTypeSpecCreator {
     repositoryBuilder.addMethod(readCursorSpec);
 
     ClassName superclass = ClassName.get(mRepositoryClass.getPackageName(), mRepositoryClass.getClassName());
-    repositoryBuilder.addSuperinterface(superclass);
+    if (mRepositoryClass.isInterface()) {
+      repositoryBuilder.addSuperinterface(superclass);
+    } else {
+      repositoryBuilder.superclass(superclass);
+    }
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
       repositoryBuilder.addMethod(methodCreatorFactory.creatorFor(repositoryMethod).create());

@@ -36,6 +36,8 @@ public class RepositoryClass {
   @NotNull
   private final String mTableClassPackageName;
 
+  private final boolean mIsInterface;
+
   @NotNull
   private final Element mElement;
 
@@ -46,12 +48,14 @@ public class RepositoryClass {
                           @NotNull final String packageName,
                           @NotNull final String tableClassName,
                           @NotNull final String tableClassPackageName,
+                          final boolean isInterface,
                           @NotNull final Collection<RepositoryMethod> methods,
                           @NotNull final Element element) {
     mClassName = className;
     mPackageName = packageName;
     mTableClassName = tableClassName;
     mTableClassPackageName = tableClassPackageName;
+    mIsInterface = isInterface;
     mElement = element;
     mMethods = methods;
   }
@@ -86,6 +90,10 @@ public class RepositoryClass {
     return mTableClassPackageName + '.' + mTableClassName;
   }
 
+  public boolean isInterface() {
+    return mIsInterface;
+  }
+
   @NotNull
   public Collection<RepositoryMethod> getMethods() {
     return Collections.unmodifiableCollection(mMethods);
@@ -109,6 +117,8 @@ public class RepositoryClass {
 
     @Nullable
     private String mTableClassPackageName;
+
+    private boolean mIsInterface;
 
     @Nullable
     private Collection<RepositoryMethod> mMethods;
@@ -141,7 +151,7 @@ public class RepositoryClass {
         throw new IllegalStateException("RepositoryClass needs an Element");
       }
 
-      return new RepositoryClass(mClassName, mPackageName, mTableClassName, mTableClassPackageName, mMethods, mElement);
+      return new RepositoryClass(mClassName, mPackageName, mTableClassName, mTableClassPackageName, mIsInterface, mMethods, mElement);
     }
 
     public Builder withClassName(@NotNull final String className) {
@@ -161,6 +171,11 @@ public class RepositoryClass {
 
     public Builder withTableClassPackageName(@NotNull final String tableClassPackageName) {
       mTableClassPackageName = tableClassPackageName;
+      return this;
+    }
+
+    public Builder isInterface() {
+      mIsInterface = true;
       return this;
     }
 
