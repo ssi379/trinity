@@ -24,7 +24,7 @@ import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.writer.method.CreateContentValuesMethodCreator;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreatorFactory;
-import com.nhaarman.trinity.internal.codegen.writer.method.ReadCursorMethodCreator;
+import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorMethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -39,7 +39,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 @SuppressWarnings("HardCodedStringLiteral")
 public class RepositoryTypeSpecCreator {
 
-  private static final String REPOSITORY_CLASS_NAME = "Trinity_%s";
+  private static final String REPOSITORY_CLASS_NAME = "Trinity%s";
 
   private static final String FIELD_NAME_DATABASE = "mDatabase";
 

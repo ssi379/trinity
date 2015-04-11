@@ -1,11 +1,10 @@
-package com.nhaarman.trinity.internal.codegen.writer.method;
+package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreator;
-import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorCreatorFactory;
+import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Collection;

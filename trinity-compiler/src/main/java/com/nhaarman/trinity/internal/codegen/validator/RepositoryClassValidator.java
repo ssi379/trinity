@@ -17,10 +17,10 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.internal.codegen.ValidationException;
-import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.validator.method.MethodValidatorFactory;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,49 +41,11 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
   }
 
   private void validate(@NotNull final RepositoryClass repositoryClass) throws ValidationException {
+    MethodValidatorFactory methodValidatorFactory = new MethodValidatorFactory(mColumnMethodRepository, repositoryClass);
+
     Collection<RepositoryMethod> methods = repositoryClass.getMethods();
     for (RepositoryMethod method : methods) {
-      if (method.getMethodName().equals("find") || method.getMethodName().equals("findById")) {
-        validateFindMethod(repositoryClass, method);
-      }
-    }
-  }
-
-  private void validateFindMethod(@NotNull final RepositoryClass repositoryClass, @NotNull final RepositoryMethod method) throws ValidationException {
-    ColumnMethod primaryKeyGetter = mColumnMethodRepository.findPrimaryKeyGetter(repositoryClass.getTableClassFullyQualifiedName());
-    ColumnMethod primaryKeySetter = mColumnMethodRepository.findPrimaryKeySetter(repositoryClass.getTableClassFullyQualifiedName());
-
-    if (primaryKeyGetter == null && primaryKeySetter == null) {
-      throw new ValidationException(String.format("Generating a '%s' implementation requires at least one method in %s to be annotated with @PrimaryKey.", method.getMethodName(),
-          repositoryClass.getTableClassFullyQualifiedName()), method.getElement());
-    }
-
-    if (primaryKeyGetter != null && !primaryKeyGetter.getType().equals(method.getParameter().getType())) {
-      throw new ValidationException(
-          String.format(
-              "Type '%s' of method '%s' does not match with type '%s' of method '%s.%s'",
-              method.getParameter().getType(),
-              method.getMethodName(),
-              primaryKeyGetter.getType(),
-              primaryKeyGetter.getFullyQualifiedTableClassName(),
-              primaryKeyGetter.getMethodName()
-          ),
-          method.getElement()
-      );
-    }
-
-    if (primaryKeySetter != null && !primaryKeySetter.getType().equals(method.getParameter().getType())) {
-      throw new ValidationException(
-          String.format(
-              "Type '%s' of method '%s' does not match with type '%s' of method '%s.%s'",
-              method.getParameter().getType(),
-              method.getMethodName(),
-              primaryKeySetter.getType(),
-              primaryKeySetter.getFullyQualifiedTableClassName(),
-              primaryKeySetter.getMethodName()
-          ),
-          method.getElement()
-      );
+      methodValidatorFactory.validatorFor(method).validate(method);
     }
   }
 }

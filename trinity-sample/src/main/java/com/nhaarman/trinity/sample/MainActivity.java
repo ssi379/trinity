@@ -46,9 +46,9 @@ public class MainActivity extends Activity {
     SQLiteDatabaseHelper databaseHelper = new SQLiteDatabaseHelper(this, "Sample", migrations);
     SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
-    mClubRepository = new com.nhaarman.trinity.sample.Trinity_ClubRepository(database);
-    mTeamRepository = new com.nhaarman.trinity.sample.Trinity_TeamRepository(database);
-    mPlayerRepository = new com.nhaarman.trinity.sample.Trinity_PlayerRepository(database);
+    mClubRepository = new com.nhaarman.trinity.sample.TrinityClubRepository(database);
+    mTeamRepository = new com.nhaarman.trinity.sample.TrinityTeamRepository(database);
+    mPlayerRepository = new com.nhaarman.trinity.sample.TrinityPlayerRepository(database);
   }
 
   @Override
