@@ -57,10 +57,17 @@ public class ColumnMethodRepository {
     mColumnMethods.clear();
   }
 
+  /**
+   * Tries to find the primary key setter method for the class with given fully qualified name.
+   *
+   * @param fullyQualifiedTableClassName The fully qualified name of the table class to find the method for.
+   *
+   * @return The method, or null if not found.
+   */
   @Nullable
-  public ColumnMethod findPrimaryKeySetter(@NotNull final String fullyQualifiedName) {
+  public ColumnMethod findPrimaryKeySetter(@NotNull final String fullyQualifiedTableClassName) {
     for (ColumnMethod columnMethod : mColumnMethods.values()) {
-      if (!columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedName)) {
+      if (!columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedTableClassName)) {
         return columnMethod;
       }
     }
@@ -68,10 +75,17 @@ public class ColumnMethodRepository {
     return null;
   }
 
+  /**
+   * Tries to find the primary key getter method for the class with given fully qualified name.
+   *
+   * @param fullyQualifiedTableClassName The fully qualified name of the table class to find the method for.
+   *
+   * @return The method, or null if not found.
+   */
   @Nullable
-  public ColumnMethod findPrimaryKeyGetter(@NotNull final String fullyQualifiedName) {
+  public ColumnMethod findPrimaryKeyGetter(@NotNull final String fullyQualifiedTableClassName) {
     for (ColumnMethod columnMethod : mColumnMethods.values()) {
-      if (columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedName)) {
+      if (columnMethod.isGetter() && columnMethod.isPrimary() && columnMethod.getFullyQualifiedTableClassName().equals(fullyQualifiedTableClassName)) {
         return columnMethod;
       }
     }

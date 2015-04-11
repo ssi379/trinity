@@ -55,7 +55,6 @@ class CreateMethodCreator implements MethodCreator {
                       @NotNull final MethodSpec createContentValuesSpec,
                       @NotNull final RepositoryMethod method,
                       @Nullable final ColumnMethod primaryKeySetter) {
-
     mTableClass = tableClass;
     mCreateContentValuesSpec = createContentValuesSpec;
     mMethod = method;

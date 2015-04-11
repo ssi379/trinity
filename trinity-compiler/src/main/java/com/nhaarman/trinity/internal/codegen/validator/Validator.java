@@ -16,10 +16,10 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.ValidationException;
 import org.jetbrains.annotations.NotNull;
 
 public interface Validator<T> {
 
-  void validate(@NotNull T t) throws ProcessingException;
+  void validate(@NotNull T t) throws ValidationException;
 }

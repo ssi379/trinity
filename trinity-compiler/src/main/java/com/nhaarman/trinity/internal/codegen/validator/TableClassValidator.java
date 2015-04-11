@@ -16,7 +16,7 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.ValidationException;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,11 +26,11 @@ import org.jetbrains.annotations.NotNull;
 public class TableClassValidator implements Validator<Collection<? extends TableClass>> {
 
   @Override
-  public void validate(@NotNull final Collection<? extends TableClass> tableClasses) throws ProcessingException {
+  public void validate(@NotNull final Collection<? extends TableClass> tableClasses) throws ValidationException {
     validateTableNames(tableClasses);
   }
 
-  private void validateTableNames(@NotNull final Collection<? extends TableClass> tableClasses) throws ProcessingException {
+  private void validateTableNames(@NotNull final Collection<? extends TableClass> tableClasses) throws ValidationException {
     Set<String> tableNames = new HashSet<>();
     for (TableClass tableClass : tableClasses) {
       if (tableNames.contains(tableClass.getTableName())) {
@@ -41,7 +41,7 @@ public class TableClassValidator implements Validator<Collection<? extends Table
     }
   }
 
-  private void throwProcessingException(@NotNull final TableClass tableClass) throws ProcessingException {
-    throw new ProcessingException("Cannot create two tables with the same name", tableClass.getElement());
+  private void throwProcessingException(@NotNull final TableClass tableClass) throws ValidationException {
+    throw new ValidationException("Cannot create two tables with the same name", tableClass.getElement());
   }
 }

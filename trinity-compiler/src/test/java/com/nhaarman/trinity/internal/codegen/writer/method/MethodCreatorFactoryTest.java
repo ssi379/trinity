@@ -29,23 +29,26 @@ import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABA
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class MethodCreatorFactoryTest {
 
   private MethodCreatorFactory mMethodCreatorFactory;
 
   private RepositoryMethod mMethod;
+  private FieldSpec mDatabaseFieldSpec;
+  private MethodSpec mReadCursorSpec;
+  private MethodSpec mCreateContentValuesSpec;
 
   @Before
   public void setUp() {
     mMethod = mock(RepositoryMethod.class);
 
-    FieldSpec databaseFieldSpec = FieldSpec.builder(SQLITE_DATABASE, "mDatabase").build();
-    MethodSpec readCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
-    MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
-    mMethodCreatorFactory = new MethodCreatorFactory(mock(TableClass.class), databaseFieldSpec, readCursorSpec, createContentValuesSpec, mock(ColumnMethod.class), mock(ColumnMethod.class));
+    mDatabaseFieldSpec = FieldSpec.builder(SQLITE_DATABASE, "mDatabase").build();
+    mReadCursorSpec = MethodSpec.methodBuilder("createContentValues").build();
+    mCreateContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
+    mMethodCreatorFactory =
+        new MethodCreatorFactory(mock(TableClass.class), mDatabaseFieldSpec, mReadCursorSpec, mCreateContentValuesSpec, mock(ColumnMethod.class), mock(ColumnMethod.class));
   }
 
   @Test
@@ -72,6 +75,19 @@ public class MethodCreatorFactoryTest {
     assertThat(creator, is(instanceOf(FindMethodCreator.class)));
   }
 
+  @Test(expected = ProcessingException.class)
+  public void findById_withoutPrimaryKeyMethods_throwsProcessingException() throws ProcessingException {
+    /* Given */
+    MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mock(TableClass.class), mDatabaseFieldSpec, mReadCursorSpec, mCreateContentValuesSpec, null, null);
+    when(mMethod.getMethodName()).thenReturn("findById");
+
+    /* When */
+    methodCreatorFactory.creatorFor(mMethod);
+
+    /* Then */
+    // An exception is thrown.
+  }
+
   @Test
   public void create_returnsCreateCreator() throws ProcessingException {
     /* Given */
@@ -91,5 +107,8 @@ public class MethodCreatorFactoryTest {
 
     /* When */
     mMethodCreatorFactory.creatorFor(mMethod);
+
+    /* Then */
+    // An exception is thrown.
   }
 }

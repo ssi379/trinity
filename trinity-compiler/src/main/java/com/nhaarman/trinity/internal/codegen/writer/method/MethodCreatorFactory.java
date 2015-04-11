@@ -24,6 +24,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodCreatorFactory {
 
@@ -39,18 +40,18 @@ public class MethodCreatorFactory {
   @NotNull
   private final MethodSpec mCreateContentValuesSpec;
 
-  @NotNull
+  @Nullable
   private final ColumnMethod mPrimaryKeySetter;
 
-  @NotNull
+  @Nullable
   private final ColumnMethod mPrimaryKeyGetter;
 
   public MethodCreatorFactory(@NotNull final TableClass tableClass,
                               @NotNull final FieldSpec databaseFieldSpec,
                               @NotNull final MethodSpec readCursorSpec,
                               @NotNull final MethodSpec createContentValuesSpec,
-                              @NotNull final ColumnMethod primaryKeySetter,
-                              @NotNull final ColumnMethod primaryKeyGetter) {
+                              @Nullable final ColumnMethod primaryKeySetter,
+                              @Nullable final ColumnMethod primaryKeyGetter) {
     mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
@@ -63,7 +64,10 @@ public class MethodCreatorFactory {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
-        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeyGetter);
+        if (mPrimaryKeyGetter == null && mPrimaryKeySetter == null) {
+          throw new ProcessingException("Missing primary key method.", method.getElement());
+        }
+        return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeySetter == null ? mPrimaryKeyGetter : mPrimaryKeySetter);
       case "create":
         return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
       default:

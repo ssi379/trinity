@@ -45,18 +45,18 @@ class FindMethodCreator implements MethodCreator {
   private final RepositoryMethod mMethod;
 
   @NotNull
-  private final ColumnMethod mPrimaryKeyGetter;
+  private final ColumnMethod mPrimaryKeyMethod;
 
   FindMethodCreator(@NotNull final TableClass tableClass,
                     @NotNull final FieldSpec databaseFieldSpec,
                     @NotNull final MethodSpec readCursorSpec,
                     @NotNull final RepositoryMethod method,
-                    @NotNull final ColumnMethod primaryKeyGetter) {
+                    @NotNull final ColumnMethod primaryKeyMethod) {
     mTableClass = tableClass;
     mDatabaseFieldSpec = databaseFieldSpec;
     mReadCursorSpec = readCursorSpec;
     mMethod = method;
-    mPrimaryKeyGetter = primaryKeyGetter;
+    mPrimaryKeyMethod = primaryKeyMethod;
   }
 
   @NotNull
@@ -64,7 +64,7 @@ class FindMethodCreator implements MethodCreator {
   public MethodSpec create() {
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
     String parameterName = mMethod.getParameter().getName();
-    String columnName = mPrimaryKeyGetter.getColumnName();
+    String columnName = mPrimaryKeyMethod.getColumnName();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())

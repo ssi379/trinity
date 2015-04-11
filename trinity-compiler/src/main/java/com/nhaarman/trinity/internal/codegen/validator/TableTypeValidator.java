@@ -17,7 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Table;
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.ValidationException;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 public class TableTypeValidator implements Validator<Set<? extends Element>> {
 
   @Override
-  public void validate(@NotNull final Set<? extends Element> elements) throws ProcessingException {
+  public void validate(@NotNull final Set<? extends Element> elements) throws ValidationException {
     for (Element element : elements) {
       if (element.getKind() != ElementKind.CLASS) {
         throwProcessingException(element);
@@ -41,9 +41,9 @@ public class TableTypeValidator implements Validator<Set<? extends Element>> {
     }
   }
 
-  private void throwProcessingException(@NotNull final Element element) throws ProcessingException {
+  private void throwProcessingException(@NotNull final Element element) throws ValidationException {
     AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
-    throw new ProcessingException("@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
+    throw new ValidationException("@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
   }
 
   private AnnotationMirror getTableAnnotationMirror(@NotNull final Element element) {

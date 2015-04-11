@@ -1,6 +1,7 @@
 package com.nhaarman.trinity.internal.codegen.step;
 
 import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClassRepository;
 import com.nhaarman.trinity.internal.codegen.validator.RepositoryClassValidator;
@@ -16,9 +17,9 @@ public class RepositoryClassValidationStep implements ProcessingStep {
   @NotNull
   private final RepositoryClassValidator mRepositoryClassValidator;
 
-  public RepositoryClassValidationStep(@NotNull final RepositoryClassRepository repositoryClassRepository) {
+  public RepositoryClassValidationStep(@NotNull final RepositoryClassRepository repositoryClassRepository, final ColumnMethodRepository columnMethodRepository) {
     mRepositoryClassRepository = repositoryClassRepository;
-    mRepositoryClassValidator = new RepositoryClassValidator();
+    mRepositoryClassValidator = new RepositoryClassValidator(columnMethodRepository);
   }
 
   @Override

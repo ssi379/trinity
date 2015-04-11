@@ -77,7 +77,7 @@ public class TrinityProcessor extends AbstractProcessor {
             new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository()),
 
             new RepositoryClassConversionStep(mRepositoryGateway.getRepositoryClassRepository()),
-            new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository()),
+            new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository(), mRepositoryGateway.getColumnMethodRepository()),
 
             new RepositoryWriterStep(
                 mRepositoryGateway.getTableClassRepository(),
@@ -92,7 +92,6 @@ public class TrinityProcessor extends AbstractProcessor {
   @Override
   public boolean process(@NotNull final Set<? extends TypeElement> annotations,
                          @NotNull final RoundEnvironment roundEnv) {
-
     mRepositoryGateway.getTableClassRepository().clear();
     mRepositoryGateway.getColumnMethodRepository().clear();
     mRepositoryGateway.getRepositoryClassRepository().clear();

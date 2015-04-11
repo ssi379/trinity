@@ -17,7 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Repository;
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.ValidationException;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 public class RepositoryTypeValidator implements Validator<Set<? extends Element>> {
 
   @Override
-  public void validate(@NotNull final Set<? extends Element> elements) throws ProcessingException {
+  public void validate(@NotNull final Set<? extends Element> elements) throws ValidationException {
     for (Element element : elements) {
       if (!(element instanceof TypeElement)) {
         throwProcessingException(element);
@@ -36,11 +36,14 @@ public class RepositoryTypeValidator implements Validator<Set<? extends Element>
     }
   }
 
-  private void throwProcessingException(@NotNull final Element element) throws ProcessingException {
+  private void throwProcessingException(@NotNull final Element element) throws ValidationException {
     AnnotationMirror repositoryAnnotationMirror = getRepositoryAnnotationMirror(element);
-    throw new ProcessingException("@Repository annotation can only be applied to classes.", element, repositoryAnnotationMirror);
+    throw new ValidationException("@Repository annotation can only be applied to classes.", element, repositoryAnnotationMirror);
   }
 
+  /**
+   * Returns the AnnotationMirror for the {@link Repository} annotation belonging to given Element.
+   */
   private AnnotationMirror getRepositoryAnnotationMirror(@NotNull final Element element) {
     List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
     AnnotationMirror tableAnnotationMirror = null;
