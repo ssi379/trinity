@@ -32,7 +32,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * A MethodCreator that creates a MethodSpec for the create method.
- *
+ * <p/>
  * The `Long create(T t)` method takes an entity of a class annotated with the @Table annotation as a parameter, and inserts the entity into the database. It returns a Long value,
  * based on the result of `insert`.
  */

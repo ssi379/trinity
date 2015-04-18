@@ -1,12 +1,12 @@
 package com.nhaarman.trinity.internal.codegen.validator.method;
 
 import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
-import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import org.jetbrains.annotations.NotNull;
 

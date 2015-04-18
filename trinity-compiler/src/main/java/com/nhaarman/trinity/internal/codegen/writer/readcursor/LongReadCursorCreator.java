@@ -20,11 +20,11 @@ import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
 import org.jetbrains.annotations.NotNull;
 
-public class LongReadCursorCreator implements ReadCursorCreator {
+class LongReadCursorCreator implements ReadCursorCreator {
 
   /**
    * Resolves to:
-   *
+   * <p/>
    * result.setId(cursor.getLong(cursor.getColumnIndex("id")));
    */
   private static final String STATEMENT = "$L.$L($L.getLong($L.getColumnIndex($S)))";
@@ -38,9 +38,9 @@ public class LongReadCursorCreator implements ReadCursorCreator {
   @NotNull
   private final String mColumnVariableName;
 
-  public LongReadCursorCreator(@NotNull final ColumnMethod column,
-                               @NotNull final String entityVariableName,
-                               @NotNull final String columnVariableName) {
+  LongReadCursorCreator(@NotNull final ColumnMethod column,
+                        @NotNull final String entityVariableName,
+                        @NotNull final String columnVariableName) {
     mColumn = column;
     mEntityVariableName = entityVariableName;
     mColumnVariableName = columnVariableName;

@@ -59,10 +59,10 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
     for (RepositoryMethod method : methods) {
       Validator<RepositoryMethod> repositoryMethodValidator = methodValidatorFactory.validatorFor(method);
 
-      if(repositoryMethodValidator == null) {
+      if (repositoryMethodValidator == null) {
         validationHandler.onError(method.getElement(), null, Message.UNSUPPORTED_METHOD_NAME, method.getMethodName());
         result = ERROR;
-      }else{
+      } else {
         result = result.and(repositoryMethodValidator.validate(method, validationHandler));
       }
     }

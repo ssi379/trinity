@@ -20,7 +20,6 @@ import com.nhaarman.trinity.annotations.Table;
 import com.nhaarman.trinity.internal.codegen.data.TableClass.Builder;
 import java.util.HashSet;
 import java.util.Set;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import org.jetbrains.annotations.NotNull;
 

@@ -61,7 +61,7 @@ public class RepositoryClassFactory {
     builder.withTableClassName(tableClassName);
     builder.withTableClassPackageName(tablePackageName);
 
-    if(typeElement.getKind() == ElementKind.INTERFACE){
+    if (typeElement.getKind() == ElementKind.INTERFACE) {
       builder.isInterface();
     }
 
