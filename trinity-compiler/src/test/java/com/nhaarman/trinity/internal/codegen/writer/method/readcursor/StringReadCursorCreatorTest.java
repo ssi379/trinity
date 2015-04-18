@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.internal.codegen.writer.readcursor;
+package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
@@ -29,19 +29,17 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LongReadCursorCreatorTest {
+public class StringReadCursorCreatorTest {
 
   private static final String RESULT = "result";
-
   private static final String CURSOR = "cursor";
 
-  private static final String SETTER_NAME = "setId";
+  private static final String SETTER_NAME = "setName";
+  private static final String COLUMN_NAME = "name";
 
-  private static final String COLUMN_NAME = "id";
+  private static final String EXPECTED_CODE = "result.setName(cursor.getString(cursor.getColumnIndex(\"name\")));\n";
 
-  private static final String EXPECTED_CODE = "result.setId(cursor.getLong(cursor.getColumnIndex(\"id\")));\n";
-
-  private LongReadCursorCreator mLongReadCursorCreator;
+  private StringReadCursorCreator mStringReadCursorCreator;
 
   @Before
   public void setUp() {
@@ -49,13 +47,13 @@ public class LongReadCursorCreatorTest {
     when(setterMock.getMethodName()).thenReturn(SETTER_NAME);
     when(setterMock.getColumnName()).thenReturn(COLUMN_NAME);
 
-    mLongReadCursorCreator = new LongReadCursorCreator(setterMock, RESULT, CURSOR);
+    mStringReadCursorCreator = new StringReadCursorCreator(setterMock, RESULT, CURSOR);
   }
 
   @Test
   public void create_returnsNotNull() {
     /* When */
-    CodeBlock codeBlock = mLongReadCursorCreator.create();
+    CodeBlock codeBlock = mStringReadCursorCreator.create();
 
     /* Then */
     assertThat(codeBlock, is(not(nullValue())));
@@ -64,7 +62,7 @@ public class LongReadCursorCreatorTest {
   @Test
   public void createdCodeBlock_hasCorrectCode() {
     /* When */
-    CodeBlock codeBlock = mLongReadCursorCreator.create();
+    CodeBlock codeBlock = mStringReadCursorCreator.create();
     String code = codeBlock.toString();
 
     /* Then */

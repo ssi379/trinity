@@ -19,11 +19,15 @@ package com.nhaarman.trinity.internal.codegen.writer;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
+import com.nhaarman.trinity.internal.codegen.method.FindMethod;
+import com.nhaarman.trinity.internal.codegen.method.MethodVisitor;
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.writer.method.CreateContentValuesMethodCreator;
+import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreator;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreatorFactory;
-import com.nhaarman.trinity.internal.codegen.writer.readcursor.ReadCursorMethodCreator;
+import com.nhaarman.trinity.internal.codegen.writer.method.readcursor.ReadCursorMethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -36,7 +40,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 @SuppressWarnings("HardCodedStringLiteral")
-public class RepositoryTypeSpecCreator {
+public class RepositoryTypeSpecCreator implements MethodVisitor {
 
   private static final String REPOSITORY_CLASS_NAME = "Trinity%s";
 
@@ -51,14 +55,22 @@ public class RepositoryTypeSpecCreator {
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
 
+  @NotNull
+  private final TypeSpec.Builder mRepositoryBuilder;
+
+  private MethodCreatorFactory mMethodCreatorFactory;
+
   public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass,
                                    @NotNull final TableClass tableClass,
                                    @NotNull final ColumnMethodRepository columnMethodRepository) {
     mRepositoryClass = repositoryClass;
     mTableClass = tableClass;
     mColumnMethodRepository = columnMethodRepository;
+
+    mRepositoryBuilder = TypeSpec.classBuilder(String.format(REPOSITORY_CLASS_NAME, mRepositoryClass.getClassName()));
   }
 
+  @NotNull
   public TypeSpec create() {
     FieldSpec databaseFieldSpec = mDatabase();
     MethodSpec constructor = constructor();
@@ -68,36 +80,34 @@ public class RepositoryTypeSpecCreator {
     ColumnMethod primaryKeySetter = mColumnMethodRepository.findPrimaryKeySetter(mTableClass.getFullyQualifiedName());
     ColumnMethod primaryKeyGetter = mColumnMethodRepository.findPrimaryKeyGetter(mTableClass.getFullyQualifiedName());
 
-    MethodCreatorFactory methodCreatorFactory =
-        new MethodCreatorFactory(
-            mTableClass,
-            databaseFieldSpec,
-            readCursorSpec,
-            createContentValuesSpec,
-            primaryKeySetter,
-            primaryKeyGetter
-        );
+    mMethodCreatorFactory = new MethodCreatorFactory(
+        mTableClass,
+        databaseFieldSpec,
+        readCursorSpec,
+        createContentValuesSpec,
+        primaryKeySetter,
+        primaryKeyGetter
+    );
 
-    TypeSpec.Builder repositoryBuilder = TypeSpec.classBuilder(createRepositoryClassName());
-    repositoryBuilder.addModifiers(PUBLIC, FINAL);
-    repositoryBuilder.addOriginatingElement(mRepositoryClass.getElement());
-    repositoryBuilder.addField(databaseFieldSpec);
-    repositoryBuilder.addMethod(constructor);
-    repositoryBuilder.addMethod(createContentValuesSpec);
-    repositoryBuilder.addMethod(readCursorSpec);
+    mRepositoryBuilder.addModifiers(PUBLIC, FINAL);
+    mRepositoryBuilder.addOriginatingElement(mRepositoryClass.getElement());
+    mRepositoryBuilder.addField(databaseFieldSpec);
+    mRepositoryBuilder.addMethod(constructor);
+    mRepositoryBuilder.addMethod(createContentValuesSpec);
+    mRepositoryBuilder.addMethod(readCursorSpec);
 
     ClassName superclass = ClassName.get(mRepositoryClass.getPackageName(), mRepositoryClass.getClassName());
     if (mRepositoryClass.isInterface()) {
-      repositoryBuilder.addSuperinterface(superclass);
+      mRepositoryBuilder.addSuperinterface(superclass);
     } else {
-      repositoryBuilder.superclass(superclass);
+      mRepositoryBuilder.superclass(superclass);
     }
 
     for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
-      repositoryBuilder.addMethod(methodCreatorFactory.creatorFor(repositoryMethod).create());
+      repositoryMethod.accept(this);
     }
 
-    return repositoryBuilder.build();
+    return mRepositoryBuilder.build();
   }
 
   /**
@@ -135,10 +145,15 @@ public class RepositoryTypeSpecCreator {
     return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository).create();
   }
 
-  /**
-   * Returns the class name of the repository to be written.
-   */
-  private String createRepositoryClassName() {
-    return String.format(REPOSITORY_CLASS_NAME, mRepositoryClass.getClassName());
+  @Override
+  public void visit(@NotNull final FindMethod findMethod) {
+    MethodCreator findMethodCreator = mMethodCreatorFactory.findMethodCreator(findMethod);
+    mRepositoryBuilder.addMethod(findMethodCreator.create());
+  }
+
+  @Override
+  public void visit(@NotNull final CreateMethod createMethod) {
+    MethodCreator createMethodCreator = mMethodCreatorFactory.createMethodCreator(createMethod);
+    mRepositoryBuilder.addMethod(createMethodCreator.create());
   }
 }

@@ -1,4 +1,4 @@
-package com.nhaarman.trinity.internal.codegen.writer.readcursor;
+package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;

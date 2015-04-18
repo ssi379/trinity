@@ -3,7 +3,7 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet. ClassName;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;

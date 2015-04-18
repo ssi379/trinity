@@ -16,6 +16,7 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import java.util.Collection;
 import java.util.Collections;
 import javax.lang.model.element.Element;

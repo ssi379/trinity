@@ -18,6 +18,7 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import com.nhaarman.trinity.annotations.Repository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass.Builder;
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

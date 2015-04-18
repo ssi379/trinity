@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.internal.codegen.writer.readcursor;
+package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.squareup.javapoet.CodeBlock;
 import org.jetbrains.annotations.NotNull;
 
-class StringReadCursorCreator implements ReadCursorCreator {
+class LongReadCursorCreator implements ReadCursorCreator {
 
   /**
    * Resolves to:
    * <p/>
-   * result.setName(cursor.getString(cursor.getColumnIndex("name")));
+   * result.setId(cursor.getLong(cursor.getColumnIndex("id")));
    */
-  private static final String STATEMENT = "$L.$L($L.getString($L.getColumnIndex($S)))";
+  private static final String STATEMENT = "$L.$L($L.getLong($L.getColumnIndex($S)))";
 
   @NotNull
   private final ColumnMethod mColumn;
@@ -36,14 +36,14 @@ class StringReadCursorCreator implements ReadCursorCreator {
   private final String mEntityVariableName;
 
   @NotNull
-  private final String mCursorVariableName;
+  private final String mColumnVariableName;
 
-  StringReadCursorCreator(@NotNull final ColumnMethod column,
-                          @NotNull final String entityVariableName,
-                          @NotNull final String cursorVariableName) {
+  LongReadCursorCreator(@NotNull final ColumnMethod column,
+                        @NotNull final String entityVariableName,
+                        @NotNull final String columnVariableName) {
     mColumn = column;
     mEntityVariableName = entityVariableName;
-    mCursorVariableName = cursorVariableName;
+    mColumnVariableName = columnVariableName;
   }
 
   @Override
@@ -53,8 +53,8 @@ class StringReadCursorCreator implements ReadCursorCreator {
             STATEMENT,
             mEntityVariableName,
             mColumn.getMethodName(),
-            mCursorVariableName,
-            mCursorVariableName,
+            mColumnVariableName,
+            mColumnVariableName,
             mColumn.getColumnName())
         .build();
   }

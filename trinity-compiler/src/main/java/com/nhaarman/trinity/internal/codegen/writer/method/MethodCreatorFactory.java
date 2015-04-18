@@ -17,11 +17,10 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,28 +58,16 @@ public class MethodCreatorFactory {
     mPrimaryKeyGetter = primaryKeyGetter;
   }
 
-  public MethodCreator creatorFor(@NotNull final RepositoryMethod method) {
-    switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
-      case "find":
-      case "findbyid":
-        return createFindMethodCreator(method);
-      case "create":
-        return createCreateMethodCreator(method);
-      default:
-        throw new IllegalArgumentException(String.format("Cannot implement '%s': unknown method.", method.toString()));
-    }
-  }
-
   @NotNull
-  private MethodCreator createCreateMethodCreator(@NotNull final RepositoryMethod method) {
-    return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
-  }
-
-  @NotNull
-  private MethodCreator createFindMethodCreator(@NotNull final RepositoryMethod method) {
+  public MethodCreator findMethodCreator(@NotNull final RepositoryMethod method) {
     if (mPrimaryKeyGetter == null && mPrimaryKeySetter == null) {
       throw new IllegalStateException("Missing primary key method.");
     }
     return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeySetter == null ? mPrimaryKeyGetter : mPrimaryKeySetter);
+  }
+
+  @NotNull
+  public MethodCreator createMethodCreator(@NotNull final RepositoryMethod method) {
+    return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
   }
 }

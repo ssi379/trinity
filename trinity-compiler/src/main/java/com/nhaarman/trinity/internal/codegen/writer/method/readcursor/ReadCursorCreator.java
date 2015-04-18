@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.internal.codegen.writer.readcursor;
+package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.squareup.javapoet.CodeBlock;
 

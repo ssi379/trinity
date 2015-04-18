@@ -5,7 +5,7 @@ import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
 import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
-public class FindMethodValidator implements Validator<RepositoryMethod> {
+ class FindMethodValidator implements Validator<RepositoryMethod> {
 
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
@@ -21,7 +21,7 @@ public class FindMethodValidator implements Validator<RepositoryMethod> {
   @NotNull
   private final RepositoryClass mRepositoryClass;
 
-  public FindMethodValidator(@NotNull final ColumnMethodRepository columnMethodRepository,
+   FindMethodValidator(@NotNull final ColumnMethodRepository columnMethodRepository,
                              @NotNull final RepositoryClass repositoryClass) {
     mColumnMethodRepository = columnMethodRepository;
     mRepositoryClass = repositoryClass;

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.internal.codegen.data;
+package com.nhaarman.trinity.internal.codegen.method;
 
+import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import java.util.Collection;
 import java.util.Collections;
 import javax.lang.model.element.Element;
@@ -23,9 +24,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class RepositoryMethod {
+public abstract class RepositoryMethod {
 
   @NotNull
   private final String mName;
@@ -86,63 +86,65 @@ public class RepositoryMethod {
     return stringBuilder.toString();
   }
 
-  public static class Builder {
+  public abstract void accept(@NotNull final MethodVisitor visitor);
 
-    @Nullable
-    private String mName;
-
-    @Nullable
-    private TypeMirror mType;
-
-    @Nullable
-    private Collection<Parameter> mParameters;
-
-    @Nullable
-    private Element mElement;
-
-    @NotNull
-    public RepositoryMethod build() {
-      if (mName == null) {
-        throw new IllegalStateException("RepositoryMethod needs a name.");
-      }
-
-      if (mType == null) {
-        throw new IllegalStateException("RepositoryMethod needs a type");
-      }
-
-      if (mParameters == null) {
-        throw new IllegalStateException("RepositoryMethod needs parameters");
-      }
-
-      if (mElement == null) {
-        throw new IllegalStateException("RepositoryMethod needs an Element");
-      }
-
-      return new RepositoryMethod(mName, mType, mParameters, mElement);
-    }
-
-    @NotNull
-    public Builder withName(@NotNull final String name) {
-      mName = name;
-      return this;
-    }
-
-    @NotNull
-    public Builder withType(@NotNull final TypeMirror type) {
-      mType = type;
-      return this;
-    }
-
-    @NotNull
-    public Builder withParameters(@NotNull final Collection<Parameter> parameters) {
-      mParameters = parameters;
-      return this;
-    }
-
-    @NotNull
-    public Builder withElement(@NotNull final Element element) {
-      mElement = element;
-      return this;
-    }
-  }
+  //public static class Builder {
+  //
+  //  @Nullable
+  //  private String mName;
+  //
+  //  @Nullable
+  //  private TypeMirror mType;
+  //
+  //  @Nullable
+  //  private Collection<Parameter> mParameters;
+  //
+  //  @Nullable
+  //  private Element mElement;
+  //
+  //  @NotNull
+  //  public RepositoryMethod build() {
+  //    if (mName == null) {
+  //      throw new IllegalStateException("RepositoryMethod needs a name.");
+  //    }
+  //
+  //    if (mType == null) {
+  //      throw new IllegalStateException("RepositoryMethod needs a type");
+  //    }
+  //
+  //    if (mParameters == null) {
+  //      throw new IllegalStateException("RepositoryMethod needs parameters");
+  //    }
+  //
+  //    if (mElement == null) {
+  //      throw new IllegalStateException("RepositoryMethod needs an Element");
+  //    }
+  //
+  //    return new RepositoryMethod(mName, mType, mParameters, mElement);
+  //  }
+  //
+  //  @NotNull
+  //  public Builder withName(@NotNull final String name) {
+  //    mName = name;
+  //    return this;
+  //  }
+  //
+  //  @NotNull
+  //  public Builder withType(@NotNull final TypeMirror type) {
+  //    mType = type;
+  //    return this;
+  //  }
+  //
+  //  @NotNull
+  //  public Builder withParameters(@NotNull final Collection<Parameter> parameters) {
+  //    mParameters = parameters;
+  //    return this;
+  //  }
+  //
+  //  @NotNull
+  //  public Builder withElement(@NotNull final Element element) {
+  //    mElement = element;
+  //    return this;
+  //  }
+  //}
 }
