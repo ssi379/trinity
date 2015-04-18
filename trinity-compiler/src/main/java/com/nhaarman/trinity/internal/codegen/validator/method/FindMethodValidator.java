@@ -1,12 +1,17 @@
 package com.nhaarman.trinity.internal.codegen.validator.method;
 
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import org.jetbrains.annotations.NotNull;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class FindMethodValidator implements Validator<RepositoryMethod> {
 
@@ -22,42 +27,51 @@ public class FindMethodValidator implements Validator<RepositoryMethod> {
     mRepositoryClass = repositoryClass;
   }
 
+  @NotNull
   @Override
-  public void validate(@NotNull final RepositoryMethod method) throws ValidationException {
+  public ProcessingStepResult validate(@NotNull final RepositoryMethod method, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     ColumnMethod primaryKeyGetter = mColumnMethodRepository.findPrimaryKeyGetter(mRepositoryClass.getTableClassFullyQualifiedName());
     ColumnMethod primaryKeySetter = mColumnMethodRepository.findPrimaryKeySetter(mRepositoryClass.getTableClassFullyQualifiedName());
 
     if (primaryKeyGetter == null && primaryKeySetter == null) {
-      throw new ValidationException(String.format("Generating a '%s' implementation requires at least one method in %s to be annotated with @PrimaryKey.", method.getMethodName(),
-          mRepositoryClass.getTableClassFullyQualifiedName()), method.getElement());
+      validationHandler.onError(
+          method.getElement(),
+          null,
+          Message.MISSING_PRIMARYKEY_METHOD_FOR_FIND_IMPLEMENTATION,
+          method.getMethodName(),
+          mRepositoryClass.getTableClassFullyQualifiedName()
+      );
+      result = ERROR;
     }
 
     if (primaryKeyGetter != null && !primaryKeyGetter.getType().equals(method.getParameter().getType())) {
-      throw new ValidationException(
-          String.format(
-              "Type '%s' of method '%s' does not match with type '%s' of method '%s.%s'",
-              method.getParameter().getType(),
-              method.getMethodName(),
-              primaryKeyGetter.getType(),
-              primaryKeyGetter.getFullyQualifiedTableClassName(),
-              primaryKeyGetter.getMethodName()
-          ),
-          method.getElement()
+      validationHandler.onError(
+          method.getElement(),
+          null,
+          Message.PRIMARYKEY_FIND_TYPE_MISMATCH,
+          method.getParameter().getType(),
+          method.getMethodName(),
+          primaryKeyGetter.getType(),
+          primaryKeyGetter.getFullyQualifiedTableClassName() + '.' + primaryKeyGetter.getMethodName()
       );
+      result = ERROR;
     }
 
     if (primaryKeySetter != null && !primaryKeySetter.getType().equals(method.getParameter().getType())) {
-      throw new ValidationException(
-          String.format(
-              "Type '%s' of method '%s' does not match with type '%s' of method '%s.%s'",
-              method.getParameter().getType(),
-              method.getMethodName(),
-              primaryKeySetter.getType(),
-              primaryKeySetter.getFullyQualifiedTableClassName(),
-              primaryKeySetter.getMethodName()
-          ),
-          method.getElement()
+      validationHandler.onError(
+          method.getElement(),
+          null,
+          Message.PRIMARYKEY_FIND_TYPE_MISMATCH,
+          method.getParameter().getType(),
+          method.getMethodName(),
+          primaryKeySetter.getType(),
+          primaryKeySetter.getFullyQualifiedTableClassName() + '.' + primaryKeySetter.getMethodName()
       );
+      result = ERROR;
     }
+
+    return result;
   }
 }

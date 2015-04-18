@@ -16,13 +16,17 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.method.MethodValidatorFactory;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class RepositoryClassValidator implements Validator<Collection<RepositoryClass>> {
 
@@ -33,19 +37,36 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
     mColumnMethodRepository = columnMethodRepository;
   }
 
+  @NotNull
   @Override
-  public void validate(@NotNull final Collection<RepositoryClass> repositoryClasses) throws ValidationException {
+  public ProcessingStepResult validate(@NotNull final Collection<RepositoryClass> repositoryClasses, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     for (RepositoryClass repositoryClass : repositoryClasses) {
-      validate(repositoryClass);
+      result = result.and(validate(repositoryClass, validationHandler));
     }
+
+    return result;
   }
 
-  private void validate(@NotNull final RepositoryClass repositoryClass) throws ValidationException {
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final RepositoryClass repositoryClass, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     MethodValidatorFactory methodValidatorFactory = new MethodValidatorFactory(mColumnMethodRepository, repositoryClass);
 
     Collection<RepositoryMethod> methods = repositoryClass.getMethods();
     for (RepositoryMethod method : methods) {
-      methodValidatorFactory.validatorFor(method).validate(method);
+      Validator<RepositoryMethod> repositoryMethodValidator = methodValidatorFactory.validatorFor(method);
+
+      if(repositoryMethodValidator == null) {
+        validationHandler.onError(method.getElement(), null, Message.UNSUPPORTED_METHOD_NAME, method.getMethodName());
+        result = ERROR;
+      }else{
+        result = result.and(repositoryMethodValidator.validate(method, validationHandler));
+      }
     }
+
+    return result;
   }
 }

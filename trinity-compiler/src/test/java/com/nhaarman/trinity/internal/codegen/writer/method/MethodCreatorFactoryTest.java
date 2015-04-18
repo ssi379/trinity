@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
@@ -52,7 +51,7 @@ public class MethodCreatorFactoryTest {
   }
 
   @Test
-  public void find_returnsFindCreator() throws ProcessingException {
+  public void find_returnsFindCreator() {
     /* Given */
     when(mMethod.getMethodName()).thenReturn("find");
 
@@ -64,7 +63,7 @@ public class MethodCreatorFactoryTest {
   }
 
   @Test
-  public void findById_returnsFindCreator() throws ProcessingException {
+  public void findById_returnsFindCreator() {
     /* Given */
     when(mMethod.getMethodName()).thenReturn("findById");
 
@@ -75,8 +74,8 @@ public class MethodCreatorFactoryTest {
     assertThat(creator, is(instanceOf(FindMethodCreator.class)));
   }
 
-  @Test(expected = ProcessingException.class)
-  public void findById_withoutPrimaryKeyMethods_throwsProcessingException() throws ProcessingException {
+  @Test(expected = IllegalStateException.class)
+  public void findById_withoutPrimaryKeyMethods_throwsIllegalStateException() {
     /* Given */
     MethodCreatorFactory methodCreatorFactory = new MethodCreatorFactory(mock(TableClass.class), mDatabaseFieldSpec, mReadCursorSpec, mCreateContentValuesSpec, null, null);
     when(mMethod.getMethodName()).thenReturn("findById");
@@ -89,7 +88,7 @@ public class MethodCreatorFactoryTest {
   }
 
   @Test
-  public void create_returnsCreateCreator() throws ProcessingException {
+  public void create_returnsCreateCreator() {
     /* Given */
     when(mMethod.getMethodName()).thenReturn("create");
 
@@ -100,8 +99,8 @@ public class MethodCreatorFactoryTest {
     assertThat(creator, is(instanceOf(CreateMethodCreator.class)));
   }
 
-  @Test(expected = ProcessingException.class)
-  public void unknownType_throwsProcessingException() throws ProcessingException {
+  @Test(expected = IllegalArgumentException.class)
+  public void unknownType_throwsIllegalArgumentException() {
     /* Given */
     when(mMethod.getMethodName()).thenReturn("some.unknown.Type");
 

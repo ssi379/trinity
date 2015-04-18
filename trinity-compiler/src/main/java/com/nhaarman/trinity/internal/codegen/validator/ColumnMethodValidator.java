@@ -1,52 +1,82 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
-public class ColumnMethodValidator {
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
-  public void validate(@NotNull final Collection<ColumnMethod> getters, @NotNull final Collection<ColumnMethod> setters) throws ProcessingException {
-    validateUniqueGetters(getters);
-    validateUniqueSetters(setters);
-    validateEqualGetterAndSetterTypes(getters, setters);
+public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>> {
+
+  @NotNull
+  @Override
+  public ProcessingStepResult validate(@NotNull final Collection<ColumnMethod> columnMethods, @NotNull final ValidationHandler validationHandler) {
+    Collection<ColumnMethod> getters = new HashSet<>(columnMethods.size());
+    Collection<ColumnMethod> setters = new HashSet<>(columnMethods.size());
+
+    for (ColumnMethod columnMethod : columnMethods) {
+      if (columnMethod.isGetter()) {
+        getters.add(columnMethod);
+      } else {
+        setters.add(columnMethod);
+      }
+    }
+
+    return validate(getters, setters, validationHandler);
+  }
+
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final Collection<ColumnMethod> getters,
+                                        @NotNull final Collection<ColumnMethod> setters,
+                                        @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
+    result = result.and(validateUniqueGetters(getters, validationHandler));
+    result = result.and(validateUniqueSetters(setters, validationHandler));
+    result = result.and(validateEqualGetterAndSetterTypes(getters, setters, validationHandler));
+
+    return result;
   }
 
   /**
    * Validates whether there is a maximum of 1 getter per column.
    *
    * @param getters The getters to check.
-   *
-   * @throws ProcessingException if a second getter is found for a single column.
    */
-  private void validateUniqueGetters(@NotNull final Collection<ColumnMethod> getters) throws ProcessingException {
+  @NotNull
+  private ProcessingStepResult validateUniqueGetters(@NotNull final Collection<ColumnMethod> getters, final ValidationHandler validationHandler) {
     Set<String> getterNames = new HashSet<>();
     for (ColumnMethod getter : getters) {
       if (!getterNames.add(getter.getColumnName())) {
-        throw new ProcessingException("Table class cannot contain multiple getters for the same column", getter.getElement());
+        validationHandler.onError(getter.getElement(), null, Message.MULTIPLE_GETTERS_FOR_SAME_COLUMN);
+        return ERROR;
       }
     }
+
+    return OK;
   }
 
   /**
    * Validates whether there is a maximum of 1 setter per column.
    *
    * @param setters The setters to check.
-   *
-   * @throws ProcessingException if a second setter is found for a single column.
    */
-  private void validateUniqueSetters(@NotNull final Collection<ColumnMethod> setters) throws ProcessingException {
+  @NotNull
+  private ProcessingStepResult validateUniqueSetters(@NotNull final Collection<ColumnMethod> setters, final ValidationHandler validationHandler) {
     Set<String> setterNames = new HashSet<>();
     for (ColumnMethod setter : setters) {
       if (!setterNames.add(setter.getColumnName())) {
-        throw new ProcessingException("Table class cannot contain multiple setters for the same column", setter.getElement());
+        validationHandler.onError(setter.getElement(), null, Message.MULTIPLE_SETTERS_FOR_SAME_COLUMN);
+        return ERROR;
       }
     }
+
+    return OK;
   }
 
   /**
@@ -54,18 +84,22 @@ public class ColumnMethodValidator {
    *
    * @param getters The getters to check.
    * @param setters The setters to check.
-   *
-   * @throws ProcessingException if a getter and setter has been found for the same column with a different type.
    */
-  private void validateEqualGetterAndSetterTypes(@NotNull final Collection<ColumnMethod> getters,
-                                                 @NotNull final Collection<ColumnMethod> setters) throws ProcessingException {
+  @NotNull
+  private ProcessingStepResult validateEqualGetterAndSetterTypes(@NotNull final Collection<ColumnMethod> getters,
+                                                                 @NotNull final Collection<ColumnMethod> setters,
+                                                                 @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     for (ColumnMethod getter : getters) {
       for (ColumnMethod setter : setters) {
         if (getter.getColumnName().equals(setter.getColumnName())) {
-          validateEqualGetterAndSetterType(getter, setter);
+          result = result.and(validateEqualGetterAndSetterType(getter, setter, validationHandler));
         }
       }
     }
+
+    return result;
   }
 
   /**
@@ -73,16 +107,21 @@ public class ColumnMethodValidator {
    *
    * @param getter The getter to check.
    * @param setter The setter to check.
-   *
-   * @throws ProcessingException if the getter and setter have a different type.
    */
-  private void validateEqualGetterAndSetterType(@NotNull final ColumnMethod getter,
-                                                @NotNull final ColumnMethod setter) throws ProcessingException {
+  @NotNull
+  private ProcessingStepResult validateEqualGetterAndSetterType(@NotNull final ColumnMethod getter,
+                                                                @NotNull final ColumnMethod setter,
+                                                                @NotNull final ValidationHandler validationHandler) {
     if (!getter.getType().equals(setter.getType())) {
-      throw new ProcessingException(
-          String.format("Getter and setter for column with name \"%s\" have different types.", getter.getColumnName()),
-          getter.getElement()
+      validationHandler.onError(
+          getter.getElement(),
+          null,
+          Message.GETTER_AND_SETTER_TYPE_MISMATCH,
+          getter.getColumnName()
       );
+      return ERROR;
     }
+
+    return OK;
   }
 }

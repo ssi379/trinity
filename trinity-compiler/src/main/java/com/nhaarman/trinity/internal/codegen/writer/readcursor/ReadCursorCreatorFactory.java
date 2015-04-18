@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +40,8 @@ public class ReadCursorCreatorFactory {
   }
 
   @NotNull
-  public ReadCursorCreator createReadCursorCreator(@NotNull final ColumnMethod column) throws ProcessingException {
-    String typeString = column.getType().toString();
+  public ReadCursorCreator createReadCursorCreator(@NotNull final ColumnMethod column) {
+    String typeString = column.getType();
 
     ReadCursorCreator result;
 
@@ -54,7 +53,7 @@ public class ReadCursorCreatorFactory {
         result = new LongReadCursorCreator(column, mResultVariableName, mCursorVariableName);
         break;
       default:
-        throw new ProcessingException(String.format("Type %s is not supported.", typeString), column.getElement());
+        throw new IllegalArgumentException(String.format("Type %s is not supported.", typeString));
     }
 
     return result;

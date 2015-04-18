@@ -17,7 +17,8 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Table;
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -25,27 +26,50 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
+
 /**
  * A class which validates the elements annotated with the @{@link Table} annotation.
- *
- * Table elements should be classes.
+ * <p/>
+ * The following rules are validated:
+ * - Table elements should be classes.
  */
 public class TableTypeValidator implements Validator<Set<? extends Element>> {
 
   @Override
-  public void validate(@NotNull final Set<? extends Element> elements) throws ValidationException {
+  @NotNull
+  public ProcessingStepResult validate(@NotNull final Set<? extends Element> elements, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     for (Element element : elements) {
-      if (element.getKind() != ElementKind.CLASS) {
-        throwProcessingException(element);
-      }
+      result = result.and(validate(element, validationHandler));
     }
+
+    return result;
   }
 
-  private void throwProcessingException(@NotNull final Element element) throws ValidationException {
-    AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
-    throw new ValidationException("@Table annotation can only be applied to classes.", element, tableAnnotationMirror);
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    return validateElementKind(element, validationHandler);
   }
 
+  @NotNull
+  private ProcessingStepResult validateElementKind(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    if (element.getKind() != ElementKind.CLASS) {
+      AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
+      validationHandler.onError(element, tableAnnotationMirror, Message.TABLE_ANNOTATION_CAN_ONLY_BE_APPLIED_TO_CLASSES);
+      return ERROR;
+    }
+
+    return OK;
+  }
+
+  /**
+   * Returns the {@link Table} AnnotationMirror on given Element.
+   *
+   * @return null if the AnnotationMirror is not found.
+   */
   private AnnotationMirror getTableAnnotationMirror(@NotNull final Element element) {
     List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
     AnnotationMirror tableAnnotationMirror = null;

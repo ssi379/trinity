@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
@@ -60,7 +59,7 @@ public class MethodCreatorFactory {
     mPrimaryKeyGetter = primaryKeyGetter;
   }
 
-  public MethodCreator creatorFor(@NotNull final RepositoryMethod method) throws ProcessingException {
+  public MethodCreator creatorFor(@NotNull final RepositoryMethod method) {
     switch (method.getMethodName().toLowerCase(Locale.ENGLISH)) {
       case "find":
       case "findbyid":
@@ -68,7 +67,7 @@ public class MethodCreatorFactory {
       case "create":
         return createCreateMethodCreator(method);
       default:
-        throw new ProcessingException(String.format("Cannot implement '%s': unknown method.", method.toString()), method.getElement());
+        throw new IllegalArgumentException(String.format("Cannot implement '%s': unknown method.", method.toString()));
     }
   }
 
@@ -78,9 +77,9 @@ public class MethodCreatorFactory {
   }
 
   @NotNull
-  private MethodCreator createFindMethodCreator(@NotNull final RepositoryMethod method) throws ProcessingException {
+  private MethodCreator createFindMethodCreator(@NotNull final RepositoryMethod method) {
     if (mPrimaryKeyGetter == null && mPrimaryKeySetter == null) {
-      throw new ProcessingException("Missing primary key method.", method.getElement());
+      throw new IllegalStateException("Missing primary key method.");
     }
     return new FindMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method, mPrimaryKeySetter == null ? mPrimaryKeyGetter : mPrimaryKeySetter);
   }

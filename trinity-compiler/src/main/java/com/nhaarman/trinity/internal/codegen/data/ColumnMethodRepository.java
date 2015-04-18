@@ -92,4 +92,16 @@ public class ColumnMethodRepository {
 
     return null;
   }
+
+  public Collection<ColumnMethod> findForTableClass(@NotNull final String tableClassFullyQualifiedName) {
+    Collection<ColumnMethod> results = new ArrayList<>();
+
+    for (ColumnMethod columnMethod : mColumnMethods.values()) {
+      if (columnMethod.getFullyQualifiedTableClassName().equals(tableClassFullyQualifiedName)) {
+        results.add(columnMethod);
+      }
+    }
+
+    return results;
+  }
 }

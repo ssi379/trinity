@@ -17,40 +17,58 @@
 package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.annotations.Repository;
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.ElementKind;
 import org.jetbrains.annotations.NotNull;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class RepositoryTypeValidator implements Validator<Set<? extends Element>> {
 
+  @NotNull
   @Override
-  public void validate(@NotNull final Set<? extends Element> elements) throws ValidationException {
+  public ProcessingStepResult validate(@NotNull final Set<? extends Element> elements, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     for (Element element : elements) {
-      if (!(element instanceof TypeElement)) {
-        throwProcessingException(element);
-      }
+      result = result.and(validate(element, validationHandler));
     }
+
+    return result;
   }
 
-  private void throwProcessingException(@NotNull final Element element) throws ValidationException {
-    AnnotationMirror repositoryAnnotationMirror = getRepositoryAnnotationMirror(element);
-    throw new ValidationException("@Repository annotation can only be applied to classes.", element, repositoryAnnotationMirror);
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    return validateElementKind(element, validationHandler);
+  }
+
+  @NotNull
+  private ProcessingStepResult validateElementKind(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    if (element.getKind() != ElementKind.INTERFACE && element.getKind() != ElementKind.CLASS) {
+      AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
+      validationHandler.onError(element, tableAnnotationMirror, Message.REPOSITORY_ANNOTATION_CAN_ONLY_BE_APPLIED_TO_CLASSES_OR_INTERFACES);
+      return ERROR;
+    }
+
+    return OK;
   }
 
   /**
-   * Returns the AnnotationMirror for the {@link Repository} annotation belonging to given Element.
+   * Returns the {@link Repository} AnnotationMirror on given Element.
+   *
+   * @return null if the AnnotationMirror is not found.
    */
-  private AnnotationMirror getRepositoryAnnotationMirror(@NotNull final Element element) {
+  private AnnotationMirror getTableAnnotationMirror(@NotNull final Element element) {
     List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
     AnnotationMirror tableAnnotationMirror = null;
     for (AnnotationMirror annotationMirror : annotationMirrors) {
-      if (annotationMirror.getAnnotationType()
-          .toString()
-          .equals(Repository.class.getCanonicalName())) {
+      if (annotationMirror.getAnnotationType().toString().equals(Repository.class.getCanonicalName())) {
         tableAnnotationMirror = annotationMirror;
       }
     }

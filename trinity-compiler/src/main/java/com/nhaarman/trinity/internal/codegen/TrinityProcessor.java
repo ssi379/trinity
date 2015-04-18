@@ -28,6 +28,7 @@ import com.nhaarman.trinity.internal.codegen.step.TableClassValidationStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateColumnElementsStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateRepositoryElementsStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateTableElementsStep;
+import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -39,9 +40,15 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 @SupportedAnnotationTypes("com.nhaarman.trinity.annotations.*")
 public class TrinityProcessor extends AbstractProcessor {
@@ -64,20 +71,22 @@ public class TrinityProcessor extends AbstractProcessor {
     super.init(processingEnv);
     mMessager = processingEnv.getMessager();
 
+    ValidationHandler validationHandler = new MyValidationHandler(mMessager);
+
     mSteps.addAll(
         Arrays.asList(
-            new ValidateTableElementsStep(),
-            new ValidateColumnElementsStep(),
-            new ValidateRepositoryElementsStep(),
+            new ValidateTableElementsStep(validationHandler),
+            new ValidateColumnElementsStep(validationHandler),
+            new ValidateRepositoryElementsStep(validationHandler),
 
             new TableClassConversionStep(mRepositoryGateway.getTableClassRepository()),
-            new TableClassValidationStep(mRepositoryGateway.getTableClassRepository()),
+            new TableClassValidationStep(mRepositoryGateway.getTableClassRepository(), validationHandler),
 
             new ColumnMethodConversionStep(mRepositoryGateway.getColumnMethodRepository()),
-            new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository()),
+            new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository(), validationHandler),
 
             new RepositoryClassConversionStep(mRepositoryGateway.getRepositoryClassRepository()),
-            new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository(), mRepositoryGateway.getColumnMethodRepository()),
+            new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository(), mRepositoryGateway.getColumnMethodRepository(), validationHandler),
 
             new RepositoryWriterStep(
                 mRepositoryGateway.getTableClassRepository(),
@@ -97,15 +106,37 @@ public class TrinityProcessor extends AbstractProcessor {
     mRepositoryGateway.getRepositoryClassRepository().clear();
 
     try {
-      for (ProcessingStep step : mSteps) {
-        step.process(roundEnv);
+      ProcessingStepResult result = OK;
+      for (int i = 0; i < mSteps.size() && result != ERROR; i++) {
+        result = result.and(mSteps.get(i).process(roundEnv));
       }
-    } catch (ProcessingException e) {
-      mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage(), e.getElement(), e.getAnnotationMirror());
     } catch (IOException e) {
       mMessager.printMessage(Kind.ERROR, e.getLocalizedMessage());
     }
 
     return true;
+  }
+
+  private static class MyValidationHandler implements ValidationHandler {
+
+    @NotNull
+    private final Messager mMessager;
+
+    MyValidationHandler(@NotNull final Messager messager) {
+      mMessager = messager;
+    }
+
+    @Override
+    public void onError(@NotNull final Element element,
+                        @Nullable final AnnotationMirror annotationMirror,
+                        @NotNull final Message message,
+                        @NotNull final String... args) {
+      mMessager.printMessage(Kind.ERROR, message.toLocalizedString(args), element, annotationMirror);
+    }
+
+    @Override
+    public void warn(@NotNull final Message message, @NotNull final Element element, @Nullable final AnnotationMirror annotationMirror, @NotNull final String... args) {
+      mMessager.printMessage(Kind.WARNING, message.toLocalizedString(args), element, annotationMirror);
+    }
   }
 }

@@ -16,14 +16,62 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.annotations.Column;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
+import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import org.jetbrains.annotations.NotNull;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class ColumnTypeValidator implements Validator<Set<? extends Element>> {
 
+  @NotNull
   @Override
-  public void validate(@NotNull final Set<? extends Element> columnElements) throws ValidationException {
+  public ProcessingStepResult validate(@NotNull final Set<? extends Element> elements, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
+    for (Element element : elements) {
+      result = result.and(validate(element, validationHandler));
+    }
+
+    return result;
+  }
+
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    return validateElementKind(element, validationHandler);
+  }
+
+  @NotNull
+  private ProcessingStepResult validateElementKind(@NotNull final Element element, @NotNull final ValidationHandler validationHandler) {
+    if (element.getKind() != ElementKind.METHOD) {
+      AnnotationMirror tableAnnotationMirror = getTableAnnotationMirror(element);
+      validationHandler.onError(element, tableAnnotationMirror, Message.COLUMN_ANNOTATION_CAN_ONLY_BE_APPLIED_TO_METHODS);
+      return ERROR;
+    }
+
+    return OK;
+  }
+
+  /**
+   * Returns the {@link Column} AnnotationMirror on given Element.
+   *
+   * @return null if the AnnotationMirror is not found.
+   */
+  private AnnotationMirror getTableAnnotationMirror(@NotNull final Element element) {
+    List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+    AnnotationMirror tableAnnotationMirror = null;
+    for (AnnotationMirror annotationMirror : annotationMirrors) {
+      if (annotationMirror.getAnnotationType().toString().equals(Column.class.getCanonicalName())) {
+        tableAnnotationMirror = annotationMirror;
+      }
+    }
+    return tableAnnotationMirror;
   }
 }

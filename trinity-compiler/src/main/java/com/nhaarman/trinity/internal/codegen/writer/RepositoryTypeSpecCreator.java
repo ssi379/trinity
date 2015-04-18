@@ -16,7 +16,6 @@
 
 package com.nhaarman.trinity.internal.codegen.writer;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
@@ -60,7 +59,7 @@ public class RepositoryTypeSpecCreator {
     mColumnMethodRepository = columnMethodRepository;
   }
 
-  public TypeSpec create() throws ProcessingException {
+  public TypeSpec create() {
     FieldSpec databaseFieldSpec = mDatabase();
     MethodSpec constructor = constructor();
     MethodSpec readCursorSpec = readCursor();
@@ -132,7 +131,7 @@ public class RepositoryTypeSpecCreator {
    * Creates the readCursor method.
    */
   @NotNull
-  private MethodSpec readCursor() throws ProcessingException {
+  private MethodSpec readCursor() {
     return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository).create();
   }
 

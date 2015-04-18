@@ -1,14 +1,18 @@
 package com.nhaarman.trinity.internal.codegen.step;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClassRepository;
 import com.nhaarman.trinity.internal.codegen.validator.ColumnMethodValidator;
+import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
+import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.processing.RoundEnvironment;
 import org.jetbrains.annotations.NotNull;
+
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class ColumnMethodValidationStep implements ProcessingStep {
 
@@ -19,22 +23,31 @@ public class ColumnMethodValidationStep implements ProcessingStep {
   private final ColumnMethodRepository mColumnMethodRepository;
 
   @NotNull
+  private final ValidationHandler mValidationHandler;
+
+  @NotNull
   private final ColumnMethodValidator mColumnMethodValidator;
 
   public ColumnMethodValidationStep(@NotNull final TableClassRepository tableClassRepository,
-                                    @NotNull final ColumnMethodRepository columnMethodRepository) {
+                                    @NotNull final ColumnMethodRepository columnMethodRepository,
+                                    @NotNull final ValidationHandler validationHandler) {
     mTableClassRepository = tableClassRepository;
     mColumnMethodRepository = columnMethodRepository;
+    mValidationHandler = validationHandler;
     mColumnMethodValidator = new ColumnMethodValidator();
   }
 
+  @NotNull
   @Override
-  public void process(@NotNull final RoundEnvironment roundEnvironment) throws ProcessingException {
+  public ProcessingStepResult process(@NotNull final RoundEnvironment roundEnvironment) throws IOException {
+    ProcessingStepResult result = OK;
+
     Collection<TableClass> tableClasses = mTableClassRepository.all();
     for (TableClass tableClass : tableClasses) {
-      Collection<ColumnMethod> getters = mColumnMethodRepository.findGettersForTableClass(tableClass.getFullyQualifiedName());
-      Collection<ColumnMethod> setters = mColumnMethodRepository.findSettersForTableClass(tableClass.getFullyQualifiedName());
-      mColumnMethodValidator.validate(getters, setters);
+      Collection<ColumnMethod> methods = mColumnMethodRepository.findForTableClass(tableClass.getFullyQualifiedName());
+      result = result.and(mColumnMethodValidator.validate(methods, mValidationHandler));
     }
+
+    return result;
   }
 }

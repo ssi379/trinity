@@ -16,32 +16,44 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
-import com.nhaarman.trinity.internal.codegen.ValidationException;
+import com.nhaarman.trinity.internal.codegen.Message;
+import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
+
 public class TableClassValidator implements Validator<Collection<? extends TableClass>> {
 
+  @NotNull
   @Override
-  public void validate(@NotNull final Collection<? extends TableClass> tableClasses) throws ValidationException {
-    validateTableNames(tableClasses);
+  public ProcessingStepResult validate(@NotNull final Collection<? extends TableClass> tableClasses, @NotNull final ValidationHandler validationHandler) {
+    return validateTableNames(tableClasses, validationHandler);
   }
 
-  private void validateTableNames(@NotNull final Collection<? extends TableClass> tableClasses) throws ValidationException {
+  @NotNull
+  private ProcessingStepResult validateTableNames(@NotNull final Collection<? extends TableClass> tableClasses, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
     Set<String> tableNames = new HashSet<>();
     for (TableClass tableClass : tableClasses) {
       if (tableNames.contains(tableClass.getTableName())) {
-        throwProcessingException(tableClass);
+        validationHandler.onError(
+            tableClass.getElement(),
+            null,
+            Message.CANNOT_CREATE_TWO_TABLES_WITH_THE_SAME_NAME,
+            tableClass.getTableName()
+        );
+        result = ERROR;
       }
 
       tableNames.add(tableClass.getTableName());
     }
-  }
 
-  private void throwProcessingException(@NotNull final TableClass tableClass) throws ValidationException {
-    throw new ValidationException("Cannot create two tables with the same name", tableClass.getElement());
+    return result;
   }
 }

@@ -1,6 +1,5 @@
 package com.nhaarman.trinity.internal.codegen.writer.readcursor;
 
-import com.nhaarman.trinity.internal.codegen.ProcessingException;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
@@ -29,7 +28,7 @@ public class ReadCursorMethodCreator implements MethodCreator {
 
   @NotNull
   @Override
-  public MethodSpec create() throws ProcessingException {
+  public MethodSpec create() {
     Collection<ColumnMethod> setters = mColumnMethodRepository.findSettersForTableClass(mTableClass.getFullyQualifiedName());
 
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
