@@ -33,6 +33,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
@@ -104,7 +106,10 @@ public class RepositoryTypeSpecCreator implements MethodVisitor {
       mRepositoryBuilder.superclass(superclass);
     }
 
-    for (RepositoryMethod repositoryMethod : mRepositoryClass.getMethods()) {
+    ArrayList<RepositoryMethod> methods = new ArrayList<>(mRepositoryClass.getMethods());
+    Collections.sort(methods);
+
+    for (RepositoryMethod repositoryMethod : methods) {
       repositoryMethod.accept(this);
     }
 

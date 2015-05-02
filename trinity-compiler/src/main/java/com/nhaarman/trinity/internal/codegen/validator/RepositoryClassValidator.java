@@ -58,7 +58,6 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
 
   private void validate(@NotNull final RepositoryClass repositoryClass) {
     mMethodValidatorFactory = new MethodValidatorFactory(mColumnMethodRepository, repositoryClass);
-
     Collection<RepositoryMethod> methods = repositoryClass.getMethods();
     for (RepositoryMethod method : methods) {
       method.accept(this);

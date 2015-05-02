@@ -50,14 +50,20 @@ public class RepositoryClassFactory {
     Builder builder = new Builder();
 
     String className = typeElement.getSimpleName().toString();
-    String packageName = typeElement.getQualifiedName().toString().substring(0, typeElement.getQualifiedName().toString().indexOf(className) - 1);
+    String packageName = "";
+    if (!typeElement.getQualifiedName().toString().equals(className)) {
+      packageName = typeElement.getQualifiedName().toString().substring(0, typeElement.getQualifiedName().toString().indexOf(className) - 1);
+    }
 
     builder.withClassName(className);
     builder.withPackageName(packageName);
 
     TypeMirror repositoryValue = getRepositoryValue(typeElement);
     String tableClassName = repositoryValue.toString().substring(repositoryValue.toString().lastIndexOf('.') + 1);
-    String tablePackageName = repositoryValue.toString().substring(0, repositoryValue.toString().indexOf(tableClassName) - 1);
+    String tablePackageName = "";
+    if (!repositoryValue.toString().equals(tableClassName)) {
+      tablePackageName = repositoryValue.toString().substring(0, repositoryValue.toString().indexOf(tableClassName) - 1);
+    }
 
     builder.withTableClassName(tableClassName);
     builder.withTableClassPackageName(tablePackageName);

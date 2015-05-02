@@ -39,7 +39,10 @@ public class TableClassFactory {
     Builder builder = new Builder();
 
     String className = tableElement.getSimpleName().toString();
-    String packageName = tableElement.getQualifiedName().toString().substring(0, tableElement.getQualifiedName().toString().indexOf(className) - 1);
+    String packageName = "";
+    if (!tableElement.getQualifiedName().toString().equals(className)) {
+      packageName = tableElement.getQualifiedName().toString().substring(0, tableElement.getQualifiedName().toString().indexOf(className) - 1);
+    }
 
     builder.withTableName(tableElement.getAnnotation(Table.class).name());
     builder.withClassName(className);

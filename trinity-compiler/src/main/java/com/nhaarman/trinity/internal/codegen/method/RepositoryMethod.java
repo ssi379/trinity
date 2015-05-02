@@ -25,7 +25,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class RepositoryMethod {
+public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
 
   @NotNull
   private final String mName;
@@ -87,4 +87,9 @@ public abstract class RepositoryMethod {
   }
 
   public abstract void accept(@NotNull final MethodVisitor visitor);
+
+  @Override
+  public int compareTo(final RepositoryMethod o) {
+    return mName.compareTo(o.mName);
+  }
 }
