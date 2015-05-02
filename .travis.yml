@@ -3,8 +3,8 @@ jdk: oraclejdk7
 
 android:
   components:
-  - android-21
-  - build-tools-21.1.2
+  - android-22
+  - build-tools-22.0.1
 
 script:
  - ./gradlew clean build assemble --stacktrace
@@ -14,9 +14,3 @@ after_success:
 
 notifications:
   email: change
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/4a9094212020b1f7a094
-    on_success: change
-    on_failure: change
-    on_start: false

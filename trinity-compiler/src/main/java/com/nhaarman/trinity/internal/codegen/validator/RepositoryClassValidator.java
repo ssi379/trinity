@@ -20,6 +20,7 @@ import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
+import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
 import com.nhaarman.trinity.internal.codegen.method.FindMethod;
 import com.nhaarman.trinity.internal.codegen.method.MethodVisitor;
 import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
@@ -33,6 +34,7 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
 
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
+
   private ProcessingStepResult mResult;
   private MethodValidatorFactory mMethodValidatorFactory;
   private ValidationHandler mValidationHandler;
@@ -71,5 +73,10 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
   @Override
   public void visit(@NotNull final CreateMethod createMethod) {
     mResult = mResult.and(mMethodValidatorFactory.createMethodValidator().validate(createMethod, mValidationHandler));
+  }
+
+  @Override
+  public void visit(@NotNull final FindAllMethod findAllMethod) {
+    mResult = mResult.and(mMethodValidatorFactory.findAllMethodValidator().validate(findAllMethod, mValidationHandler));
   }
 }

@@ -87,8 +87,8 @@ public class CreateMethodCreatorTest {
     MethodSpec createContentValuesSpec = MethodSpec.methodBuilder("createContentValues").build();
 
     Parameter parameterMock = mock(Parameter.class);
-    when(parameterMock.getType()).thenReturn(PARAMETER_TYPE);
-    when(parameterMock.getName()).thenReturn(PARAMETER_NAME);
+    when(parameterMock.getFullyQualifiedType()).thenReturn(PARAMETER_TYPE);
+    when(parameterMock.getVariableName()).thenReturn(PARAMETER_NAME);
 
     RepositoryMethod methodMock = mock(RepositoryMethod.class);
     when(methodMock.getMethodName()).thenReturn(METHOD_NAME);

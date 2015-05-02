@@ -1,28 +1,27 @@
 package com.nhaarman.trinity.internal.codegen.data;
 
-import javax.lang.model.element.VariableElement;
 import org.jetbrains.annotations.NotNull;
 
 public class Parameter {
 
   @NotNull
-  private final String mType;
+  private final String mFullyQualifiedType;
 
   @NotNull
-  private final String mName;
+  private final String mVariableName;
 
-  public Parameter(@NotNull final VariableElement variableElement) {
-    mType = variableElement.asType().toString();
-    mName = variableElement.getSimpleName().toString();
+  public Parameter(@NotNull final String fullyQualifiedType, @NotNull final String variableName) {
+    mFullyQualifiedType = fullyQualifiedType;
+    mVariableName = variableName;
   }
 
   @NotNull
-  public String getType() {
-    return mType;
+  public String getFullyQualifiedType() {
+    return mFullyQualifiedType;
   }
 
   @NotNull
-  public String getName() {
-    return mName;
+  public String getVariableName() {
+    return mVariableName;
   }
 }

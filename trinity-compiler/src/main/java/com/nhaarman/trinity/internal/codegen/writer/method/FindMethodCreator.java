@@ -63,14 +63,14 @@ class FindMethodCreator implements MethodCreator {
   @Override
   public MethodSpec create() {
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
-    String parameterName = mMethod.getParameter().getName();
+    String parameterName = mMethod.getParameter().getVariableName();
     String columnName = mPrimaryKeyMethod.getColumnName();
 
     return MethodSpec.methodBuilder(mMethod.getMethodName())
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(ClassName.bestGuess(mMethod.getParameter().getType()), parameterName, FINAL)
+        .addParameter(ClassName.bestGuess(mMethod.getParameter().getFullyQualifiedType()), parameterName, FINAL)
         .returns(ClassName.bestGuess(mMethod.getReturnType()))
         .beginControlFlow("if (" + parameterName + " == null)")
         .addStatement("return null")
@@ -106,7 +106,7 @@ class FindMethodCreator implements MethodCreator {
         + "Performs a query for a " + mMethod.getReturnType() + " with given id.\n"
         + "If no such instance is found, null is returned.\n"
         + '\n'
-        + "@param " + mMethod.getParameter().getName() + " The id of the instance to find."
+        + "@param " + mMethod.getParameter().getVariableName() + " The id of the instance to find."
         + '\n'
         + "@return The " + mMethod.getReturnType() + " with given id, or null if it doesn't exist.";
   }

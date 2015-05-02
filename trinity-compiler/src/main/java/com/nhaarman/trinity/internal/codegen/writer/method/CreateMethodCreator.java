@@ -70,16 +70,16 @@ class CreateMethodCreator implements MethodCreator {
         .addJavadoc(createJavadoc())
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(ClassName.bestGuess(parameter.getType()), parameter.getName(), FINAL)
+        .addParameter(ClassName.bestGuess(parameter.getFullyQualifiedType()), parameter.getVariableName(), FINAL)
         .returns(ClassName.bestGuess(mMethod.getReturnType()))
         .addStatement("$T result = null", Long.class)
         .addCode("\n")
-        .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getName())
+        .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getVariableName())
         .addStatement("$T id = mDatabase.insert($S, null, contentValues)", long.class, mTableClass.getTableName())
         .beginControlFlow("if (id != -1)");
 
     if (mPrimaryKeySetter != null && Long.class.getName().equals(mPrimaryKeySetter.getType())) {
-      builder.addStatement("$L.$L(id)", parameter.getName(), mPrimaryKeySetter.getMethodName());
+      builder.addStatement("$L.$L(id)", parameter.getVariableName(), mPrimaryKeySetter.getMethodName());
     }
 
     builder.addStatement("result = id")
@@ -93,10 +93,10 @@ class CreateMethodCreator implements MethodCreator {
   private String createJavadoc() {
     Parameter parameter = mMethod.getParameter();
     return ""
-        + "Executes an insert statement to persist given " + parameter.getType() + " in the database.\n"
-        + "When successful, the id of the " + parameter.getType() + " will be set to the id of the created row.\n"
+        + "Executes an insert statement to persist given " + parameter.getFullyQualifiedType() + " in the database.\n"
+        + "When successful, the id of the " + parameter.getFullyQualifiedType() + " will be set to the id of the created row.\n"
         + "\n"
-        + "@param " + parameter.getName() + " The " + parameter.getType() + " to insert.\n"
+        + "@param " + parameter.getVariableName() + " The " + parameter.getFullyQualifiedType() + " to insert.\n"
         + "\n"
         + "@return The created row id, or null if an error occurred.\n";
   }

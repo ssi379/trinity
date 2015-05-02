@@ -1,6 +1,7 @@
 package com.nhaarman.trinity.internal.codegen.data;
 
 import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
+import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
 import com.nhaarman.trinity.internal.codegen.method.FindMethod;
 import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import java.util.ArrayList;
@@ -18,13 +19,20 @@ public class RepositoryMethodFactory {
 
     List<Parameter> parameters = new ArrayList<>();
     for (VariableElement variableElement : element.getParameters()) {
-      parameters.add(new Parameter(variableElement));
+      parameters.add(
+          new Parameter(
+              variableElement.asType().toString(),
+              variableElement.getSimpleName().toString()
+          )
+      );
     }
 
     switch (methodName) {
       case "find":
       case "findById":
         return new FindMethod(methodName, type, parameters, element);
+      case "findAll":
+        return new FindAllMethod(methodName, type, parameters, element);
       case "create":
         return new CreateMethod(methodName, type, parameters, element);
       default:

@@ -21,6 +21,7 @@ import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
+import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
 import com.nhaarman.trinity.internal.codegen.method.FindMethod;
 import com.nhaarman.trinity.internal.codegen.method.MethodVisitor;
 import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
@@ -155,5 +156,11 @@ public class RepositoryTypeSpecCreator implements MethodVisitor {
   public void visit(@NotNull final CreateMethod createMethod) {
     MethodCreator createMethodCreator = mMethodCreatorFactory.createMethodCreator(createMethod);
     mRepositoryBuilder.addMethod(createMethodCreator.create());
+  }
+
+  @Override
+  public void visit(@NotNull final FindAllMethod findAllMethod) {
+    MethodCreator findAllMethodCreator = mMethodCreatorFactory.findAllMethodCreator(findAllMethod);
+    mRepositoryBuilder.addMethod(findAllMethodCreator.create());
   }
 }

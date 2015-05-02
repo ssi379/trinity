@@ -135,8 +135,8 @@ public class FindMethodCreatorTest {
     when(tableClassMock.getTableName()).thenReturn(TABLE_NAME);
 
     mParameterMock = mock(Parameter.class);
-    when(mParameterMock.getName()).thenReturn(PARAMETER_NAME);
-    when(mParameterMock.getType()).thenReturn(PARAMETER_TYPE);
+    when(mParameterMock.getVariableName()).thenReturn(PARAMETER_NAME);
+    when(mParameterMock.getFullyQualifiedType()).thenReturn(PARAMETER_TYPE);
 
     RepositoryMethod repositoryMethodMock = mock(RepositoryMethod.class);
     when(repositoryMethodMock.getMethodName()).thenReturn(FIND);
@@ -228,7 +228,7 @@ public class FindMethodCreatorTest {
   @Test
   public void createdMethodSpec_forTableWithStringKey_hasASingleFinalParameterWithCorrectTypeAndName() {
     /* Given */
-    when(mParameterMock.getType()).thenReturn(String.class.getName());
+    when(mParameterMock.getFullyQualifiedType()).thenReturn(String.class.getName());
 
     /* When */
     MethodSpec methodSpec = mFindMethodCreator.create();
@@ -243,7 +243,7 @@ public class FindMethodCreatorTest {
   @Test
   public void createdMethodSpec_withCustomParameterName_hascorrectCode() {
     /* Given */
-    when(mParameterMock.getName()).thenReturn(CUSTOM_PARAMETER_NAME);
+    when(mParameterMock.getVariableName()).thenReturn(CUSTOM_PARAMETER_NAME);
 
     /* When */
     MethodSpec methodSpec = mFindMethodCreator.create();

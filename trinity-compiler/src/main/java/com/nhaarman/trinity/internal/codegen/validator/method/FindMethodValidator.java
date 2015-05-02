@@ -46,12 +46,12 @@ import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
       result = ERROR;
     }
 
-    if (primaryKeyGetter != null && !primaryKeyGetter.getType().equals(method.getParameter().getType())) {
+    if (primaryKeyGetter != null && !primaryKeyGetter.getType().equals(method.getParameter().getFullyQualifiedType())) {
       validationHandler.onError(
           method.getElement(),
           null,
           Message.PRIMARYKEY_FIND_TYPE_MISMATCH,
-          method.getParameter().getType(),
+          method.getParameter().getFullyQualifiedType(),
           method.getMethodName(),
           primaryKeyGetter.getType(),
           primaryKeyGetter.getFullyQualifiedTableClassName() + '.' + primaryKeyGetter.getMethodName()
@@ -59,12 +59,12 @@ import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
       result = ERROR;
     }
 
-    if (primaryKeySetter != null && !primaryKeySetter.getType().equals(method.getParameter().getType())) {
+    if (primaryKeySetter != null && !primaryKeySetter.getType().equals(method.getParameter().getFullyQualifiedType())) {
       validationHandler.onError(
           method.getElement(),
           null,
           Message.PRIMARYKEY_FIND_TYPE_MISMATCH,
-          method.getParameter().getType(),
+          method.getParameter().getFullyQualifiedType(),
           method.getMethodName(),
           primaryKeySetter.getType(),
           primaryKeySetter.getFullyQualifiedTableClassName() + '.' + primaryKeySetter.getMethodName()

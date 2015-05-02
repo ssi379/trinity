@@ -43,7 +43,7 @@ public class FindMethodValidatorTest {
     when(repositoryClassMock.getTableClassFullyQualifiedName()).thenReturn(FULLY_QUALIFIED_TABLECLASSNAME);
 
     Parameter parameterMock = mock(Parameter.class);
-    when(parameterMock.getType()).thenReturn(Long.class.getName());
+    when(parameterMock.getFullyQualifiedType()).thenReturn(Long.class.getName());
 
     mRepositoryMethodMock = mock(RepositoryMethod.class);
     when(mRepositoryMethodMock.getMethodName()).thenReturn(METHOD_NAME);

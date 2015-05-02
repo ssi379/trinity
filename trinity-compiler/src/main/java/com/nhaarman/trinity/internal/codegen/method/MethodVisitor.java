@@ -7,4 +7,6 @@ public interface MethodVisitor {
   void visit(@NotNull FindMethod findMethod);
 
   void visit(@NotNull CreateMethod createMethod);
+
+  void visit(@NotNull FindAllMethod findAllMethod);
 }

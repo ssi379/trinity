@@ -28,4 +28,9 @@ public class MethodValidatorFactory {
   public Validator<RepositoryMethod> createMethodValidator() {
     return new CreateMethodValidator();
   }
+
+  @NotNull
+  public Validator<RepositoryMethod> findAllMethodValidator() {
+    return new FindAllMethodValidator();
+  }
 }

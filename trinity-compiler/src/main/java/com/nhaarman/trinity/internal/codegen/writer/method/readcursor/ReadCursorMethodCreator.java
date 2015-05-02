@@ -6,6 +6,7 @@ import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,7 @@ public class ReadCursorMethodCreator implements MethodCreator {
 
     ClassName entityClassName = ClassName.get(mTableClass.getPackageName(), mTableClass.getClassName());
 
-    MethodSpec.Builder methodBuilder =
+    Builder methodBuilder =
         MethodSpec.methodBuilder("read")
             .addModifiers(PUBLIC)
             .addParameter(CURSOR, "cursor", FINAL)
