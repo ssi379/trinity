@@ -7,10 +7,7 @@ android:
   - build-tools-22.0.1
 
 script:
- - ./gradlew clean build assemble --stacktrace
-
-after_success:
- - ./gradlew artifactoryPublish
+ - ./gradlew clean build assemble artifactoryPublish --stacktrace
 
 notifications:
   email: change
