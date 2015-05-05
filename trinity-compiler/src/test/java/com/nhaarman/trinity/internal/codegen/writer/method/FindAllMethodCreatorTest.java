@@ -35,7 +35,7 @@ public class FindAllMethodCreatorTest {
   private static final String EXPECTED_CODE = ""
       + "java.util.List results = new java.util.ArrayList<" + TABLE_TYPE + ">();\n"
       + '\n'
-      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select().from(\"" + TABLE_NAME + "\").queryOn(mDatabase);\n"
+      + "android.database.Cursor cursor = mDatabase.query(\"my_table\", null, null, null, null, null, null);\n"
       + "try {\n"
       + "  while (cursor.moveToNext()) {\n"
       + "    results.add(readCursor(cursor));\n"

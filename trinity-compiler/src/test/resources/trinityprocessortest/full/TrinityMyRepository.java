@@ -3,7 +3,6 @@ package trinityprocessortest.full;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import com.nhaarman.trinity.query.select.Select;
 import java.lang.Long;
 import java.lang.Override;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public final class TrinityMyRepository implements MyRepository {
   public List findAll() {
     List results = new ArrayList<MyEntity>();
 
-    Cursor cursor = new Select().from("entities").queryOn(mDatabase);
+    Cursor cursor = mDatabase.query("entities", null, null, null, null, null, null);
     try {
       while (cursor.moveToNext()) {
         results.add(read(cursor));
@@ -93,7 +92,7 @@ public final class TrinityMyRepository implements MyRepository {
 
     MyEntity result = null;
 
-    Cursor cursor = new Select().from("entities").where("id=?", id).limit("1").queryOn(mDatabase);
+    Cursor cursor = mDatabase.query("entities", null, "id=?", new String[] {String.valueOf(id)}, null, null, null, "1");
     try {
       if (cursor.moveToFirst()) {
         result = read(cursor);

@@ -79,15 +79,13 @@ class FindMethodCreator implements MethodCreator {
         .addStatement("$T result = null", entityClassName)
         .addCode("\n")
         .addStatement(
-            "$T cursor = new $T()" +
-                ".from($S)" +
-                ".where(\"" + columnName + "=?\", " + parameterName + ')' +
-                ".limit(\"1\")" +
-                ".queryOn($N)",
+            "$T cursor = $N.query($S, null, \"$L=?\", new String[] {String.valueOf($N)}, null, null, null, \"1\")",
             CURSOR,
-            ClassName.bestGuess("com.nhaarman.trinity.query.select.Select"),
+            mDatabaseFieldSpec,
             mTableClass.getTableName(),
-            mDatabaseFieldSpec)
+            columnName,
+            parameterName
+        )
         .beginControlFlow("try")
         .beginControlFlow("if (cursor.moveToFirst())")
         .addStatement("result = $N(cursor)", mReadCursorSpec)

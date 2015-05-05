@@ -26,9 +26,8 @@ dependencies {
 
   testCompile 'com.google.testing.compile:compile-testing:0.7'
   testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
-  //  testCompile files((System.getenv('ANDROID_HOME') + '/platforms/andro id-22/android.jar')) // TODO: Make this work
-  testCompile files('/opt/android-sdk/platforms/android-22/android.jar')
-  testCompile project(':trinity')
+  testCompile files('libs/mockable-android-22.jar')
+
 }
 
 sourceSets {

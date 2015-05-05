@@ -53,11 +53,10 @@ class FindAllMethodCreator implements MethodCreator {
         )
         .addCode("\n")
         .addStatement(
-            "$T cursor = new $T().from($S).queryOn($N)",
+            "$T cursor = $N.query($S, null, null, null, null, null, null)",
             CURSOR,
-            ClassName.bestGuess("com.nhaarman.trinity.query.select.Select"),
-            mTableClass.getTableName(),
-            mDatabaseFieldSpec
+            mDatabaseFieldSpec,
+            mTableClass.getTableName()
         )
         .beginControlFlow("try")
         .beginControlFlow("while (cursor.moveToNext())")

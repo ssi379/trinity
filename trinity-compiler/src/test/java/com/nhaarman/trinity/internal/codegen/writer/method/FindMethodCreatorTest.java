@@ -53,20 +53,19 @@ public class FindMethodCreatorTest {
   private static final String EXPECTED_JAVADOC = ""
       + "Performs a query for a " + RETURN_TYPE + " with given id.\n"
       + "If no such instance is found, null is returned.\n"
-      + "\n"
+      + '\n'
       + "@param " + PARAMETER_NAME + " The id of the instance to find."
-      + "\n"
+      + '\n'
       + "@return The " + RETURN_TYPE + " with given id, or null if it doesn't exist.";
 
   private static final String EXPECTED_CODE = ""
       + "if (" + PARAMETER_NAME + " == null) {\n"
       + "  return null;\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
-      + "\n"
-      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
-      + "from(\"" + TABLE_NAME + "\").where(\"" + COLUMN_NAME + "=?\", " + PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + '\n'
+      + "android.database.Cursor cursor = mDatabase.query(\""+TABLE_NAME+"\", null, \"" + COLUMN_NAME + "=?\", new String[] {String.valueOf("+PARAMETER_NAME+")}, null, null, null, \"1\");\n"
       + "try {\n"
       + "  if (cursor.moveToFirst()) {\n"
       + "    result = readCursor(cursor);\n"
@@ -74,7 +73,7 @@ public class FindMethodCreatorTest {
       + "} finally{\n"
       + "  cursor.close();\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + "return result;\n"
       + "";
 
@@ -82,11 +81,10 @@ public class FindMethodCreatorTest {
       + "if (" + CUSTOM_PARAMETER_NAME + " == null) {\n"
       + "  return null;\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
-      + "\n"
-      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
-      + "from(\"" + TABLE_NAME + "\").where(\""+ COLUMN_NAME+"=?\", " + CUSTOM_PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + '\n'
+      + "android.database.Cursor cursor = mDatabase.query(\""+TABLE_NAME+"\", null, \"" + COLUMN_NAME + "=?\", new String[] {String.valueOf("+CUSTOM_PARAMETER_NAME+")}, null, null, null, \"1\");\n"
       + "try {\n"
       + "  if (cursor.moveToFirst()) {\n"
       + "    result = readCursor(cursor);\n"
@@ -94,7 +92,7 @@ public class FindMethodCreatorTest {
       + "} finally{\n"
       + "  cursor.close();\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + "return result;\n"
       + "";
 
@@ -102,11 +100,10 @@ public class FindMethodCreatorTest {
       + "if (" + PARAMETER_NAME + " == null) {\n"
       + "  return null;\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + PACKAGE + '.' + RETURN_TYPE + " result = null;\n"
-      + "\n"
-      + "android.database.Cursor cursor = new com.nhaarman.trinity.query.select.Select()."
-      + "from(\"" + TABLE_NAME + "\").where(\"" + CUSTOM_COLUMN_NAME + "=?\", " + PARAMETER_NAME + ").limit(\"1\").queryOn(" + DATABASE_FIELD + ");\n"
+      + '\n'
+      + "android.database.Cursor cursor = mDatabase.query(\""+TABLE_NAME+"\", null, \"" + CUSTOM_COLUMN_NAME + "=?\", new String[] {String.valueOf("+PARAMETER_NAME+")}, null, null, null, \"1\");\n"
       + "try {\n"
       + "  if (cursor.moveToFirst()) {\n"
       + "    result = readCursor(cursor);\n"
@@ -114,7 +111,7 @@ public class FindMethodCreatorTest {
       + "} finally{\n"
       + "  cursor.close();\n"
       + "}\n"
-      + "\n"
+      + '\n'
       + "return result;\n"
       + "";
 
