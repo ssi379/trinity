@@ -27,12 +27,12 @@ dependencies {
   testCompile 'com.google.testing.compile:compile-testing:0.7'
   testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
   testCompile files('libs/mockable-android-22.jar')
-
 }
 
 sourceSets {
   main {
     compileClasspath += configurations.providedCompile
+    runtimeClasspath += configurations.providedCompile
   }
   test {
     compileClasspath += configurations.providedCompile
