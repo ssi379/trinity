@@ -11,5 +11,7 @@ dependencies {
   provided project(':trinity-annotations')
   apt project(':trinity-compiler')
 
+  compile 'com.nhaarman:sqlitebuilder-android:0.0.1-SNAPSHOT'
+
   compile 'javax.annotation:jsr250-api:1.0'
 }

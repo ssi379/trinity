@@ -17,12 +17,12 @@
 package com.nhaarman.trinity.sample;
 
 import android.database.sqlite.SQLiteDatabase;
+import com.nhaarman.sqlitebuilder.android.AndroidStatementExecutor;
 import com.nhaarman.trinity.annotations.Migration;
 import com.nhaarman.trinity.migrations.MigrationAdapter;
 
-import static com.nhaarman.trinity.query.create.Column.integer;
-import static com.nhaarman.trinity.query.create.Column.text;
-import static com.nhaarman.trinity.query.create.Create.create;
+import static com.nhaarman.sqlitebuilder.impl.Statements.column;
+import static com.nhaarman.sqlitebuilder.impl.Statements.create;
 
 @Migration(version = 3, order = CreatePlayersTableMigration.VERSION)
 public class CreatePlayersTableMigration extends MigrationAdapter {
@@ -37,10 +37,10 @@ public class CreatePlayersTableMigration extends MigrationAdapter {
   public void onUpgrade(final SQLiteDatabase database) {
     create().table("players")
         .columns(
-            integer("id").primaryKey(),
-            text("name"),
-            integer("team_id").references("teams").columns("id")
+            column("id"),
+            column("name"),
+            column("team_id")
         )
-        .executeOn(database);
+        .executeOn(new AndroidStatementExecutor(database));
   }
 }

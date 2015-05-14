@@ -76,15 +76,10 @@ org.gradle.jvmargs=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address
 Next, in IntelliJ, add a Remote Run Configuration and start debugging. When building the project (`gradlew build`), the debugger will halt at breakpoints in the annotation
 processor.
 
-Special Thanks
------
-The query builder part is a modified version of Michael Pardo's version in Ollie.
-
 License
 =======
 
-    Copyright 2014 Michael Pardo
-    Copyright 2014 Niek Haarman
+    Copyright 2015 Niek Haarman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
