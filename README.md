@@ -1,7 +1,6 @@
 Trinity (Pre-alpha)
 =====
 [![Build Status](https://travis-ci.org/nhaarman/trinity.svg?branch=master)](https://travis-ci.org/nhaarman/trinity)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nhaarman/trinity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Inspired by Dagger and Ollie, Trinity generates all database stuff you don't want to write, without using reflection, and just the way you would write it.
 Just annotate your repository interfaces with the `@Repository` tag, and annotate your model methods:
