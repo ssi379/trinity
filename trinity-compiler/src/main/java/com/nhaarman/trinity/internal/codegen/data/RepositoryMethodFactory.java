@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 
 public class RepositoryMethodFactory {
 
   public RepositoryMethod createRepositoryMethod(@NotNull final ExecutableElement element) {
-    TypeMirror type = element.getReturnType();
+    String returnType = element.getReturnType().toString();
     String methodName = element.getSimpleName().toString();
 
     List<Parameter> parameters = new ArrayList<>();
@@ -30,11 +29,11 @@ public class RepositoryMethodFactory {
     switch (methodName) {
       case "find":
       case "findById":
-        return new FindMethod(methodName, type, parameters, element);
+        return new FindMethod(methodName, returnType, parameters, element);
       case "findAll":
-        return new FindAllMethod(methodName, type, parameters, element);
+        return new FindAllMethod(methodName, returnType, parameters, element);
       case "create":
-        return new CreateMethod(methodName, type, parameters, element);
+        return new CreateMethod(methodName, returnType, parameters, element);
       default:
         throw new IllegalStateException("Unsupported method: " + methodName);
     }

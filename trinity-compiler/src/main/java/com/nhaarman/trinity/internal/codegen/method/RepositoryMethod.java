@@ -22,8 +22,8 @@ import java.util.Collections;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
 
@@ -31,7 +31,7 @@ public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
   private final String mName;
 
   @NotNull
-  private final TypeMirror mType;
+  private final String mReturnType;
 
   @NotNull
   private final Collection<Parameter> mParameters;
@@ -40,11 +40,11 @@ public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
   private final Element mElement;
 
   public RepositoryMethod(@NotNull final String name,
-                          @NotNull final TypeMirror type,
+                          @NotNull final String returnType,
                           @NotNull final Collection<Parameter> parameters,
                           @NotNull final Element element) {
     mName = name;
-    mType = type;
+    mReturnType = returnType;
     mParameters = parameters;
     mElement = element;
   }
@@ -56,15 +56,16 @@ public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
 
   @NotNull
   public String getReturnType() {
-    return mType.toString();
+    return mReturnType;
   }
 
   public Collection<Parameter> getParameters() {
     return Collections.unmodifiableCollection(mParameters);
   }
 
+  @Nullable
   public Parameter getParameter() {
-    return mParameters.iterator().next();
+    return mParameters.isEmpty() ? null : mParameters.iterator().next();
   }
 
   @NotNull

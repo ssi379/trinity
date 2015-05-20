@@ -18,8 +18,8 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.Parameter;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
+import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
@@ -71,7 +71,7 @@ class CreateMethodCreator implements MethodCreator {
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .addParameter(ClassName.bestGuess(parameter.getFullyQualifiedType()), parameter.getVariableName(), FINAL)
-        .returns(ClassName.bestGuess(mMethod.getReturnType()))
+        .returns(Long.class)
         .addStatement("$T result = null", Long.class)
         .addCode("\n")
         .addStatement("$T contentValues = $N($L)", CONTENT_VALUES, mCreateContentValuesSpec, parameter.getVariableName())
