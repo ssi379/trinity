@@ -18,13 +18,11 @@ package com.nhaarman.trinity.sample;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.nhaarman.sqlitebuilder.android.AndroidStatementExecutor;
-import com.nhaarman.trinity.annotations.Migration;
 import com.nhaarman.trinity.migrations.MigrationAdapter;
 
 import static com.nhaarman.sqlitebuilder.impl.Statements.column;
 import static com.nhaarman.sqlitebuilder.impl.Statements.create;
 
-@Migration(version = 2, order = CreateTeamsTableMigration.VERSION)
 public class CreateTeamsTableMigration extends MigrationAdapter {
 
   static final int VERSION = 2;
