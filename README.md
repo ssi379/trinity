@@ -46,7 +46,7 @@ public interface EmployeeRepository {
 }
 ```
 
-Trinity will generate a `Trinity_EmployeeRepository` class, which implements the `EmployeeRepository`.
+Trinity will generate a `TrinityEmployeeRepository` class, which implements the `EmployeeRepository`.
 See the example project on how to use Trinity.
 
 
