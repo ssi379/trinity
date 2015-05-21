@@ -49,12 +49,17 @@ public class ReadCursorCreatorFactory {
       case "java.lang.String":
         result = new StringReadCursorCreator(column, mResultVariableName, mCursorVariableName);
         break;
+      case "long":
       case "java.lang.Long":
         result = new LongReadCursorCreator(column, mResultVariableName, mCursorVariableName);
         break;
       case "boolean":
       case "java.lang.Boolean":
         result = new BooleanReadCursorCreator(column, mResultVariableName, mCursorVariableName);
+        break;
+      case "int":
+      case "java.lang.Integer":
+        result = new IntegerReadCursorCreator(column, mResultVariableName, mCursorVariableName);
         break;
       default:
         throw new IllegalArgumentException(String.format("Type %s is not supported.", typeString));
