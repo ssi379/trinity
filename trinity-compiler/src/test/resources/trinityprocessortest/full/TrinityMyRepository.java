@@ -21,7 +21,11 @@ public final class TrinityMyRepository implements MyRepository {
   public ContentValues createContentValues(final MyEntity entity) {
     ContentValues result = new ContentValues();
 
+    result.put("some_boxed_boolean", entity.getSomeBoxedBoolean());
+    result.put("some_boolean", entity.getSomeBoolean());
+    result.put("some_int", entity.getSomeInt());
     result.put("name", entity.getName());
+    result.put("some_integer", entity.getSomeInteger());
     result.put("id", entity.getId());
 
     return result;
@@ -30,7 +34,11 @@ public final class TrinityMyRepository implements MyRepository {
   public MyEntity read(final Cursor cursor) {
     MyEntity result = new MyEntity();
 
+    result.setSomeInteger(cursor.getInt(cursor.getColumnIndex("some_integer")));
+    result.setSomeInt(cursor.getInt(cursor.getColumnIndex("some_int")));
+    result.setSomeBoxedBoolean(cursor.getInt(cursor.getColumnIndex("some_boxed_boolean")) == 1);
     result.setId(cursor.getLong(cursor.getColumnIndex("id")));
+    result.setSomeBoolean(cursor.getInt(cursor.getColumnIndex("some_boolean")) == 1);
     result.setName(cursor.getString(cursor.getColumnIndex("name")));
 
     return result;

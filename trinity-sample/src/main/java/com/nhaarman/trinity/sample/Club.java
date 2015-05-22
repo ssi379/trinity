@@ -27,6 +27,8 @@ public class Club {
 
   private String mName;
 
+  private MyObject mMyObject;
+
   @Column("id")
   @PrimaryKey
   public String getId() {
@@ -47,5 +49,15 @@ public class Club {
   @Column("name")
   public void setName(final String name) {
     mName = name;
+  }
+
+  //@Column("my_object")
+  public MyObject getMyObject() {
+    return mMyObject;
+  }
+
+  //@Column("my_object")
+  public void setMyObject(final MyObject myObject) {
+    mMyObject = myObject;
   }
 }

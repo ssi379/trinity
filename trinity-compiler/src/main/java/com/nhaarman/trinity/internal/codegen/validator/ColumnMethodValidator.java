@@ -13,6 +13,20 @@ import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>> {
 
+  private static final Collection<String> SUPPORTED_TYPES;
+
+  static {
+    SUPPORTED_TYPES = new HashSet<>();
+
+    SUPPORTED_TYPES.add("java.lang.String");
+    SUPPORTED_TYPES.add("long");
+    SUPPORTED_TYPES.add("java.lang.Long");
+    SUPPORTED_TYPES.add("boolean");
+    SUPPORTED_TYPES.add("java.lang.Boolean");
+    SUPPORTED_TYPES.add("java.lang.Integer");
+    SUPPORTED_TYPES.add("int");
+  }
+
   @NotNull
   @Override
   public ProcessingStepResult validate(@NotNull final Collection<ColumnMethod> columnMethods, @NotNull final ValidationHandler validationHandler) {
@@ -39,6 +53,8 @@ public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>
     result = result.and(validateUniqueGetters(getters, validationHandler));
     result = result.and(validateUniqueSetters(setters, validationHandler));
     result = result.and(validateEqualGetterAndSetterTypes(getters, setters, validationHandler));
+    result = result.and(validateColumnTypes(getters, validationHandler));
+    result = result.and(validateColumnTypes(setters, validationHandler));
 
     return result;
   }
@@ -119,6 +135,28 @@ public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>
           Message.GETTER_AND_SETTER_TYPE_MISMATCH,
           getter.getColumnName()
       );
+      return ERROR;
+    }
+
+    return OK;
+  }
+
+  @NotNull
+  private ProcessingStepResult validateColumnTypes(@NotNull final Collection<ColumnMethod> columnMethods, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
+    for (ColumnMethod columnMethod : columnMethods) {
+      result = result.and(validateColumnType(columnMethod, validationHandler));
+    }
+
+    return result;
+  }
+
+  @NotNull
+  private ProcessingStepResult validateColumnType(@NotNull final ColumnMethod columnMethod, @NotNull final ValidationHandler validationHandler) {
+    String type = columnMethod.getType();
+    if (!SUPPORTED_TYPES.contains(type)) {
+      validationHandler.onError(columnMethod.getElement(), null, Message.UNSUPPORTED_COLUMN_TYPE, type);
       return ERROR;
     }
 

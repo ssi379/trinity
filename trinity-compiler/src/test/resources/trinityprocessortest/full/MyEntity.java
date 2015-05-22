@@ -1,8 +1,8 @@
 package trinityprocessortest.full;
 
-import com.nhaarman.trinity.annotations.Table;
 import com.nhaarman.trinity.annotations.Column;
 import com.nhaarman.trinity.annotations.PrimaryKey;
+import com.nhaarman.trinity.annotations.Table;
 
 @Table(name = "entities")
 public class MyEntity {
@@ -10,6 +10,10 @@ public class MyEntity {
   private Long mId;
 
   private String mName;
+
+  private boolean mSomeBoolean;
+
+  private int mSomeInt;
 
   @Column("id")
   @PrimaryKey
@@ -23,12 +27,52 @@ public class MyEntity {
   }
 
   @Column("name")
+  public String getName() {
+    return mName;
+  }
+
+  @Column("name")
   public void setName(final String name) {
     mName = name;
   }
 
-  @Column("name")
-  public String getName() {
-    return mName;
+  @Column("some_boolean")
+  public boolean getSomeBoolean() {
+    return mSomeBoolean;
+  }
+
+  @Column("some_boolean")
+  public void setSomeBoolean(boolean someBoolean) {
+    mSomeBoolean = someBoolean;
+  }
+
+  @Column("some_boxed_boolean")
+  public Boolean getSomeBoxedBoolean() {
+    return mSomeBoolean;
+  }
+
+  @Column("some_boxed_boolean")
+  public void setSomeBoxedBoolean(Boolean someBoolean) {
+    mSomeBoolean = someBoolean;
+  }
+
+  @Column("some_int")
+  public int getSomeInt() {
+    return mSomeInt;
+  }
+
+  @Column("some_int")
+  public void setSomeInt(int someInt) {
+    mSomeInt = someInt;
+  }
+
+  @Column("some_integer")
+  public Integer getSomeInteger() {
+    return mSomeInt;
+  }
+
+  @Column("some_integer")
+  public void setSomeInteger(Integer someInt) {
+    mSomeInt = someInt;
   }
 }
