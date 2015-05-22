@@ -16,25 +16,24 @@
 
 package com.nhaarman.trinity.internal.codegen.writer;
 
+import com.nhaarman.trinity.internal.codegen.SupportedMethod;
+import com.nhaarman.trinity.internal.codegen.SupportedMethod.SupportedMethodVisitor;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
-import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
-import com.nhaarman.trinity.internal.codegen.method.FindMethod;
-import com.nhaarman.trinity.internal.codegen.method.MethodVisitor;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.writer.method.CreateContentValuesMethodCreator;
-import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreator;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreatorFactory;
 import com.nhaarman.trinity.internal.codegen.writer.method.readcursor.ReadCursorMethodCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeSpec.Builder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.AndroidClasses.SQLITE_DATABASE;
@@ -43,7 +42,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 @SuppressWarnings("HardCodedStringLiteral")
-public class RepositoryTypeSpecCreator implements MethodVisitor {
+public class RepositoryTypeSpecCreator {
 
   private static final String REPOSITORY_CLASS_NAME = "Trinity%s";
 
@@ -59,7 +58,7 @@ public class RepositoryTypeSpecCreator implements MethodVisitor {
   private final ColumnMethodRepository mColumnMethodRepository;
 
   @NotNull
-  private final TypeSpec.Builder mRepositoryBuilder;
+  private final Builder mRepositoryBuilder;
 
   private MethodCreatorFactory mMethodCreatorFactory;
 
@@ -106,11 +105,16 @@ public class RepositoryTypeSpecCreator implements MethodVisitor {
       mRepositoryBuilder.superclass(superclass);
     }
 
-    ArrayList<RepositoryMethod> methods = new ArrayList<>(mRepositoryClass.getMethods());
+    List<RepositoryMethod> methods = new ArrayList<>(mRepositoryClass.getMethods());
     Collections.sort(methods);
 
-    for (RepositoryMethod repositoryMethod : methods) {
-      repositoryMethod.accept(this);
+    for (final RepositoryMethod repositoryMethod : methods) {
+      SupportedMethod supportedMethod = SupportedMethod.from(repositoryMethod.getMethodName());
+      if (supportedMethod == null) {
+        throw new IllegalArgumentException(String.format("Method '%s' is not supported", repositoryMethod.getMethodName()));
+      }
+
+      mRepositoryBuilder.addMethod(supportedMethod.accept(new MyMethodVisitor(repositoryMethod)));
     }
 
     return mRepositoryBuilder.build();
@@ -151,21 +155,30 @@ public class RepositoryTypeSpecCreator implements MethodVisitor {
     return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository).create();
   }
 
-  @Override
-  public void visit(@NotNull final FindMethod findMethod) {
-    MethodCreator findMethodCreator = mMethodCreatorFactory.findMethodCreator(findMethod);
-    mRepositoryBuilder.addMethod(findMethodCreator.create());
-  }
+  private class MyMethodVisitor implements SupportedMethodVisitor<MethodSpec> {
 
-  @Override
-  public void visit(@NotNull final CreateMethod createMethod) {
-    MethodCreator createMethodCreator = mMethodCreatorFactory.createMethodCreator(createMethod);
-    mRepositoryBuilder.addMethod(createMethodCreator.create());
-  }
+    private final RepositoryMethod mRepositoryMethod;
 
-  @Override
-  public void visit(@NotNull final FindAllMethod findAllMethod) {
-    MethodCreator findAllMethodCreator = mMethodCreatorFactory.findAllMethodCreator(findAllMethod);
-    mRepositoryBuilder.addMethod(findAllMethodCreator.create());
+    MyMethodVisitor(final RepositoryMethod repositoryMethod) {
+      mRepositoryMethod = repositoryMethod;
+    }
+
+    @NotNull
+    @Override
+    public MethodSpec visitFind() {
+      return mMethodCreatorFactory.findMethodCreator(mRepositoryMethod).create();
+    }
+
+    @NotNull
+    @Override
+    public MethodSpec visitCreate() {
+      return mMethodCreatorFactory.createMethodCreator(mRepositoryMethod).create();
+    }
+
+    @NotNull
+    @Override
+    public MethodSpec visitFindAll() {
+      return mMethodCreatorFactory.findAllMethodCreator(mRepositoryMethod).create();
+    }
   }
 }

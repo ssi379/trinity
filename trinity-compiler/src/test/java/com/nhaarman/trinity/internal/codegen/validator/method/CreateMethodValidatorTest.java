@@ -3,8 +3,7 @@ package com.nhaarman.trinity.internal.codegen.validator.method;
 import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.Parameter;
-import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class CreateMethodValidatorTest {
 
   private CreateMethodValidator mCreateMethodValidator;
@@ -33,7 +33,7 @@ public class CreateMethodValidatorTest {
   public void validate_javaLangLong_create_validates() {
     /* Given */
     RepositoryMethod repositoryMethod =
-        new CreateMethod(
+        new RepositoryMethod(
             "create",
             "java.lang.Long",
             Collections.singletonList(mock(Parameter.class)),
@@ -52,7 +52,7 @@ public class CreateMethodValidatorTest {
   public void validate_void_create_doesNotValidate() {
     /* Given */
     RepositoryMethod repositoryMethod =
-        new CreateMethod(
+        new RepositoryMethod(
             "create",
             "void",
             Collections.singletonList(mock(Parameter.class)),
@@ -71,7 +71,7 @@ public class CreateMethodValidatorTest {
   public void validate_long_create_doesNotValidate() {
     /* Given */
     RepositoryMethod repositoryMethod =
-        new CreateMethod(
+        new RepositoryMethod(
             "create",
             "long",
             Collections.singletonList(mock(Parameter.class)),
@@ -90,7 +90,7 @@ public class CreateMethodValidatorTest {
   public void validate_withoutParameters_doesNotValidate() {
     /* Given */
     RepositoryMethod repositoryMethod =
-        new CreateMethod(
+        new RepositoryMethod(
             "create",
             "java.lang.Long",
             Collections.<Parameter>emptyList(),
@@ -109,7 +109,7 @@ public class CreateMethodValidatorTest {
   public void validate_withTwoParameters_doesNotValidate() {
     /* Given */
     RepositoryMethod repositoryMethod =
-        new CreateMethod(
+        new RepositoryMethod(
             "create",
             "java.lang.Long",
             Arrays.asList(mock(Parameter.class), mock(Parameter.class)),

@@ -19,25 +19,17 @@ package com.nhaarman.trinity.internal.codegen.validator;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
-import com.nhaarman.trinity.internal.codegen.method.CreateMethod;
-import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
-import com.nhaarman.trinity.internal.codegen.method.FindMethod;
-import com.nhaarman.trinity.internal.codegen.method.MethodVisitor;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.method.MethodValidatorFactory;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
-public class RepositoryClassValidator implements Validator<Collection<RepositoryClass>>, MethodVisitor {
+public class RepositoryClassValidator implements Validator<Collection<RepositoryClass>> {
 
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
-
-  private ProcessingStepResult mResult;
-  private MethodValidatorFactory mMethodValidatorFactory;
-  private ValidationHandler mValidationHandler;
 
   public RepositoryClassValidator(@NotNull final ColumnMethodRepository columnMethodRepository) {
     mColumnMethodRepository = columnMethodRepository;
@@ -46,36 +38,32 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
   @NotNull
   @Override
   public ProcessingStepResult validate(@NotNull final Collection<RepositoryClass> repositoryClasses, @NotNull final ValidationHandler validationHandler) {
-    mValidationHandler = validationHandler;
-    mResult = OK;
+    ProcessingStepResult result = OK;
 
     for (RepositoryClass repositoryClass : repositoryClasses) {
-      validate(repositoryClass);
+      result = result.and(validate(repositoryClass, validationHandler));
     }
 
-    return mResult;
+    return result;
   }
 
-  private void validate(@NotNull final RepositoryClass repositoryClass) {
-    mMethodValidatorFactory = new MethodValidatorFactory(mColumnMethodRepository, repositoryClass);
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final RepositoryClass repositoryClass, @NotNull final ValidationHandler validationHandler) {
+    ProcessingStepResult result = OK;
+
+    MethodValidatorFactory methodValidatorFactory = new MethodValidatorFactory(mColumnMethodRepository, repositoryClass);
     Collection<RepositoryMethod> methods = repositoryClass.getMethods();
-    for (RepositoryMethod method : methods) {
-      method.accept(this);
+    for (final RepositoryMethod method : methods) {
+      result = result.and(validate(method, validationHandler, methodValidatorFactory));
     }
+
+    return result;
   }
 
-  @Override
-  public void visit(@NotNull final FindMethod findMethod) {
-    mResult = mResult.and(mMethodValidatorFactory.findMethodValidator().validate(findMethod, mValidationHandler));
-  }
-
-  @Override
-  public void visit(@NotNull final CreateMethod createMethod) {
-    mResult = mResult.and(mMethodValidatorFactory.createMethodValidator().validate(createMethod, mValidationHandler));
-  }
-
-  @Override
-  public void visit(@NotNull final FindAllMethod findAllMethod) {
-    mResult = mResult.and(mMethodValidatorFactory.findAllMethodValidator().validate(findAllMethod, mValidationHandler));
+  @NotNull
+  private ProcessingStepResult validate(@NotNull final RepositoryMethod method,
+                                        @NotNull final ValidationHandler validationHandler,
+                                        @NotNull final MethodValidatorFactory methodValidatorFactory) {
+    return methodValidatorFactory.methodValidator(method).validate(method, validationHandler);
   }
 }

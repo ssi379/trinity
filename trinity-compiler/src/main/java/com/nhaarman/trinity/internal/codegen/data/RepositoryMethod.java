@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.nhaarman.trinity.internal.codegen.method;
+package com.nhaarman.trinity.internal.codegen.data;
 
-import com.nhaarman.trinity.internal.codegen.data.Parameter;
 import java.util.Collection;
 import java.util.Collections;
 import javax.lang.model.element.Element;
@@ -25,7 +24,7 @@ import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
+public class RepositoryMethod implements Comparable<RepositoryMethod> {
 
   @NotNull
   private final String mName;
@@ -86,8 +85,6 @@ public abstract class RepositoryMethod implements Comparable<RepositoryMethod> {
 
     return stringBuilder.toString();
   }
-
-  public abstract void accept(@NotNull final MethodVisitor visitor);
 
   @Override
   public int compareTo(final RepositoryMethod o) {

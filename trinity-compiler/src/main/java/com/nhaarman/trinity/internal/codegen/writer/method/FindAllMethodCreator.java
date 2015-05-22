@@ -1,7 +1,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;

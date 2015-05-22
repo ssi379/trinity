@@ -3,7 +3,7 @@ package com.nhaarman.trinity.internal.codegen.validator.method;
 import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.Parameter;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
 import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import java.util.Collection;

@@ -18,8 +18,7 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.nhaarman.trinity.internal.codegen.method.FindAllMethod;
-import com.nhaarman.trinity.internal.codegen.method.RepositoryMethod;
+import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +72,7 @@ public class MethodCreatorFactory {
   }
 
   @NotNull
-  public MethodCreator findAllMethodCreator(@NotNull final FindAllMethod method) {
+  public MethodCreator findAllMethodCreator(@NotNull final RepositoryMethod method) {
     return new FindAllMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method);
   }
 }

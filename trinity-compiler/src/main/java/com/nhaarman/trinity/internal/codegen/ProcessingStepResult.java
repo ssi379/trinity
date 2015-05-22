@@ -15,5 +15,4 @@ public enum ProcessingStepResult {
       return OK;
     }
   }
-
 }
