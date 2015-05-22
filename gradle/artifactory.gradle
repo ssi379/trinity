@@ -33,6 +33,6 @@ artifactoryPublish {
     def pullRequest = System.getenv('TRAVIS_PULL_REQUEST')
     def branch = System.getenv('TRAVIS_BRANCH')
 
-    (!pullRequest || pullRequest=='false')// && (!branch || branch=='dev')
+    (!pullRequest || pullRequest=='false') && (!branch || branch=='dev')
   }
 }
