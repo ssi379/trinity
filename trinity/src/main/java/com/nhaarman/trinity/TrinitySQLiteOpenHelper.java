@@ -18,20 +18,30 @@ package com.nhaarman.trinity;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.nhaarman.trinity.migrations.Migration;
 import com.nhaarman.trinity.migrations.Migrations;
 import java.util.SortedSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
+public class TrinitySQLiteOpenHelper extends SQLiteOpenHelper {
 
   @NotNull
   private final Migrations mMigrations;
 
-  public SQLiteDatabaseHelper(@NotNull final Context context, @NotNull final String databaseName, @NotNull final Migrations migrations) {
-    super(context, databaseName, null, findVersionNumber(migrations));
+  public TrinitySQLiteOpenHelper(@NotNull final Context context, @NotNull final String databaseName, @NotNull final Migrations migrations) {
+    this(context, databaseName, null, migrations);
+  }
+
+  public TrinitySQLiteOpenHelper(@NotNull final Context context, @NotNull final String databaseName, @Nullable final CursorFactory factory, @NotNull final Migrations migrations) {
+    super(context, databaseName, factory, findVersionNumber(migrations));
     mMigrations = migrations;
+  }
+
+  private static int findVersionNumber(@NotNull final Migrations migrations) {
+    return migrations.getVersionNumber();
   }
 
   @Override
@@ -84,9 +94,5 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     migration.beforeDown(database);
     migration.onDowngrade(database);
     migration.afterDown(database);
-  }
-
-  private static int findVersionNumber(@NotNull final Migrations migrations) {
-    return migrations.getVersionNumber();
   }
 }
