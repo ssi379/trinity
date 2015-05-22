@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class TableClassRepository {
 
@@ -33,15 +32,5 @@ public class TableClassRepository {
 
   public void clear() {
     mTableClasses.clear();
-  }
-
-  @Nullable
-  public TableClass find(@NotNull final CharSequence tableClassFullyQualifiedName) {
-    for (TableClass tableClass : mTableClasses.values()) {
-      if (tableClass.getFullyQualifiedName().equals(tableClassFullyQualifiedName)) {
-        return tableClass;
-      }
-    }
-    return null;
   }
 }
