@@ -2,6 +2,7 @@ package com.nhaarman.trinity.internal.codegen.validator;
 
 import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
+import com.nhaarman.trinity.internal.codegen.SupportedColumnType;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,20 +13,6 @@ import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>> {
-
-  private static final Collection<String> SUPPORTED_TYPES;
-
-  static {
-    SUPPORTED_TYPES = new HashSet<>();
-
-    SUPPORTED_TYPES.add("java.lang.String");
-    SUPPORTED_TYPES.add("long");
-    SUPPORTED_TYPES.add("java.lang.Long");
-    SUPPORTED_TYPES.add("boolean");
-    SUPPORTED_TYPES.add("java.lang.Boolean");
-    SUPPORTED_TYPES.add("java.lang.Integer");
-    SUPPORTED_TYPES.add("int");
-  }
 
   @NotNull
   @Override
@@ -155,7 +142,7 @@ public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>
   @NotNull
   private ProcessingStepResult validateColumnType(@NotNull final ColumnMethod columnMethod, @NotNull final ValidationHandler validationHandler) {
     String type = columnMethod.getType();
-    if (!SUPPORTED_TYPES.contains(type)) {
+    if (SupportedColumnType.from(type) == null) {
       validationHandler.onError(columnMethod.getElement(), null, Message.UNSUPPORTED_COLUMN_TYPE, type);
       return ERROR;
     }

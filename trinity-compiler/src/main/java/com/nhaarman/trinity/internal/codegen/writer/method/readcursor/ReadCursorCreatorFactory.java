@@ -16,6 +16,8 @@
 
 package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
+import com.nhaarman.trinity.internal.codegen.SupportedColumnType;
+import com.nhaarman.trinity.internal.codegen.SupportedColumnType.SupportedColumnTypeVisitor;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,29 +44,65 @@ public class ReadCursorCreatorFactory {
   @NotNull
   public ReadCursorCreator createReadCursorCreator(@NotNull final ColumnMethod column) {
     String typeString = column.getType();
+    SupportedColumnType type = SupportedColumnType.from(typeString);
 
-    ReadCursorCreator result;
-
-    switch (typeString) {
-      case "java.lang.String":
-        result = new StringReadCursorCreator(column, mResultVariableName, mCursorVariableName);
-        break;
-      case "long":
-      case "java.lang.Long":
-        result = new LongReadCursorCreator(column, mResultVariableName, mCursorVariableName);
-        break;
-      case "boolean":
-      case "java.lang.Boolean":
-        result = new BooleanReadCursorCreator(column, mResultVariableName, mCursorVariableName);
-        break;
-      case "int":
-      case "java.lang.Integer":
-        result = new IntegerReadCursorCreator(column, mResultVariableName, mCursorVariableName);
-        break;
-      default:
-        throw new IllegalArgumentException(String.format("Type %s is not supported.", typeString));
+    if (type == null) {
+      throw new IllegalArgumentException(String.format("Type '%s' is not supported.", typeString));
     }
 
-    return result;
+    SupportedColumnTypeVisitor<ReadCursorCreator> supportedColumnTypeVisitor = new MySupportedColumnTypeVisitor(column);
+    return type.accept(supportedColumnTypeVisitor);
+  }
+
+  private class MySupportedColumnTypeVisitor implements SupportedColumnTypeVisitor<ReadCursorCreator> {
+
+    @NotNull
+    private final ColumnMethod mColumn;
+
+    MySupportedColumnTypeVisitor(@NotNull final ColumnMethod column) {
+      mColumn = column;
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptInt() {
+      return new IntegerReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptJavaLangInteger() {
+      return new IntegerReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptLong() {
+      return new LongReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptJavaLangLong() {
+      return new LongReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptBoolean() {
+      return new BooleanReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptJavaLangBoolean() {
+      return new BooleanReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
+
+    @NotNull
+    @Override
+    public ReadCursorCreator acceptJavaLangString() {
+      return new StringReadCursorCreator(mColumn, mResultVariableName, mCursorVariableName);
+    }
   }
 }
