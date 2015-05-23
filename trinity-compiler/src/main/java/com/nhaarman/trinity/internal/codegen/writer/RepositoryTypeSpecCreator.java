@@ -21,6 +21,7 @@ import com.nhaarman.trinity.internal.codegen.SupportedMethod.SupportedMethodVisi
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.writer.method.CreateContentValuesMethodCreator;
@@ -57,6 +58,8 @@ public class RepositoryTypeSpecCreator {
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
 
+  @NotNull final SerializerClassRepository mSerializerClassRepository;
+
   @NotNull
   private final Builder mRepositoryBuilder;
 
@@ -64,10 +67,12 @@ public class RepositoryTypeSpecCreator {
 
   public RepositoryTypeSpecCreator(@NotNull final RepositoryClass repositoryClass,
                                    @NotNull final TableClass tableClass,
-                                   @NotNull final ColumnMethodRepository columnMethodRepository) {
+                                   @NotNull final ColumnMethodRepository columnMethodRepository,
+                                   @NotNull final SerializerClassRepository serializerClassRepository) {
     mRepositoryClass = repositoryClass;
     mTableClass = tableClass;
     mColumnMethodRepository = columnMethodRepository;
+    mSerializerClassRepository = serializerClassRepository;
 
     mRepositoryBuilder = TypeSpec.classBuilder(String.format(REPOSITORY_CLASS_NAME, mRepositoryClass.getClassName()));
   }
@@ -144,7 +149,7 @@ public class RepositoryTypeSpecCreator {
    * Creates the createContentValues method.
    */
   private MethodSpec createContentValues() {
-    return new CreateContentValuesMethodCreator(mTableClass, mColumnMethodRepository).create();
+    return new CreateContentValuesMethodCreator(mTableClass, mColumnMethodRepository, mSerializerClassRepository).create();
   }
 
   /**
@@ -152,7 +157,7 @@ public class RepositoryTypeSpecCreator {
    */
   @NotNull
   private MethodSpec readCursor() {
-    return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository).create();
+    return new ReadCursorMethodCreator(mTableClass, mColumnMethodRepository, mSerializerClassRepository).create();
   }
 
   private class MyMethodVisitor implements SupportedMethodVisitor<MethodSpec> {

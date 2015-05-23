@@ -15,6 +15,8 @@ public class MyEntity {
 
   private int mSomeInt;
 
+  private MyObject mMyObject;
+
   @Column("id")
   @PrimaryKey
   public Long getId() {
@@ -74,5 +76,15 @@ public class MyEntity {
   @Column("some_integer")
   public void setSomeInteger(Integer someInt) {
     mSomeInt = someInt;
+  }
+
+  @Column("my_object")
+  public MyObject getMyObject(){
+    return mMyObject;
+  }
+
+  @Column("my_object")
+  public void setMyObject(MyObject myObject) {
+    mMyObject = myObject;
   }
 }

@@ -51,12 +51,12 @@ public class Club {
     mName = name;
   }
 
-  //@Column("my_object")
+  @Column("my_object")
   public MyObject getMyObject() {
     return mMyObject;
   }
 
-  //@Column("my_object")
+  @Column("my_object")
   public void setMyObject(final MyObject myObject) {
     mMyObject = myObject;
   }

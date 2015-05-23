@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 public class RepositoryGateway {
 
   @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
+  @NotNull
   private final TableClassRepository mTableClassRepository;
 
   @NotNull
@@ -17,9 +20,15 @@ public class RepositoryGateway {
   private final RepositoryClassRepository mRepositoryClassRepository;
 
   public RepositoryGateway() {
+    mSerializerClassRepository = new SerializerClassRepository();
     mTableClassRepository = new TableClassRepository();
     mColumnMethodRepository = new ColumnMethodRepository();
     mRepositoryClassRepository = new RepositoryClassRepository();
+  }
+
+  @NotNull
+  public SerializerClassRepository getSerializerClassRepository() {
+    return mSerializerClassRepository;
   }
 
   @NotNull

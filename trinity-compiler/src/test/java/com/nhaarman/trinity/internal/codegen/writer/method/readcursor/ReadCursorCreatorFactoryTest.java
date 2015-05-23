@@ -17,6 +17,7 @@
 package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class ReadCursorCreatorFactoryTest {
   @Before
   public void setUp() {
     mColumnMock = mock(ColumnMethod.class);
-    mReadCursorCreatorFactory = new ReadCursorCreatorFactory("result", "cursor");
+    mReadCursorCreatorFactory = new ReadCursorCreatorFactory("result", "cursor", new SerializerClassRepository());
   }
 
   @Test

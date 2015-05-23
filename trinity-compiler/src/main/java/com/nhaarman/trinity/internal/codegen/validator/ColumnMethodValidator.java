@@ -4,6 +4,8 @@ import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.SupportedColumnType;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClass;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,13 @@ import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>> {
+
+  @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
+  public ColumnMethodValidator(@NotNull final SerializerClassRepository serializerClassRepository) {
+    mSerializerClassRepository = serializerClassRepository;
+  }
 
   @NotNull
   @Override
@@ -142,6 +151,12 @@ public class ColumnMethodValidator implements Validator<Collection<ColumnMethod>
   @NotNull
   private ProcessingStepResult validateColumnType(@NotNull final ColumnMethod columnMethod, @NotNull final ValidationHandler validationHandler) {
     String type = columnMethod.getType();
+
+    SerializerClass serializerClass = mSerializerClassRepository.findByFullyQualifiedSerializableTypeName(type);
+    if (serializerClass != null) {
+      return OK;
+    }
+
     if (SupportedColumnType.from(type) == null) {
       validationHandler.onError(columnMethod.getElement(), null, Message.UNSUPPORTED_COLUMN_TYPE, type);
       return ERROR;

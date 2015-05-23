@@ -17,14 +17,14 @@ public class TableClassRepository {
     mTableClasses = new HashMap<>();
   }
 
-  public void save(@NotNull final TableClass tableClass) {
+  public void store(@NotNull final TableClass tableClass) {
     String key = tableClass.getFullyQualifiedName();
     mTableClasses.put(key, tableClass);
   }
 
-  public void save(@NotNull final Collection<TableClass> tableClasses) {
+  public void store(@NotNull final Collection<TableClass> tableClasses) {
     for (TableClass tableClass : tableClasses) {
-      save(tableClass);
+      store(tableClass);
     }
   }
 

@@ -40,6 +40,9 @@ public class ColumnMethod {
   @NotNull
   private final String mFullyQualifiedTableClassName;
 
+  /**
+   * The name of the column in the table.
+   */
   @NotNull
   private final String mColumnName;
 

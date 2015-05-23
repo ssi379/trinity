@@ -19,6 +19,8 @@ package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 import com.nhaarman.trinity.internal.codegen.SupportedColumnType;
 import com.nhaarman.trinity.internal.codegen.SupportedColumnType.SupportedColumnTypeVisitor;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClass;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import org.jetbrains.annotations.NotNull;
 
 public class ReadCursorCreatorFactory {
@@ -35,23 +37,33 @@ public class ReadCursorCreatorFactory {
   @NotNull
   private final String mCursorVariableName;
 
+  @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
   public ReadCursorCreatorFactory(@NotNull final String resultVariableName,
-                                  @NotNull final String cursorVariableName) {
+                                  @NotNull final String cursorVariableName,
+                                  @NotNull final SerializerClassRepository serializerClassRepository) {
     mResultVariableName = resultVariableName;
     mCursorVariableName = cursorVariableName;
+    mSerializerClassRepository = serializerClassRepository;
   }
 
   @NotNull
   public ReadCursorCreator createReadCursorCreator(@NotNull final ColumnMethod column) {
     String typeString = column.getType();
-    SupportedColumnType type = SupportedColumnType.from(typeString);
 
-    if (type == null) {
-      throw new IllegalArgumentException(String.format("Type '%s' is not supported.", typeString));
+    SerializerClass serializerClass = mSerializerClassRepository.findByFullyQualifiedSerializableTypeName(typeString);
+    if (serializerClass != null) {
+      return new SerializedReadCursorCreator(column, mResultVariableName, mCursorVariableName, serializerClass);
     }
 
-    SupportedColumnTypeVisitor<ReadCursorCreator> supportedColumnTypeVisitor = new MySupportedColumnTypeVisitor(column);
-    return type.accept(supportedColumnTypeVisitor);
+    SupportedColumnType type = SupportedColumnType.from(typeString);
+    if (type != null) {
+      SupportedColumnTypeVisitor<ReadCursorCreator> supportedColumnTypeVisitor = new MySupportedColumnTypeVisitor(column);
+      return type.accept(supportedColumnTypeVisitor);
+    }
+
+    throw new IllegalArgumentException(String.format("Type '%s' is not supported.", typeString));
   }
 
   private class MySupportedColumnTypeVisitor implements SupportedColumnTypeVisitor<ReadCursorCreator> {

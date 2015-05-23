@@ -8,6 +8,21 @@ apply from: rootProject.projectDir.absolutePath + '/gradle/artifactory.gradle'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
+configurations {
+  providedCompile
+}
+
 dependencies {
-  compile project(':trinity-core')
+  providedCompile 'org.jetbrains:annotations:13.0'
+}
+
+sourceSets {
+  main {
+    compileClasspath += configurations.providedCompile
+    runtimeClasspath += configurations.providedCompile
+  }
+  test {
+    compileClasspath += configurations.providedCompile
+    runtimeClasspath += configurations.providedCompile
+  }
 }

@@ -4,6 +4,7 @@ import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClassRepository;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClassRepository;
 import com.nhaarman.trinity.internal.codegen.writer.RepositoryTypeSpecCreator;
@@ -29,15 +30,19 @@ public class RepositoryWriterStep implements ProcessingStep {
   private final ColumnMethodRepository mColumnMethodRepository;
 
   @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
+  @NotNull
   private final TypeSpecWriter mTypeSpecWriter;
 
   public RepositoryWriterStep(@NotNull final TableClassRepository tableClassRepository,
                               @NotNull final RepositoryClassRepository repositoryClassRepository,
                               @NotNull final ColumnMethodRepository columnMethodRepository,
-                              @NotNull final Filer filer) {
+                              @NotNull final SerializerClassRepository serializerClassRepository, @NotNull final Filer filer) {
     mTableClassRepository = tableClassRepository;
     mRepositoryClassRepository = repositoryClassRepository;
     mColumnMethodRepository = columnMethodRepository;
+    mSerializerClassRepository = serializerClassRepository;
     mTypeSpecWriter = new TypeSpecWriter(filer);
   }
 
@@ -64,7 +69,7 @@ public class RepositoryWriterStep implements ProcessingStep {
   }
 
   private void writeRepositoryClass(@NotNull final RepositoryClass repositoryClass, @NotNull final TableClass tableClass) throws IOException {
-    TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass, tableClass, mColumnMethodRepository).create();
+    TypeSpec repositoryTypeSpec = new RepositoryTypeSpecCreator(repositoryClass, tableClass, mColumnMethodRepository, mSerializerClassRepository).create();
     mTypeSpecWriter.writeToFile(repositoryClass.getPackageName(), repositoryTypeSpec);
   }
 }

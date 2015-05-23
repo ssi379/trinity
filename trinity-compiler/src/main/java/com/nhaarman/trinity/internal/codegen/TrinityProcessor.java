@@ -23,10 +23,12 @@ import com.nhaarman.trinity.internal.codegen.step.ProcessingStep;
 import com.nhaarman.trinity.internal.codegen.step.RepositoryClassConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.RepositoryClassValidationStep;
 import com.nhaarman.trinity.internal.codegen.step.RepositoryWriterStep;
+import com.nhaarman.trinity.internal.codegen.step.SerializerClassConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.TableClassConversionStep;
 import com.nhaarman.trinity.internal.codegen.step.TableClassValidationStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateColumnElementsStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateRepositoryElementsStep;
+import com.nhaarman.trinity.internal.codegen.step.ValidateSerializerElementsStep;
 import com.nhaarman.trinity.internal.codegen.step.ValidateTableElementsStep;
 import com.nhaarman.trinity.internal.codegen.validator.ValidationHandler;
 import java.io.IOException;
@@ -75,15 +77,19 @@ public class TrinityProcessor extends AbstractProcessor {
 
     mSteps.addAll(
         Arrays.asList(
+            new ValidateSerializerElementsStep(validationHandler),
             new ValidateTableElementsStep(validationHandler),
             new ValidateColumnElementsStep(validationHandler),
             new ValidateRepositoryElementsStep(validationHandler),
+
+            new SerializerClassConversionStep(mRepositoryGateway.getSerializerClassRepository()),
 
             new TableClassConversionStep(mRepositoryGateway.getTableClassRepository()),
             new TableClassValidationStep(mRepositoryGateway.getTableClassRepository(), validationHandler),
 
             new ColumnMethodConversionStep(mRepositoryGateway.getColumnMethodRepository()),
-            new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository(), validationHandler),
+            new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository(),
+                mRepositoryGateway.getSerializerClassRepository(), validationHandler),
 
             new RepositoryClassConversionStep(mRepositoryGateway.getRepositoryClassRepository()),
             new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository(), mRepositoryGateway.getColumnMethodRepository(), validationHandler),
@@ -92,6 +98,7 @@ public class TrinityProcessor extends AbstractProcessor {
                 mRepositoryGateway.getTableClassRepository(),
                 mRepositoryGateway.getRepositoryClassRepository(),
                 mRepositoryGateway.getColumnMethodRepository(),
+                mRepositoryGateway.getSerializerClassRepository(),
                 processingEnv.getFiler()
             )
         )
@@ -101,6 +108,7 @@ public class TrinityProcessor extends AbstractProcessor {
   @Override
   public boolean process(@NotNull final Set<? extends TypeElement> annotations,
                          @NotNull final RoundEnvironment roundEnv) {
+    mRepositoryGateway.getSerializerClassRepository().clear();
     mRepositoryGateway.getTableClassRepository().clear();
     mRepositoryGateway.getColumnMethodRepository().clear();
     mRepositoryGateway.getRepositoryClassRepository().clear();

@@ -27,4 +27,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 public @interface Column {
 
   String value();
+
 }

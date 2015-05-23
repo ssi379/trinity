@@ -2,6 +2,7 @@ package com.nhaarman.trinity.internal.codegen.writer.method.readcursor;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.writer.method.MethodCreator;
 import com.squareup.javapoet.ClassName;
@@ -22,9 +23,15 @@ public class ReadCursorMethodCreator implements MethodCreator {
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
 
-  public ReadCursorMethodCreator(@NotNull final TableClass tableClass, @NotNull final ColumnMethodRepository columnMethodRepository) {
+  @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
+  public ReadCursorMethodCreator(@NotNull final TableClass tableClass,
+                                 @NotNull final ColumnMethodRepository columnMethodRepository,
+                                 @NotNull final SerializerClassRepository serializerClassRepository) {
     mTableClass = tableClass;
     mColumnMethodRepository = columnMethodRepository;
+    mSerializerClassRepository = serializerClassRepository;
   }
 
   @NotNull
@@ -46,7 +53,7 @@ public class ReadCursorMethodCreator implements MethodCreator {
             )
             .addCode("\n");
 
-    ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor");
+    ReadCursorCreatorFactory creatorFactory = new ReadCursorCreatorFactory("result", "cursor", mSerializerClassRepository);
     for (ColumnMethod setter : setters) {
       ReadCursorCreator readCursorCreator = creatorFactory.createReadCursorCreator(setter);
       methodBuilder.addCode(readCursorCreator.create());

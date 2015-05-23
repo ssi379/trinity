@@ -31,7 +31,7 @@ public class TableClassConversionStep implements ProcessingStep {
   public ProcessingStepResult process(@NotNull final RoundEnvironment roundEnvironment) throws IOException {
     Set<? extends TypeElement> tableElements = (Set<? extends TypeElement>) roundEnvironment.getElementsAnnotatedWith(Table.class);
     Set<TableClass> tableClasses = mTableClassFactory.createTableClasses(tableElements);
-    mTableClassRepository.save(tableClasses);
+    mTableClassRepository.store(tableClasses);
 
     return OK;
   }

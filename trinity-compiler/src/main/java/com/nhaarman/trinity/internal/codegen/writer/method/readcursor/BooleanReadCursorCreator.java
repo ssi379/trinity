@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import org.jetbrains.annotations.NotNull;
 
 class BooleanReadCursorCreator implements ReadCursorCreator {
+
   /**
    * Resolves to:
    * <p/>

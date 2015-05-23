@@ -30,7 +30,9 @@ public class TrinityProcessorTest {
         .about(javaSources())
         .that(asList(
             forResource("trinityprocessortest/full/MyEntity.java"),
-            forResource("trinityprocessortest/full/MyRepository.java")
+            forResource("trinityprocessortest/full/MyRepository.java"),
+            forResource("trinityprocessortest/full/MyObject.java"),
+            forResource("trinityprocessortest/full/MyObjectTypeSerializer.java")
         ))
         .processedWith(new TrinityProcessor())
         .compilesWithoutError()

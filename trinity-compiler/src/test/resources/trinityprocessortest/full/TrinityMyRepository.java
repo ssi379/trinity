@@ -23,10 +23,11 @@ public final class TrinityMyRepository implements MyRepository {
 
     result.put("some_boxed_boolean", entity.getSomeBoxedBoolean());
     result.put("some_boolean", entity.getSomeBoolean());
-    result.put("some_int", entity.getSomeInt());
     result.put("name", entity.getName());
+    result.put("some_int", entity.getSomeInt());
     result.put("some_integer", entity.getSomeInteger());
     result.put("id", entity.getId());
+    result.put("my_object", new MyObjectTypeSerializer().serialize(entity.getMyObject()));
 
     return result;
   }
@@ -34,12 +35,13 @@ public final class TrinityMyRepository implements MyRepository {
   public MyEntity read(final Cursor cursor) {
     MyEntity result = new MyEntity();
 
-    result.setSomeInteger(cursor.getInt(cursor.getColumnIndex("some_integer")));
+    result.setSomeBoolean(cursor.getInt(cursor.getColumnIndex("some_boolean")) == 1);
+    result.setMyObject(new MyObjectTypeSerializer().deserialize(cursor.getString(cursor.getColumnIndex("my_object"))));
+    result.setName(cursor.getString(cursor.getColumnIndex("name")));
     result.setSomeInt(cursor.getInt(cursor.getColumnIndex("some_int")));
+    result.setSomeInteger(cursor.getInt(cursor.getColumnIndex("some_integer")));
     result.setSomeBoxedBoolean(cursor.getInt(cursor.getColumnIndex("some_boxed_boolean")) == 1);
     result.setId(cursor.getLong(cursor.getColumnIndex("id")));
-    result.setSomeBoolean(cursor.getInt(cursor.getColumnIndex("some_boolean")) == 1);
-    result.setName(cursor.getString(cursor.getColumnIndex("name")));
 
     return result;
   }

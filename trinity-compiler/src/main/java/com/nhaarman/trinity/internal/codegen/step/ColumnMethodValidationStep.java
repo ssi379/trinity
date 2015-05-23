@@ -3,6 +3,7 @@ package com.nhaarman.trinity.internal.codegen.step;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
 import com.nhaarman.trinity.internal.codegen.data.TableClassRepository;
 import com.nhaarman.trinity.internal.codegen.validator.ColumnMethodValidator;
@@ -30,11 +31,12 @@ public class ColumnMethodValidationStep implements ProcessingStep {
 
   public ColumnMethodValidationStep(@NotNull final TableClassRepository tableClassRepository,
                                     @NotNull final ColumnMethodRepository columnMethodRepository,
+                                    @NotNull final SerializerClassRepository serializerClassRepository,
                                     @NotNull final ValidationHandler validationHandler) {
     mTableClassRepository = tableClassRepository;
     mColumnMethodRepository = columnMethodRepository;
     mValidationHandler = validationHandler;
-    mColumnMethodValidator = new ColumnMethodValidator();
+    mColumnMethodValidator = new ColumnMethodValidator(serializerClassRepository);
   }
 
   @NotNull

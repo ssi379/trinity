@@ -2,8 +2,10 @@ package com.nhaarman.trinity.internal.codegen.writer.method;
 
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethod;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClass;
+import com.nhaarman.trinity.internal.codegen.data.SerializerClassRepository;
 import com.nhaarman.trinity.internal.codegen.data.TableClass;
-import com.squareup.javapoet. ClassName;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +23,15 @@ public class CreateContentValuesMethodCreator implements MethodCreator {
   @NotNull
   private final ColumnMethodRepository mColumnMethodRepository;
 
+  @NotNull
+  private final SerializerClassRepository mSerializerClassRepository;
+
   public CreateContentValuesMethodCreator(@NotNull final TableClass tableClass,
-                                          @NotNull final ColumnMethodRepository columnMethodRepository) {
+                                          @NotNull final ColumnMethodRepository columnMethodRepository,
+                                          @NotNull final SerializerClassRepository serializerClassRepository) {
     mTableClass = tableClass;
     mColumnMethodRepository = columnMethodRepository;
+    mSerializerClassRepository = serializerClassRepository;
   }
 
   @NotNull
@@ -43,7 +50,12 @@ public class CreateContentValuesMethodCreator implements MethodCreator {
             .addCode("\n");
 
     for (ColumnMethod getter : getters) {
-      methodBuilder.addStatement("result.put($S, entity.$L())", getter.getColumnName(), getter.getMethodName());
+      SerializerClass serializerClass = mSerializerClassRepository.findByFullyQualifiedSerializableTypeName(getter.getType());
+      if (serializerClass == null) {
+        methodBuilder.addStatement("result.put($S, entity.$L())", getter.getColumnName(), getter.getMethodName());
+      } else {
+        methodBuilder.addStatement("result.put($S, new $T().serialize(entity.$L()))", getter.getColumnName(), ClassName.bestGuess(serializerClass.getFullyQualifiedClassName()), getter.getMethodName());
+      }
     }
 
     methodBuilder.addCode("\n");
