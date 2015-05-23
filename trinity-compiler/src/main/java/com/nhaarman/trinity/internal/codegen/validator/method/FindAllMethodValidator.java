@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
-public class FindAllMethodValidator implements Validator<RepositoryMethod> {
+class FindAllMethodValidator implements Validator<RepositoryMethod> {
 
   @NotNull
   @Override

@@ -2,6 +2,9 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A class which represents a method parameter.
+ */
 public class Parameter {
 
   @NotNull

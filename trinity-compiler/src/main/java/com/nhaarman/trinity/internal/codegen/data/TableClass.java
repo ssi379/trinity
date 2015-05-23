@@ -16,12 +16,13 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
+import com.nhaarman.trinity.annotations.Table;
 import javax.lang.model.element.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A class that holds information about a class that is annotated with the @Table annotation.
+ * A class that holds information about a class that is annotated with the @{@link Table} annotation.
  */
 public class TableClass {
 

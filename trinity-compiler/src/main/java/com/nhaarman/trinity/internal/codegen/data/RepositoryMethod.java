@@ -24,6 +24,9 @@ import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A class which holds information about an abstract method in a class annotated with @Repository.
+ */
 public class RepositoryMethod implements Comparable<RepositoryMethod> {
 
   @NotNull

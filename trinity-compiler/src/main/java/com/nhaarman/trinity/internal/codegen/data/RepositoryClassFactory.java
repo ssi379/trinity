@@ -31,14 +31,17 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A factory class for creating {@link RepositoryClass} instances from {@link TypeElement}s.
+ */
 public class RepositoryClassFactory {
 
-  public Collection<RepositoryClass> createRepositoryClasses(@NotNull final Set<? extends Element> repositoryElements) {
+  @NotNull
+  public Collection<RepositoryClass> createRepositoryClasses(@NotNull final Set<? extends TypeElement> repositoryElements) {
     Set<RepositoryClass> results = new HashSet<>();
 
-    for (Element repositoryElement : repositoryElements) {
-      TypeElement typeElement = (TypeElement) repositoryElement;
-      results.add(createRepositoryClass(typeElement));
+    for (TypeElement repositoryElement : repositoryElements) {
+      results.add(createRepositoryClass(repositoryElement));
     }
 
     return results;

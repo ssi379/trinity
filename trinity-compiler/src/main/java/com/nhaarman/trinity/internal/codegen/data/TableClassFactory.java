@@ -23,6 +23,9 @@ import java.util.Set;
 import javax.lang.model.element.TypeElement;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A factory class for building {@link TableClass} instances out of {@link TypeElement}s.
+ */
 public class TableClassFactory {
 
   public Set<TableClass> createTableClasses(@NotNull final Set<? extends TypeElement> tableElements) {

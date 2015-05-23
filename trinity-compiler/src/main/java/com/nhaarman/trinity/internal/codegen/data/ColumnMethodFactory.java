@@ -10,6 +10,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A factory class for building {@link ColumnMethod} instances from {@link ExecutableElement}s.
+ */
 public class ColumnMethodFactory {
 
   public Collection<ColumnMethod> createColumnMethods(final Set<? extends ExecutableElement> columnElements) {

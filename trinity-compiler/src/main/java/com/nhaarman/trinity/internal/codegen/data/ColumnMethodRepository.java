@@ -7,6 +7,9 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A repository class which stores {@link ColumnMethod} instances.
+ */
 public class ColumnMethodRepository {
 
   @NotNull
@@ -16,14 +19,14 @@ public class ColumnMethodRepository {
     mColumnMethods = new HashMap<>();
   }
 
-  public void save(@NotNull final ColumnMethod columnMethod) {
+  public void store(@NotNull final ColumnMethod columnMethod) {
     String key = columnMethod.getId();
     mColumnMethods.put(key, columnMethod);
   }
 
-  public void save(@NotNull final Collection<ColumnMethod> columnMethodes) {
+  public void store(@NotNull final Collection<ColumnMethod> columnMethodes) {
     for (ColumnMethod columnMethod : columnMethodes) {
-      save(columnMethod);
+      store(columnMethod);
     }
   }
 

@@ -2,6 +2,9 @@ package com.nhaarman.trinity.internal.codegen.data;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A gateway class which holds several repository classes.
+ */
 public class RepositoryGateway {
 
   @NotNull

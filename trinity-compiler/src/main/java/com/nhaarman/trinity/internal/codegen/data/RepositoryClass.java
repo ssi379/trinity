@@ -16,19 +16,23 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
+import com.nhaarman.trinity.annotations.Repository;
 import java.util.Collection;
 import java.util.Collections;
 import javax.lang.model.element.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A class which holds information about a with @{@link Repository} annotated abstract class or interface.
+ */
 public class RepositoryClass {
 
   @NotNull
-  private final String mClassName;
+  private final String mPackageName;
 
   @NotNull
-  private final String mPackageName;
+  private final String mClassName;
 
   @NotNull
   private final String mTableClassName;
@@ -44,8 +48,8 @@ public class RepositoryClass {
   @NotNull
   private final Collection<RepositoryMethod> mMethods;
 
-  private RepositoryClass(@NotNull final String className,
-                          @NotNull final String packageName,
+  private RepositoryClass(@NotNull final String packageName,
+                          @NotNull final String className,
                           @NotNull final String tableClassName,
                           @NotNull final String tableClassPackageName,
                           final boolean isInterface,
@@ -61,13 +65,13 @@ public class RepositoryClass {
   }
 
   @NotNull
-  public String getClassName() {
-    return mClassName;
+  public String getPackageName() {
+    return mPackageName;
   }
 
   @NotNull
-  public String getPackageName() {
-    return mPackageName;
+  public String getClassName() {
+    return mClassName;
   }
 
   @NotNull
@@ -104,6 +108,7 @@ public class RepositoryClass {
     return mElement;
   }
 
+  @SuppressWarnings("PublicInnerClass")
   public static class Builder {
 
     @Nullable
@@ -151,7 +156,7 @@ public class RepositoryClass {
         throw new IllegalStateException("RepositoryClass needs an Element");
       }
 
-      return new RepositoryClass(mClassName, mPackageName, mTableClassName, mTableClassPackageName, mIsInterface, mMethods, mElement);
+      return new RepositoryClass(mPackageName, mClassName, mTableClassName, mTableClassPackageName, mIsInterface, mMethods, mElement);
     }
 
     public Builder withClassName(@NotNull final String className) {

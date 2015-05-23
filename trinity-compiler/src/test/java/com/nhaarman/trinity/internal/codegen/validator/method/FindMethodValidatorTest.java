@@ -37,7 +37,7 @@ public class FindMethodValidatorTest {
     when(mColumnMethodMock.getFullyQualifiedTableClassName()).thenReturn(FULLY_QUALIFIED_TABLECLASSNAME);
 
     ColumnMethodRepository columnMethodRepository = new ColumnMethodRepository();
-    columnMethodRepository.save(mColumnMethodMock);
+    columnMethodRepository.store(mColumnMethodMock);
 
     RepositoryClass repositoryClassMock = mock(RepositoryClass.class);
     when(repositoryClassMock.getTableClassFullyQualifiedName()).thenReturn(FULLY_QUALIFIED_TABLECLASSNAME);

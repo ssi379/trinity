@@ -16,13 +16,15 @@
 
 package com.nhaarman.trinity.internal.codegen.data;
 
+import com.nhaarman.trinity.annotations.Column;
+import com.nhaarman.trinity.annotations.Table;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A class which holds information about a getter or setter method for a column.
+ * A class which holds information about a with @{@link Column} annotated getter or setter method in a class annotated with @{@link Table}.
  */
 public class ColumnMethod {
 

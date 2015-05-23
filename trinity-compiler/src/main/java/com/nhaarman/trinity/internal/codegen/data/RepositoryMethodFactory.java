@@ -6,6 +6,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A factory class for building {@link RepositoryMethod} instances out of {@link ExecutableElement}s.
+ */
 public class RepositoryMethodFactory {
 
   @NotNull

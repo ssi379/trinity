@@ -32,7 +32,7 @@ public class ColumnMethodConversionStep implements ProcessingStep {
   public ProcessingStepResult process(@NotNull final RoundEnvironment roundEnvironment) throws IOException {
     Set<? extends ExecutableElement> columnElements = (Set<? extends ExecutableElement>) roundEnvironment.getElementsAnnotatedWith(Column.class);
     Collection<ColumnMethod> columnMethods = mColumnMethodFactory.createColumnMethods(columnElements);
-    mColumnMethodRepository.save(columnMethods);
+    mColumnMethodRepository.store(columnMethods);
 
     return OK;
   }

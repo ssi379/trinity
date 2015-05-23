@@ -32,7 +32,7 @@ public class RepositoryClassConversionStep implements ProcessingStep {
   public ProcessingStepResult process(@NotNull final RoundEnvironment roundEnvironment) throws IOException {
     Set<? extends TypeElement> repositoryElements = (Set<? extends TypeElement>) roundEnvironment.getElementsAnnotatedWith(Repository.class);
     Collection<RepositoryClass> repositoryClasses = mRepositoryClassFactory.createRepositoryClasses(repositoryElements);
-    mRepositoryClassRepository.save(repositoryClasses);
+    mRepositoryClassRepository.store(repositoryClasses);
 
     return OK;
   }

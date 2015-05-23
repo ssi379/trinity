@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A repository class which stores instances of {@link TableClass}.
+ */
 public class TableClassRepository {
 
   @NotNull

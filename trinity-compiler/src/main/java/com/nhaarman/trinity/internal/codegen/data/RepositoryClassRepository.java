@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A repository class which stores instances of {@link RepositoryClass}.
+ */
 public class RepositoryClassRepository {
 
   @NotNull
@@ -14,14 +17,14 @@ public class RepositoryClassRepository {
     mRepositoryClasses = new HashMap<>();
   }
 
-  public void save(@NotNull final RepositoryClass repositoryClass) {
+  public void store(@NotNull final RepositoryClass repositoryClass) {
     String key = repositoryClass.getFullyQualifiedName();
     mRepositoryClasses.put(key, repositoryClass);
   }
 
-  public void save(@NotNull final Collection<RepositoryClass> repositoryClasses) {
+  public void store(@NotNull final Collection<RepositoryClass> repositoryClasses) {
     for (RepositoryClass repositoryClass : repositoryClasses) {
-      save(repositoryClass);
+      store(repositoryClass);
     }
   }
 
