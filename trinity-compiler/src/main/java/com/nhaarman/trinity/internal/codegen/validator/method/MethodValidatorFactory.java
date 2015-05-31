@@ -7,6 +7,7 @@ import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryMethod;
 import com.nhaarman.trinity.internal.codegen.validator.Validator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodValidatorFactory {
 
@@ -25,11 +26,11 @@ public class MethodValidatorFactory {
     mMySupportedMethodVisitor = new MySupportedMethodVisitor();
   }
 
-  @NotNull
+  @Nullable
   public Validator<RepositoryMethod> methodValidator(@NotNull final RepositoryMethod repositoryMethod) {
     SupportedMethod supportedMethod = SupportedMethod.from(repositoryMethod.getMethodName());
     if (supportedMethod == null) {
-      throw new IllegalArgumentException(String.format("Method '%s' is not supported.", repositoryMethod.getMethodName()));
+      return null;
     }
 
     return supportedMethod.accept(mMySupportedMethodVisitor);
@@ -45,14 +46,20 @@ public class MethodValidatorFactory {
 
     @NotNull
     @Override
+    public Validator<RepositoryMethod> visitFindAll() {
+      return new FindAllMethodValidator();
+    }
+
+    @NotNull
+    @Override
     public Validator<RepositoryMethod> visitCreate() {
       return new CreateMethodValidator();
     }
 
     @NotNull
     @Override
-    public Validator<RepositoryMethod> visitFindAll() {
-      return new FindAllMethodValidator();
+    public Validator<RepositoryMethod> visitCreateAll() {
+      return new CreateAllMethodValidator();
     }
   }
 }

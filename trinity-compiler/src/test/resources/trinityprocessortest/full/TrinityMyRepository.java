@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.lang.Long;
 import java.lang.Override;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class TrinityMyRepository implements MyRepository {
@@ -65,6 +66,27 @@ public final class TrinityMyRepository implements MyRepository {
     }
 
     return result;
+  }
+
+  /**
+   * Executes insert statements to persist given java.util.Collection<trinityprocessortest.full.MyEntity> in the database.
+   *
+   * @param entities The entities to insert.
+   */
+  @Override
+  public void createAll(final Collection<MyEntity> entities) {
+    try {
+      mDatabase.beginTransaction();
+
+      for (MyEntity entity: entities) {
+        ContentValues contentValues = createContentValues(entity);
+        mDatabase.insert("entities", null, contentValues);
+      }
+
+      mDatabase.setTransactionSuccessful();
+    } finally{
+      mDatabase.endTransaction();
+    }
   }
 
   /**

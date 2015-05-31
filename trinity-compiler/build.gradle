@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'jacoco'
 
-apply from: rootProject.projectDir.absolutePath + '/gradle/javaCompile.gradle';
+apply from: rootProject.projectDir.absolutePath + '/gradle/javaCompile.gradle'
 apply from: rootProject.projectDir.absolutePath + '/gradle/publishing.gradle'
 apply from: rootProject.projectDir.absolutePath + '/gradle/bintray.gradle'
 apply from: rootProject.projectDir.absolutePath + '/gradle/artifactory.gradle'

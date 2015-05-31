@@ -88,11 +88,19 @@ public class TrinityProcessor extends AbstractProcessor {
             new TableClassValidationStep(mRepositoryGateway.getTableClassRepository(), validationHandler),
 
             new ColumnMethodConversionStep(mRepositoryGateway.getColumnMethodRepository()),
-            new ColumnMethodValidationStep(mRepositoryGateway.getTableClassRepository(), mRepositoryGateway.getColumnMethodRepository(),
-                mRepositoryGateway.getSerializerClassRepository(), validationHandler),
+            new ColumnMethodValidationStep(
+                mRepositoryGateway.getTableClassRepository(),
+                mRepositoryGateway.getColumnMethodRepository(),
+                mRepositoryGateway.getSerializerClassRepository(),
+                validationHandler
+            ),
 
             new RepositoryClassConversionStep(mRepositoryGateway.getRepositoryClassRepository()),
-            new RepositoryClassValidationStep(mRepositoryGateway.getRepositoryClassRepository(), mRepositoryGateway.getColumnMethodRepository(), validationHandler),
+            new RepositoryClassValidationStep(
+                mRepositoryGateway.getRepositoryClassRepository(),
+                mRepositoryGateway.getColumnMethodRepository(),
+                validationHandler
+            ),
 
             new RepositoryWriterStep(
                 mRepositoryGateway.getTableClassRepository(),

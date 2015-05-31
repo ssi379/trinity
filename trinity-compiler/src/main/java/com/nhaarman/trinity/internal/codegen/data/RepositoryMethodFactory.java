@@ -21,7 +21,8 @@ public class RepositoryMethodFactory {
       parameters.add(
           new Parameter(
               variableElement.asType().toString(),
-              variableElement.getSimpleName().toString()
+              variableElement.getSimpleName().toString(),
+              variableElement.asType()
           )
       );
     }

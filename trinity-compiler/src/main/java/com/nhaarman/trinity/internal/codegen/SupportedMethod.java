@@ -25,18 +25,25 @@ public enum SupportedMethod {
       return visitor.visitFind();
     }
   },
+  FIND_ALL("findAll") {
+    @Override
+    public <T> T accept(@NotNull final SupportedMethodVisitor<T> visitor) {
+      return visitor.visitFindAll();
+    }
+  },
   CREATE("create") {
     @Override
     public <T> T accept(@NotNull final SupportedMethodVisitor<T> visitor) {
       return visitor.visitCreate();
     }
   },
-  FIND_ALL("findAll") {
+  CREATE_ALL("createAll"){
     @Override
     public <T> T accept(@NotNull final SupportedMethodVisitor<T> visitor) {
-      return visitor.visitFindAll();
+      return visitor.visitCreateAll();
     }
-  };
+  }
+  ;
 
   private static final Map<String, SupportedMethod> SUPPORTED_METHODS;
 
@@ -71,5 +78,8 @@ public enum SupportedMethod {
 
     @NotNull
     T visitFindAll();
+
+    @NotNull
+    T visitCreateAll();
   }
 }

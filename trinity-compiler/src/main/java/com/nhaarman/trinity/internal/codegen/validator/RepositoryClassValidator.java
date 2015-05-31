@@ -16,6 +16,7 @@
 
 package com.nhaarman.trinity.internal.codegen.validator;
 
+import com.nhaarman.trinity.internal.codegen.Message;
 import com.nhaarman.trinity.internal.codegen.ProcessingStepResult;
 import com.nhaarman.trinity.internal.codegen.data.ColumnMethodRepository;
 import com.nhaarman.trinity.internal.codegen.data.RepositoryClass;
@@ -24,6 +25,7 @@ import com.nhaarman.trinity.internal.codegen.validator.method.MethodValidatorFac
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
+import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.ERROR;
 import static com.nhaarman.trinity.internal.codegen.ProcessingStepResult.OK;
 
 public class RepositoryClassValidator implements Validator<Collection<RepositoryClass>> {
@@ -64,6 +66,12 @@ public class RepositoryClassValidator implements Validator<Collection<Repository
   private ProcessingStepResult validate(@NotNull final RepositoryMethod method,
                                         @NotNull final ValidationHandler validationHandler,
                                         @NotNull final MethodValidatorFactory methodValidatorFactory) {
-    return methodValidatorFactory.methodValidator(method).validate(method, validationHandler);
+    Validator<RepositoryMethod> validator = methodValidatorFactory.methodValidator(method);
+    if(validator == null) {
+      validationHandler.onError(method.getElement(), null, Message.UNSUPPORTED_METHOD_NAME, method.getMethodName());
+      return ERROR;
+    }
+
+    return validator.validate(method, validationHandler);
   }
 }

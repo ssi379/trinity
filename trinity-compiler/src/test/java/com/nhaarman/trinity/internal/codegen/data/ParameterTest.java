@@ -1,10 +1,12 @@
 package com.nhaarman.trinity.internal.codegen.data;
 
+import javax.lang.model.type.TypeMirror;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.mock;
 
 public class ParameterTest {
 
@@ -14,7 +16,7 @@ public class ParameterTest {
   @Test
   public void createdInstanceReturnsProperFullyQualifiedType() {
     /* Given */
-    Parameter parameter = new Parameter(FULLY_QUALIFIED_TYPE, VARIABLE_NAME);
+    Parameter parameter = new Parameter(FULLY_QUALIFIED_TYPE, VARIABLE_NAME, mock(TypeMirror.class));
 
     /* When */
     String fullyQualifiedType = parameter.getFullyQualifiedType();
@@ -26,7 +28,7 @@ public class ParameterTest {
   @Test
   public void createdInstanceReturnsProperVariableName() {
     /* Given */
-    Parameter parameter = new Parameter(FULLY_QUALIFIED_TYPE, VARIABLE_NAME);
+    Parameter parameter = new Parameter(FULLY_QUALIFIED_TYPE, VARIABLE_NAME, mock(TypeMirror.class));
 
     /* When */
     String variableName = parameter.getVariableName();

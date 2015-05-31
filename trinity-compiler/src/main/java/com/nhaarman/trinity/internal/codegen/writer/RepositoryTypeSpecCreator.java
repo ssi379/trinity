@@ -176,14 +176,20 @@ public class RepositoryTypeSpecCreator {
 
     @NotNull
     @Override
+    public MethodSpec visitFindAll() {
+      return mMethodCreatorFactory.findAllMethodCreator(mRepositoryMethod).create();
+    }
+
+    @NotNull
+    @Override
     public MethodSpec visitCreate() {
       return mMethodCreatorFactory.createMethodCreator(mRepositoryMethod).create();
     }
 
     @NotNull
     @Override
-    public MethodSpec visitFindAll() {
-      return mMethodCreatorFactory.findAllMethodCreator(mRepositoryMethod).create();
+    public MethodSpec visitCreateAll() {
+      return mMethodCreatorFactory.createAllMethodCreator(mRepositoryMethod).create();
     }
   }
 }

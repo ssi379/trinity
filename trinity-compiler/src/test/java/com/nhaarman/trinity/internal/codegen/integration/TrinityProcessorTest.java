@@ -26,6 +26,8 @@ public class TrinityProcessorTest {
 
   @Test
   public void fullFiles() {
+    android.content.ContentValues a;
+
     assert_()
         .about(javaSources())
         .that(asList(

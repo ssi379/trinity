@@ -17,6 +17,7 @@
 package com.nhaarman.trinity.sample;
 
 import com.nhaarman.trinity.annotations.Repository;
+import java.util.Collection;
 
 @Repository(Club.class)
 public interface ClubRepository {
@@ -24,5 +25,7 @@ public interface ClubRepository {
   Club find(String key);
 
   Long create(Club club);
+
+  void createAll(Collection<Club> clubs);
 
 }

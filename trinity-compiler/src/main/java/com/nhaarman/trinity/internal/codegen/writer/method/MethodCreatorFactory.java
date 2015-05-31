@@ -67,12 +67,17 @@ public class MethodCreatorFactory {
   }
 
   @NotNull
+  public MethodCreator findAllMethodCreator(@NotNull final RepositoryMethod method) {
+    return new FindAllMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method);
+  }
+
+  @NotNull
   public MethodCreator createMethodCreator(@NotNull final RepositoryMethod method) {
     return new CreateMethodCreator(mTableClass, mCreateContentValuesSpec, method, mPrimaryKeySetter);
   }
 
   @NotNull
-  public MethodCreator findAllMethodCreator(@NotNull final RepositoryMethod method) {
-    return new FindAllMethodCreator(mTableClass, mDatabaseFieldSpec, mReadCursorSpec, method);
+  public MethodCreator createAllMethodCreator(@NotNull final RepositoryMethod method) {
+    return new CreateAllMethodCreator(mTableClass, mDatabaseFieldSpec, mCreateContentValuesSpec, method);
   }
 }
